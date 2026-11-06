@@ -17,7 +17,7 @@ export function updateWelcomeAnchor(id,root,camera,mode,player){
  const pos=root.position.clone().add(new THREE.Vector3(0,2.25,0)).project(camera);
  const visible=near&&pos.z>-1&&pos.z<1&&Math.abs(pos.x)<1.15;
  const wasHidden=panel.hidden;panel.hidden=!visible;if(!visible){video.pause();return;}if(wasHidden&&!video.ended)video.play().catch(()=>{});
- const width=Math.min(innerWidth<600?220:320,innerWidth-24),height=panel.offsetHeight||240;
+ const width=Math.min(innerWidth<600?200:320,innerWidth-24),height=panel.offsetHeight||240;
  const x=(pos.x*.5+.5)*innerWidth+65,y=(-pos.y*.5+.5)*innerHeight-45;
- panel.style.width=width+'px';panel.style.left=Math.max(12,Math.min(innerWidth-width-12,x))+'px';panel.style.top=Math.max(innerWidth<600?106:92,Math.min(innerHeight-height-90,y))+'px';
+ panel.style.width=width+'px';panel.style.left=Math.max(12,Math.min(innerWidth-width-12,x))+'px';panel.style.top=(innerWidth<600?(document.querySelector('#experience > header')?.getBoundingClientRect().bottom||184)+8:Math.max(92,Math.min(innerHeight-height-90,y)))+'px';
 }
