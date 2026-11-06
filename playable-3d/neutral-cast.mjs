@@ -1,4 +1,4 @@
-import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=curios-4';
+import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=curios-5';
 import {createTeacherNPC,TEACHERS} from './teacher-npc.js?v=text-1';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -14,13 +14,13 @@ export function showNpc(id,details=npcInfo(id)){
 }
 export function createNeutralGuide({scene,onPause=()=>{}}){
  const fallback=()=>{const root=new THREE.Group();return {root};};
- const model=createSelectedHelper(fallback);scene.add(model.root);model.root.position.set(-5.85,0,22.7);let visible=true;
+ const model=createSelectedHelper(fallback);scene.add(model.root);model.root.position.set(-8.5,0,24.0);let visible=true;
  return {root:model.root,resources:null,resourcesNear:()=>false,showResources:()=>{},showHelp:()=>{},close:()=>dialog?.close(),open:()=>false,markMarketVisited:()=>{},guidance:()=>{},nextPreparation:()=>null,
  async selectHelper(helper){if(helper.id==='echo'&&!npcInfo('echo').enabled)helper={id:'none',model:null};visible=Boolean(helper.model);await model.select(helper);},setHidden(value){visible=!value;},
  near:p=>visible&&model.root.position.distanceTo(p)<2.5,
  show(){onPause();showNpc('echo');},
  interaction(p){const details=npcInfo('echo');return visible&&details.enabled&&details.dialogue&&model.root.position.distanceTo(p)<2.5?{label:'Talk to '+details.name,action:()=>{onPause();showNpc('echo');}}:null;},
- update(dt,p,camera,available,activeScene){model.root.visible=visible&&activeScene===scene;if(model.root.visible){const target=new THREE.Vector3(p.x+1.3,0,p.z+1.2);if(model.root.position.distanceTo(target)>2.5)model.root.position.lerp(target,Math.min(1,dt*2));model.root.lookAt(p.x,model.root.position.y,p.z);}},
+ update(dt,p,camera,available,activeScene){model.root.visible=visible&&activeScene===scene;if(model.root.visible){const target=new THREE.Vector3(p.x-1.5,0,p.z+.7);if(model.root.position.distanceTo(target)>2.5)model.root.position.lerp(target,Math.min(1,dt*2));model.root.lookAt(p.x,model.root.position.y,p.z);}},
  snapshot:()=>({neutral:true,helperStatus:model.status})};
 }
 export function createExtraCast(worlds){
