@@ -39,8 +39,8 @@
     "welcome-slides.json": {
       "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
       "path": "playable-3d/assets/curios/welcome-slides.json",
-      "sha256": "e0afec7ddf04350abca492a104e21d941a2281b932730942d903586d6c54aca5",
-      "bytes": 1723
+      "sha256": "00d35d7a8cfdbef41a1dffb296b0e19d2df330a8a3b43b4e1365e2a766ea4835",
+      "bytes": 1751
     },
     "curios-campus-clean.jpg": {
       "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",

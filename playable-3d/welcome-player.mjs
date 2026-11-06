@@ -4,7 +4,7 @@ let panel,activeId,closed=false,slides=[],index=0,playing=true,remaining=0,last=
 function renderSlide(){
  const slide=slides[index];if(!slide)return;
  panel.querySelector('.welcome-slide h3').textContent=slide.title;panel.querySelector('.welcome-slide p').textContent=slide.text;
- panel.querySelector('.welcome-slide').style.backgroundImage=`linear-gradient(#06232ed9,#06232ef5),url("./assets/curios/${slide.image}")`;
+ const image=panel.querySelector('.welcome-slide img');image.src=`./assets/curios/${slide.image}`;image.alt=slide.title==='Make it your own.'?'Teacher setup page with world and character settings':slide.title==='Walk in. Open an app.'?'Campus map showing the app rooms':'Curios learning world';
  panel.querySelector('[data-count]').textContent=`${index+1} / ${slides.length}`;
  panel.querySelector('[data-back]').disabled=index===0;panel.querySelector('[data-next]').textContent=index===slides.length-1?'Explore rooms':'Next';
  remaining=slide.seconds*1000;last=performance.now();
@@ -13,10 +13,10 @@ export async function showWelcomeVideo(details){
  if(!panel){
   panel=document.createElement('aside');panel.id='basil-welcome';panel.setAttribute('aria-label','Basil’s welcome slides');
   const header=document.createElement('header'),title=document.createElement('strong'),close=document.createElement('button');title.textContent='A quick hello from Basil';close.textContent='×';close.setAttribute('aria-label','Close welcome');close.onclick=finishWelcome;header.append(title,close);
-  const slide=document.createElement('section');slide.className='welcome-slide';const heading=document.createElement('h3'),text=document.createElement('p');slide.append(heading,text);
+  const slide=document.createElement('section');slide.className='welcome-slide';const image=document.createElement('img'),copy=document.createElement('div'),heading=document.createElement('h3'),text=document.createElement('p');copy.className='welcome-copy';copy.append(heading,text);slide.append(image,copy);
   const footer=document.createElement('footer');for(const [key,label,action]of [['back','Previous',()=>{if(index>0){index--;renderSlide();}}],['pause','Pause',()=>{playing=!playing;panel.querySelector('[data-pause]').textContent=playing?'Pause':'Play';last=performance.now();}],['next','Next',()=>{if(index<slides.length-1){index++;renderSlide();}else finishWelcome();}]]){const button=document.createElement('button');button.dataset[key]='';button.textContent=label;button.onclick=action;footer.append(button);}const count=document.createElement('span');count.dataset.count='';footer.append(count);
   panel.append(header,slide,footer);document.body.append(panel);for(const event of ['pointerdown','pointerup','click'])panel.addEventListener(event,e=>e.stopPropagation());
-  const response=await fetch('./assets/curios/welcome-slides.json?v=text-1');slides=await response.json();
+  const response=await fetch('./assets/curios/welcome-slides.json?v=text-2');slides=await response.json();
  }
  if(activeId!==details.id||index===slides.length-1){index=0;activeId=details.id;playing=true;panel.querySelector('[data-pause]').textContent='Pause';renderSlide();}
  closed=false;panel.hidden=false;last=performance.now();

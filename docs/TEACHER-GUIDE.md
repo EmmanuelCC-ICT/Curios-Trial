@@ -34,3 +34,5 @@ Teacher setup includes app names, HTTPS website links and availability. Names on
 Basil’s small welcome video plays beside him at the entrance without stopping exploration. Select Sound on to hear the synthetic narration, or use captions/Transcript. Closing it or walking away leaves the campus available. Talk to Basil to reopen. Editing his conversation switches off the stock welcome video so your own words appear instead; the “Use Basil’s welcome video” checkbox can restore it.
 
 Updated welcome: Basil now dances beside silent, automatically advancing text slides. Use Pause, Previous or Next to read at your own pace. When the welcome finishes or closes, the campus map opens with app logos and labelled entrances. Choose a destination, then walk towards its door or press E. The earlier narrated video has been removed.
+
+Final navigation: the welcome now leaves a small tracking map at bottom right. Its You marker follows movement; select an app entrance or Expand map. Teacher setup is in the top bar. Slides show screenshots separately from the text and have no sound controls.

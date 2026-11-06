@@ -11,3 +11,18 @@
 #basil-welcome .welcome-slide{min-height:300px;box-sizing:border-box;background-size:cover;background-position:center;padding:28px 32px;display:flex;flex-direction:column;justify-content:center}#basil-welcome .welcome-slide h3{font:700 28px/1.2 system-ui;margin:0 0 22px;color:#ffd66d}#basil-welcome .welcome-slide p{font:400 23px/1.55 system-ui;margin:0;color:#fff}#basil-welcome footer{align-items:center;flex-wrap:wrap}#basil-welcome [data-count]{margin-left:auto;color:#c4eeea}#basil-welcome button:disabled{opacity:.45}@media(max-width:899px){#basil-welcome .welcome-slide{padding:20px;min-height:260px}#basil-welcome .welcome-slide h3{font-size:21px;margin-bottom:14px}#basil-welcome .welcome-slide p{font-size:17px;line-height:1.45}}
 /* Fit the complete route map, including the southern app rooms, without scrolling. */
 .curios-campus-plan{width:min(100%,610px,calc(73.828125dvh - 123.046875px))}
+/* Screenshot and copy are separate, so instructional images are never obscured. */
+#basil-welcome .welcome-slide{padding:0;min-height:0;display:block;background:#082b36}
+#basil-welcome .welcome-slide>img{display:block;width:100%;height:190px;object-fit:contain;background:#e5eee8}
+#basil-welcome .welcome-copy{padding:20px 28px 24px}
+#basil-welcome .welcome-slide h3{font-size:24px;margin:0 0 12px}
+#basil-welcome .welcome-slide p{font-size:20px;line-height:1.45}
+#basil-welcome{max-height:calc(100dvh - 120px);overflow:auto}
+@media(max-width:899px){#basil-welcome .welcome-slide>img{height:135px}#basil-welcome .welcome-copy{padding:16px}#basil-welcome .welcome-slide h3{font-size:20px}#basil-welcome .welcome-slide p{font-size:16px}}
+#curios-mini-map{position:fixed;right:14px;bottom:14px;z-index:16;width:250px;background:#f4f7ecf5;color:#153e40;border:1px solid #429b98;border-radius:12px;box-shadow:0 6px 24px #06232e44;padding:8px;box-sizing:border-box;pointer-events:auto}
+#curios-mini-map header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;font:12px system-ui}
+#curios-mini-map header button{font:11px system-ui;padding:5px 7px;min-height:0;background:#17494c;color:white;border:0;border-radius:5px;cursor:pointer}
+#curios-mini-map .curios-campus-plan{width:100%;max-width:none}
+#curios-mini-map .curios-map-pin{font-size:8px;max-width:73px;padding:2px 3px;gap:1px;min-height:0;border-radius:5px}
+#curios-mini-map .curios-map-logo{width:25px;height:20px}#curios-mini-map .curios-map-pin img{width:25px;height:20px}#curios-mini-map .curios-you{font-size:8px;padding:2px 4px}
+@media(max-width:599px){#curios-mini-map{width:175px;right:8px;bottom:70px;padding:6px}#curios-mini-map .curios-map-pin{font-size:7px;max-width:55px}#curios-mini-map .curios-map-logo,#curios-mini-map .curios-map-pin img{width:18px;height:15px}}
