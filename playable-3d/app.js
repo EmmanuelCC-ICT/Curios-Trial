@@ -1,9 +1,9 @@
 import {roomCameraPose} from './room-camera.mjs';
-import {welcomeViewShift} from './welcome-player.mjs?v=curios-10';
-import {createCuriosHub,ROOM_POINTS} from './curios-hub.mjs?v=text-5';
+import {welcomeViewShift} from './welcome-player.mjs?v=curios-11';
+import {createCuriosHub,ROOM_POINTS} from './curios-hub.mjs?v=text-6';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=navigation-final1';
 import {createIsolatedStorage} from './world-storage.mjs';
-import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=curios-10';
+import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=curios-11';
 import {estEyeHeight,estPlayTop} from './est-camera.mjs?v=broad-integrated-20261014';
 import {MARKET_APPROACH} from './landing.mjs?v=post-photo-tour-20261013';
 import {createGpuFrameGate,createTextureUploadQueue} from './frame-budget.mjs?v=interaction-upload-priority-20261016';
@@ -581,8 +581,8 @@ function updateInteraction(){
   const walking=keys.size>0||Math.hypot(joystick.x,joystick.z)>.1;
   if(walking&&!curiosHub?.blocked()){if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<1.1){enterHall();return;}if(Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<1.1){enterCareers();return;}if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<.9){curiosHub?.open('media');return;}}
   if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<2.2)interaction={label:'Enter Loopy Tunes',action:()=>curiosHub?.open('media')};
-  else if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<2.2)interaction={label:'Enter '+config.places.hall,action:enterHall};
-  else if(Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<2.2)interaction={label:'Enter '+config.places.centre,action:enterCareers};
+  else if(Math.hypot(p.x-ROOM_POINTS.hall.x,p.z-ROOM_POINTS.hall.z)<2.2||Math.hypot(p.x-EST.x,p.z-EST.doorZ)<2.2)interaction={label:'Enter '+config.places.hall,action:enterHall};
+  else if(Math.hypot(p.x-ROOM_POINTS.centre.x,p.z-ROOM_POINTS.centre.z)<2.2||Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<2.2)interaction={label:'Enter '+config.places.centre,action:enterCareers};
   else if(campusReady&&Math.hypot(p.x-43,p.z+22)<3.2)interaction={label:'Enter '+config.places.market,action:requestMarket};
   else if(p.x>-13.6&&p.x<-10.8&&Math.abs(p.z-5)<1.45)interaction={label:'Open Avatar Studio',action:openStudio};
   else if(Math.hypot(p.x-CHAPEL.x,p.z-CHAPEL.z)<1.9)interaction={label:'Enter Chapel',action:enterChapel};
