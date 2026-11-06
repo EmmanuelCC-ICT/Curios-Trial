@@ -1,4 +1,4 @@
-import {neutralLabel} from './world-settings.mjs';
+import {neutralLabel} from './world-settings.mjs?v=navigation-final1';
 import * as T from 'three';
 import {approvedPalette,dressedBox,batchStatic} from './environment/approved-campus-kit.js?v=ecc-ba60122';
 

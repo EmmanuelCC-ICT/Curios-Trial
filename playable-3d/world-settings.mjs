@@ -1,5 +1,5 @@
-import {validateConfig,previewStorageKey} from './world-content.mjs';
-const response=await fetch('../world-config.json');
+import {validateConfig,previewStorageKey} from './world-content.mjs?v=navigation-final1';
+const response=await fetch('../world-config.json?v=navigation-final1');
 if(!response.ok)throw Error('World settings could not load.');
 let settings=await response.json();
 if(new URLSearchParams(location.search).get('teacher-preview')==='1'){try{const draft=localStorage.getItem(previewStorageKey(new URL('../',location.href).pathname));if(draft)settings=validateConfig(JSON.parse(draft));}catch(error){console.warn('Teacher preview settings unavailable; using published settings.',error);}}
@@ -9,7 +9,7 @@ const labels={
  'ORIGINAL CAREER EMPIRE':'WELCOME','OPEN THE ORIGINAL GAME':'EXPLORE THE CAMPUS',
  'CAREERS ADVICE CENTRE':config.places.centre.toUpperCase(),'Careers Advice Centre':config.places.centre,
  'EST PREP':config.places.hall.toUpperCase(),'EST Prep':config.places.hall,
- 'MY LIFE':'EXPLORATION SPACE','SHOP DEMO':'ACTIVITY SPACE','$100,000 PRACTICE MONEY':'',
+ 'MY LIFE':'','SHOP DEMO':'','$100,000 PRACTICE MONEY':'',
  CORE:config.stations[0],TERM:config.stations[1],VTCS:config.stations[2],BOSS:config.stations[3],
  'LIVE MUSIC & SUNDAY MARKETS':config.places.market.toUpperCase(),'LIVE MUSIC & SUNDAY MARKET':config.places.market.toUpperCase(),
  'MARA · START HERE':npcInfo('mara').name,'SAM · MARKET CREW':npcInfo('sam').name,

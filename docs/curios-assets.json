@@ -37,10 +37,10 @@
       "bytes": 895
     },
     "welcome-slides.json": {
-      "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
+      "source": "Actual Curios browser capture / welcome script; slide5 shows retained Avatar Studio.",
       "path": "playable-3d/assets/curios/welcome-slides.json",
-      "sha256": "00d35d7a8cfdbef41a1dffb296b0e19d2df330a8a3b43b4e1365e2a766ea4835",
-      "bytes": 1751
+      "sha256": "6d422bfb0d658864b225aa76132ae9fb15f5e046e52c286bd1e501b70892b777",
+      "bytes": 1770
     },
     "curios-campus-clean.jpg": {
       "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
@@ -59,6 +59,18 @@
       "path": "playable-3d/assets/curios/teacher-settings-film.jpg",
       "sha256": "95131bd5f77a368ce98eb4e1d5d19dad16ff5a5563ee36f36fbc711fb57625ea",
       "bytes": 64356
+    },
+    "avatar-studio.jpg": {
+      "source": "Actual Curios browser capture / welcome script; slide5 shows retained Avatar Studio.",
+      "path": "playable-3d/assets/curios/avatar-studio.jpg",
+      "sha256": "a23f0e2e5e03c2bd8f7cbfe117a9942f9289ae647c988bb690e06b526df8bcb3",
+      "bytes": 48816
+    },
+    "archon-icon.webp": {
+      "source": "User supplied /Users/tania.byrnes/Downloads/content.webp (correct Archon Engine icon)",
+      "path": "playable-3d/assets/curios/archon-icon.webp",
+      "bytes": 225412,
+      "sha256": "1216fa10f501f832c77512b286627ec55c036b1c28302a213e32eedb9ae13feb"
     }
   },
   "newMotionGraphicsGenerated": true,

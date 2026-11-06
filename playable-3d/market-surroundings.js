@@ -1,4 +1,4 @@
-import {neutralLabel} from './world-settings.mjs';
+import {neutralLabel} from './world-settings.mjs?v=navigation-final1';
 import * as THREE from 'three';
 import {JUNIPER} from './market-food.js?v=stall-refine-20260924';
 import {approvedPalette,dressedBox,planter,batchStatic} from './environment/approved-campus-kit.js?v=ecc-ba60122';

@@ -3,7 +3,7 @@
   "welcome": "Reuse · Repurpose · Recycle. Explore, connect and create your own learning experiences.",
   "places": {
     "hall": "Archon Engine",
-    "centre": "ArtQuest",
+    "centre": "ArtQuest + Loopy Tunes",
     "market": "Markets",
     "community": "Community Centre"
   },
@@ -76,7 +76,7 @@
       "name": "Archon Engine",
       "room": "hall",
       "url": "https://emmanuelcc-ict.github.io/Archon-Engine/",
-      "badge": "./assets/curios/archon.webp",
+      "badge": "./assets/curios/archon-icon.webp",
       "enabled": true
     },
     {
@@ -85,15 +85,17 @@
       "room": "centre",
       "url": "https://emmanuel-ict-support.github.io/ArtQuest-RPG-V2/",
       "badge": "./assets/curios/artquest.png",
-      "enabled": true
+      "enabled": true,
+      "station": "right"
     },
     {
       "id": "loopy",
       "name": "Loopy Tunes",
-      "room": "media",
+      "room": "centre",
       "url": "https://emmanuelcc-ict.github.io/Loopy-Tunes/",
       "badge": "./assets/curios/loopy.webp",
-      "enabled": true
+      "enabled": true,
+      "station": "left"
     }
   ]
 }

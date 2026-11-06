@@ -26,3 +26,6 @@
 #curios-mini-map .curios-map-pin{font-size:8px;max-width:73px;padding:2px 3px;gap:1px;min-height:0;border-radius:5px}
 #curios-mini-map .curios-map-logo{width:25px;height:20px}#curios-mini-map .curios-map-pin img{width:25px;height:20px}#curios-mini-map .curios-you{font-size:8px;padding:2px 4px}
 @media(max-width:599px){#curios-mini-map{width:175px;right:8px;bottom:70px;padding:6px}#curios-mini-map .curios-map-pin{font-size:7px;max-width:55px}#curios-mini-map .curios-map-logo,#curios-mini-map .curios-map-pin img{width:18px;height:15px}}
+.curios-wordmark{width:160px;height:58px;background-position:-60px -4px;background-size:270px auto}
+.curios-pc-pin .curios-map-logo{display:flex;width:auto;gap:3px}
+#curios-mini-map .curios-pc-pin .curios-map-logo{width:auto}

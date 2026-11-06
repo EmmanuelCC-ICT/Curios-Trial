@@ -1,3 +1,4 @@
+import {config} from './world-settings.mjs?v=navigation-final1';
 import {resolveCampusAssetURL} from './campus-asset-url.mjs?v=broad-integrated-20261014';
 import {pavingNetwork} from './environment/paving-network.js?v=student-usability-20260924';
 import {applyBuildingPalette,planter} from './environment/approved-campus-kit.js?v=ecc-ba60122';
@@ -102,12 +103,23 @@ for(const spec of [{id:'careers',name:'Careers Advice Centre',x:-19,z:18,width:8
  const asset=loaded.get(spec.id);
  // Reuse the building, porch, furniture and planting. The display plate gives way to campus paths.
  for(const child of [...asset.scene.children])if(/^Whole item paving/i.test(child.name))asset.scene.remove(child);
- if(spec.id===EST.buildingId){
-  const oldText=[];asset.scene.traverse(o=>{if(/^Text[._]?013$/.test(o.name))oldText.push(o);});oldText.forEach(o=>o.removeFromParent());
- }
+ // Replace authored text geometry before batching; labels in the GLB cannot
+ // be renamed by changing navigation strings.
+ const obsolete=[];asset.scene.traverse(o=>{
+  if(/^Text[._]?01[123]$/.test(o.name))obsolete.push(o);
+  if(spec.id==='careers'&&o.isMesh){
+   const bounds=new THREE.Box3().setFromObject(o);
+   const centre=bounds.getCenter(new THREE.Vector3());
+   if((/^Garden[ _]edge/.test(o.name)||/^Native[ _]grass[ _]clump/.test(o.name)||/soil|mulch/i.test(o.name))&&centre.x< -4.7)obsolete.push(o);
+  }
+ });obsolete.forEach(o=>o.removeFromParent());
  // The legacy display ramps cut through the continuous campus paving. Keep the raised landing.
  const oldRamps=[];asset.scene.traverse(o=>{if(/^ramp-3p2x2/.test(o.name))oldRamps.push(o);});oldRamps.forEach(o=>o.removeFromParent());
- applyBuildingPalette(asset.scene,palette);const model=batchStatic(asset.scene);model.name=spec.name;model.rotation.y=Math.PI;model.position.set(spec.x,0,spec.z);scene.add(model);
+ applyBuildingPalette(asset.scene,palette);
+ const facadeLabel=(text,width,height,x,y,z)=>{const c=document.createElement('canvas');c.width=2048;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle='#fff5dc';ctx.font='500 135px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,1024,96,1960);const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Mesh(new THREE.PlaneGeometry(width,height),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));label.position.set(x,y,z);label.name='Curios facade: '+text;asset.scene.add(label);};
+ facadeLabel((spec.id==='careers'?config.places.centre:config.places.hall).toUpperCase(),spec.id==='careers'?7.5:9,.55,0,3.22,spec.id==='careers'?4.68:5.68);
+ if(spec.id==='careers')facadeLabel('CREATE · EXPLORE · CONNECT',4.8,.42,0,1.8,-2.71);
+ const model=batchStatic(asset.scene);model.name=spec.name;model.rotation.y=Math.PI;model.position.set(spec.x,0,spec.z);scene.add(model);
  if(spec.id===EST.buildingId){
   const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#164f54';ctx.fillRect(0,0,1024,256);ctx.strokeStyle='#d6b95c';ctx.lineWidth=12;ctx.strokeRect(10,10,1004,236);ctx.fillStyle='#fff9e8';ctx.font='bold 110px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(EST.name,512,130);
   const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;const sign=new THREE.Mesh(new THREE.PlaneGeometry(3,.45),new THREE.MeshBasicMaterial({map:texture}));sign.name='EST Prep entrance sign';sign.rotation.y=Math.PI;sign.position.set(15,3.34,12.30);scene.add(sign);

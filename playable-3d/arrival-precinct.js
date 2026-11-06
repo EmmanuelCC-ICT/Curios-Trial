@@ -23,7 +23,7 @@ export function arrivalPrecinct(town,stoneTexture,sign,palette){
  }
  // Flush Studio apron, shaded walk and southern link; no new collision bodies.
  // The cross-link passes south of the existing garden and joins the main avenue.
- ground(-7,13.55,4.5,12.9,paving);
+ ground(-8.5,15,7.5,17,paving);
  ground(-8.6,5,9.8,4.2,paving);
  ground(-2.875,18,3.75,3.6,paving);
  for(const x of [-9.16,-4.84])ground(x,13.55,.18,12.9,border,.107);
@@ -39,10 +39,10 @@ export function arrivalPrecinct(town,stoneTexture,sign,palette){
  // isolated uprights after their seating has been cleared.
  const welcome=sign('ARRIVAL GARDENS',1.35,'#f4e5c6','#29434a');welcome.position.set(-10.4,1.35,19.9);root.add(welcome);
  let seed=719;const random=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
- const walkBeds=[[-10.6,11.2,2.1,7],[-3.3,12,2.7,8],[-10.7,1,3,3],[-4.3,2,2.0,3.8],[-10.7,20.6,3.5,2.2]];
+ const walkBeds=[[-3.3,12,2.7,8],[-10.7,1,3,3],[-4.3,2,2.0,3.8]];
  for(const [x,z,w,d]of walkBeds){dressedBox(root,x,.22,z,w,.44,d,stone);dressedBox(root,x,.46,z,w+.05,.08,d+.05,stone);box(root,x,.505,z,w-.2,.025,d-.2,soil);}
  // Stone outcrops and seating frame the walkway, never obstruct its centre.
- for(const [x,z] of [[-10.6,9],[-3.3,10],[-3.3,15],[-10.7,1]]){const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.38,0),stone.clone());rock.position.set(x,.55,z);rock.scale.set(1.05,.7,.85);rock.castShadow=true;root.add(rock);}
+ for(const [x,z] of [[-3.3,10],[-3.3,15],[-10.7,1]]){const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(.38,0),stone.clone());rock.position.set(x,.55,z);rock.scale.set(1.05,.7,.85);rock.castShadow=true;root.add(rock);}
  // Remove the thin decorative posts along this route. Their overlapping
  // geometry produced the reported Administration-side flicker.
  // Keep planting inside the resized courtyard-facing beds.
@@ -56,9 +56,9 @@ export function arrivalPrecinct(town,stoneTexture,sign,palette){
  function loadDetail(){return detailLoad||=(async()=>{
   const {addAuthoredGarden}=await import('./ecc-preview/authored-garden.js?v=ecc-ba60122');
   const detail=new THREE.Group();detail.name='Arrival authored garden detail';
-  addAuthoredGarden(detail,walkBeds.filter(b=>b[1]>3),{treeSites:[[-11.3,10,1.22,.7],[-2.8,13,1.34,2.3]],baseY:.52,density:4,detail:'supporting'});
+  addAuthoredGarden(detail,walkBeds.filter(b=>b[1]>3),{treeSites:[[-2.8,13,1.34,2.3]],baseY:.52,density:4,detail:'supporting'});
   addAuthoredGarden(detail,[[-10.7,1,3,3],[-4.3,2,2.0,3.8]],{treeSites:[[-11,0,1.25,.4],[-4.3,1,1.20,2.3]],baseY:.5});
   partitionInstances(detail,{filter:o=>!o.userData.distanceDetail});root.add(detail);return detail;
  })().catch(error=>{detailLoad=null;throw error;});}
- return {loadDetail,trees:[],colliders:[[-10.6,.22,11.2,2.1,.44,7],[-3.3,.22,12,2.7,.44,8],[-10.7,.22,1,3,.44,3],[-4.3,.22,2,2.0,.44,3.8]]};
+ return {loadDetail,trees:[],colliders:[[-3.3,.22,12,2.7,.44,8],[-10.7,.22,1,3,.44,3],[-4.3,.22,2,2.0,.44,3.8]]};
 }

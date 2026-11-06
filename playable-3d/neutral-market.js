@@ -3,7 +3,7 @@ import {JUNIPER,riceBowl,takeawayBag} from './market-food.js';
 import {marketCharacters} from './market-characters.js';
 import {marketSurroundings} from './market-surroundings.js';
 import {createOpeningDistrict} from './opening-district.js';
-import {config,npcInfo,neutralLabel} from './world-settings.mjs';
+import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=navigation-final1';
 import {showNpc} from './neutral-cast.mjs';
 export function createNightMarket({onExit,campusPalette,campusGrass,onPause=()=>{},onClose=()=>{}}){
  const scene=new THREE.Scene(),people=[];let visible=false;

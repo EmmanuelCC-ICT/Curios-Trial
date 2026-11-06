@@ -36,3 +36,5 @@ Basil’s small welcome video plays beside him at the entrance without stopping 
 Updated welcome: Basil now dances beside silent, automatically advancing text slides. Use Pause, Previous or Next to read at your own pace. When the welcome finishes or closes, the campus map opens with app logos and labelled entrances. Choose a destination, then walk towards its door or press E. The earlier narrated video has been removed.
 
 Final navigation: the welcome now leaves a small tracking map at bottom right. Its You marker follows movement; select an app entrance or Expand map. Teacher setup is in the top bar. Slides show screenshots separately from the text and have no sound controls.
+
+Updated app access: enter ArtQuest + Loopy Tunes (the former Careers Centre), walk to the left PC for Loopy Tunes or right PC for ArtQuest, then press E/select the nearby Open button. Each monitor shows the app artwork. Return to Curios returns to the same PC. Archon remains in the Learning Hall. The arts-building portal has been removed. The room uses a fixed front view so movement remains predictable near walls.

@@ -1,4 +1,4 @@
-import {neutralLabel} from './world-settings.mjs';
+import {neutralLabel} from './world-settings.mjs?v=navigation-final1';
 import {approvedPalette} from './environment/approved-campus-kit.js?v=ecc-ba60122';
 import {createESTWallVideo} from './est-wall-video.js?v=load1-20260914';
 import {buildChapel} from './chapel.js?v=opt2-20260914';
@@ -6,8 +6,8 @@ import {buildExterior} from './ecc-preview/model.js?v=ecc-ba60122';
 import {LEGACY} from './destinations.js?v=ecc1';
 import {findSafeLanding} from './landing.mjs?v=post-photo-tour-20261013';
 import {createDeferredTextures} from './deferred-textures.js?v=ecc-ba60122';
-import {createCampusLandscape,createCampusPaths,createCampusBuildingExteriors} from './campus-landscape.js?v=broad-integrated-20261014';
-import {arrivalPrecinct} from './arrival-precinct.js?v=ecc-ba60122';
+import {createCampusLandscape,createCampusPaths,createCampusBuildingExteriors} from './campus-landscape.js?v=curios-navigation-4';
+import {arrivalPrecinct} from './arrival-precinct.js?v=curios-navigation-4';
 /**
  * Modular tile-kit plaza ground (Career Empire daytime campus).
  * ~2wu tiles stamped from a 2D grid: grass / path / asphalt / plaza (+ curb overlays).

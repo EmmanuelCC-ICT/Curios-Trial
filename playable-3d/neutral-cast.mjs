@@ -1,9 +1,9 @@
-import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=curios-6';
+import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=curios-10';
 import {createTeacherNPC,TEACHERS} from './teacher-npc.js?v=text-1';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createSelectedHelper} from './helper-model.js';
-import {config,npcInfo} from './world-settings.mjs';
+import {config,npcInfo} from './world-settings.mjs?v=navigation-final1';
 let dialog,pages=[],page=0;
 function renderDialogue(){dialog.querySelector('#npc-message').textContent=pages[page]||'';dialog.querySelector('[data-page]').textContent=pages.length>1?`${page+1} of ${pages.length}`:'';dialog.querySelector('[data-back]').disabled=page===0;dialog.querySelector('[data-next]').textContent=page===pages.length-1?'Explore Curios':'Next';dialog.querySelector('footer').hidden=pages.length<2;dialog.scrollTop=0;}
 export function showNpc(id,details=npcInfo(id)){

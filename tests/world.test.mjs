@@ -10,10 +10,14 @@ test('additional characters require a local asset and unique identity',()=>{cons
 test('malformed teacher configuration is rejected before scene construction',()=>{for(const change of [s=>s.stations=[],s=>s.places.hall=23,s=>s.npcs.echo.enabled='false',s=>s.extraNpcs.push({})]){const next=structuredClone(base);change(next);assert.throws(()=>validateConfig(next));}});
 test('prototype saves never read, overwrite or remove original Career Empire keys',()=>{const data=new Map([['career-empire-3d-profiles-v2-tripo','original']]);const backing={getItem:k=>data.get(k)??null,setItem:(k,v)=>data.set(k,v),removeItem:k=>data.delete(k)};const store=createIsolatedStorage(backing);assert.equal(store.getItem('career-empire-3d-profiles-v2-tripo'),null);store.setItem('career-empire-3d-profiles-v2-tripo','prototype');assert.equal(data.get('career-empire-3d-profiles-v2-tripo'),'original');assert.equal(store.getItem('career-empire-3d-profiles-v2-tripo'),'prototype');store.removeItem('career-empire-3d-profiles-v2-tripo');assert.equal(data.get('career-empire-3d-profiles-v2-tripo'),'original');});
 test('restricted browser storage still supports current-session character state',()=>{const store=createIsolatedStorage({getItem(){throw Error();},setItem(){throw Error();},removeItem(){throw Error();}});store.setItem('avatar','saved');assert.equal(store.getItem('avatar'),'saved');store.removeItem('avatar');assert.equal(store.getItem('avatar'),null);});
-test('app rooms accept the three supplied HTTPS destinations and reject unsafe or duplicate routes',()=>{assert.equal(validateConfig(base).apps.length,3);for(const change of [s=>s.apps[0].url='javascript:alert(1)',s=>s.apps[0].url='https://',s=>s.apps[0].badge='../private.png',s=>s.apps[1].room=s.apps[0].room,s=>s.apps[0].enabled='false']){const next=structuredClone(base);change(next);assert.throws(()=>validateConfig(next));}});
+test('app rooms accept the three supplied HTTPS destinations and reject unsafe or duplicate routes',()=>{assert.equal(validateConfig(base).apps.length,3);for(const change of [s=>s.apps[0].url='javascript:alert(1)',s=>s.apps[0].url='https://',s=>s.apps[0].badge='../private.png',s=>{s.apps[1].room=s.apps[0].room;delete s.apps[1].station;},s=>s.apps[0].enabled='false']){const next=structuredClone(base);change(next);assert.throws(()=>validateConfig(next));}});
 
 test('welcome video is optional and only accepts local media',()=>{
  const custom=structuredClone(base),basil=custom.extraNpcs.find(n=>n.id==='basil');
  basil.videoEnabled=false;basil.dialogue='Welcome to our science world';assert.equal(validateConfig(custom).extraNpcs.find(n=>n.id==='basil').videoEnabled,false);
  basil.video='https://example.com/film.mp4';assert.throws(()=>validateConfig(custom),/local assets/);
+});
+
+test('ArtQuest and Loopy Tunes use distinct PCs in the same centre',()=>{
+ const next=structuredClone(base);const art=next.apps.find(a=>a.id==='artquest'),music=next.apps.find(a=>a.id==='loopy');assert.equal(art.room,'centre');assert.equal(music.room,'centre');assert.notEqual(art.station,music.station);validateConfig(next);music.station=art.station;assert.throws(()=>validateConfig(next));
 });
