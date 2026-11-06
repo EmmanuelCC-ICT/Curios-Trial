@@ -67,10 +67,7 @@
       ],
       "model": "./assets/mr-psandodakis-20260917.glb",
       "greetOnArrival": true,
-      "videoEnabled": true,
-      "video": "./assets/curios/basil-welcome.mp4",
-      "videoPoster": "./assets/curios/basil-welcome-poster.jpg",
-      "videoCaptions": "./assets/curios/basil-welcome.vtt"
+      "videoEnabled": true
     }
   ],
   "apps": [

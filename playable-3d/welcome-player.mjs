@@ -1,24 +1,33 @@
 import * as THREE from 'three';
-let panel,video,activeId,closed=false;
-export function showWelcomeVideo(details){
- if(!panel){
-  panel=document.createElement('aside');panel.id='basil-welcome';panel.setAttribute('aria-label','Basil’s welcome video');
-  const header=document.createElement('header'),title=document.createElement('strong'),close=document.createElement('button');title.textContent='A quick hello from Basil';close.textContent='×';close.setAttribute('aria-label','Close welcome video');close.onclick=()=>{closed=true;video.pause();panel.hidden=true;};header.append(title,close);
-  video=document.createElement('video');video.muted=true;video.playsInline=true;video.preload='metadata';video.controls=true;video.setAttribute('aria-label','Basil introduces Curios');
-  const footer=document.createElement('footer'),sound=document.createElement('button'),transcript=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');sound.textContent='Sound on';sound.onclick=()=>{video.muted=!video.muted;sound.textContent=video.muted?'Sound on':'Mute';if(video.paused)video.play().catch(()=>{});};summary.textContent='Transcript';transcript.append(summary,text);footer.append(sound,transcript);panel.append(header,video,footer);document.body.append(panel);
-  for(const event of ['pointerdown','pointerup','click'])panel.addEventListener(event,e=>e.stopPropagation());
- }
- if(activeId!==details.id){video.src=details.video;video.poster=details.videoPoster;video.replaceChildren();if(details.videoCaptions){const track=document.createElement('track');track.kind='captions';track.label='English';track.srclang='en';track.src=details.videoCaptions;video.append(track);}panel.querySelector('details p').textContent=details.dialogue;activeId=details.id;}
- closed=false;panel.hidden=false;video.play().catch(()=>{});
+function finishWelcome(){closed=true;playing=false;if(panel)panel.hidden=true;document.dispatchEvent(new Event('curios-welcome-finished'));}
+let panel,activeId,closed=false,slides=[],index=0,playing=true,remaining=0,last=0;
+function renderSlide(){
+ const slide=slides[index];if(!slide)return;
+ panel.querySelector('.welcome-slide h3').textContent=slide.title;panel.querySelector('.welcome-slide p').textContent=slide.text;
+ panel.querySelector('.welcome-slide').style.backgroundImage=`linear-gradient(#06232ed9,#06232ef5),url("./assets/curios/${slide.image}")`;
+ panel.querySelector('[data-count]').textContent=`${index+1} / ${slides.length}`;
+ panel.querySelector('[data-back]').disabled=index===0;panel.querySelector('[data-next]').textContent=index===slides.length-1?'Explore rooms':'Next';
+ remaining=slide.seconds*1000;last=performance.now();
 }
+export async function showWelcomeVideo(details){
+ if(!panel){
+  panel=document.createElement('aside');panel.id='basil-welcome';panel.setAttribute('aria-label','Basil’s welcome slides');
+  const header=document.createElement('header'),title=document.createElement('strong'),close=document.createElement('button');title.textContent='A quick hello from Basil';close.textContent='×';close.setAttribute('aria-label','Close welcome');close.onclick=finishWelcome;header.append(title,close);
+  const slide=document.createElement('section');slide.className='welcome-slide';const heading=document.createElement('h3'),text=document.createElement('p');slide.append(heading,text);
+  const footer=document.createElement('footer');for(const [key,label,action]of [['back','Previous',()=>{if(index>0){index--;renderSlide();}}],['pause','Pause',()=>{playing=!playing;panel.querySelector('[data-pause]').textContent=playing?'Pause':'Play';last=performance.now();}],['next','Next',()=>{if(index<slides.length-1){index++;renderSlide();}else finishWelcome();}]]){const button=document.createElement('button');button.dataset[key]='';button.textContent=label;button.onclick=action;footer.append(button);}const count=document.createElement('span');count.dataset.count='';footer.append(count);
+  panel.append(header,slide,footer);document.body.append(panel);for(const event of ['pointerdown','pointerup','click'])panel.addEventListener(event,e=>e.stopPropagation());
+  const response=await fetch('./assets/curios/welcome-slides.json?v=text-1');slides=await response.json();
+ }
+ if(activeId!==details.id||index===slides.length-1){index=0;activeId=details.id;playing=true;panel.querySelector('[data-pause]').textContent='Pause';renderSlide();}
+ closed=false;panel.hidden=false;last=performance.now();
+}
+export function welcomeIsPlaying(id){return activeId===id&&panel&&!panel.hidden&&!closed&&playing;}
 export function welcomeViewShift(){return panel&&!panel.hidden&&innerWidth>=600?(innerWidth<900?.25:.19):0;}
 export function updateWelcomeAnchor(id,root,camera,mode,player){
  if(!panel||activeId!==id||closed)return;
- const near=mode==='town'&&root.position.distanceTo(player)<7;
  const pos=root.position.clone().add(new THREE.Vector3(0,2.25,0)).project(camera);
- const visible=near&&pos.z>-1&&pos.z<1&&Math.abs(pos.x)<1.15;
- const wasHidden=panel.hidden;panel.hidden=!visible;if(!visible){video.pause();return;}if(wasHidden&&!video.ended)video.play().catch(()=>{});
- const width=Math.min(innerWidth<600?200:Math.min(600,innerWidth*.48),innerWidth-24),height=panel.offsetHeight||240;
- const x=(pos.x*.5+.5)*innerWidth+65,y=(-pos.y*.5+.5)*innerHeight-45;
- panel.style.width=width+'px';panel.style.left=(innerWidth>=600?innerWidth-width-24:Math.max(12,Math.min(innerWidth-width-12,x)))+'px';panel.style.top=(innerWidth<600?(document.querySelector('#experience > header')?.getBoundingClientRect().bottom||184)+8:Math.max(100,(innerHeight-height)/2))+'px';
+ const visible=mode==='town'&&root.position.distanceTo(player)<7&&pos.z>-1&&pos.z<1&&Math.abs(pos.x)<1.15;
+ panel.hidden=!visible;const now=performance.now();if(visible&&playing){remaining-=Math.min(100,now-last);if(remaining<=0&&index<slides.length-1){index++;renderSlide();}else if(remaining<=0){finishWelcome();}}last=now;if(!visible||closed)return;
+ const width=Math.min(innerWidth<600?Math.min(300,innerWidth-24):Math.min(600,innerWidth*.48),innerWidth-24),height=panel.offsetHeight||380;
+ panel.style.width=width+'px';panel.style.left=(innerWidth>=600?innerWidth-width-24:innerWidth-width-12)+'px';panel.style.top=(innerWidth<600?(document.querySelector('#experience > header')?.getBoundingClientRect().bottom||184)+8:Math.max(100,(innerHeight-height)/2))+'px';
 }

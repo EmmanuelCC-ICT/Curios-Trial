@@ -37,7 +37,7 @@ export async function createTeacherNPC(worlds,config=TEACHERS[0]){
  const collider=world.createCollider(RAPIER.ColliderDesc.capsule(HALF,RADIUS),body);
  const controller=world.createCharacterController(.025);controller.enableSnapToGround(.25);controller.setSlideEnabled(true);
  root.position.set(config.spawn.x,0,config.spawn.z);worlds.town.add(root);
- let state='idle',timer=3,target=null,reaction=0,blocked=0;
+ let state='idle',timer=3,target=null,reaction=0,blocked=0,welcomeDancing=false;
  actions.idle.play();mixer.update(.1);if(config.fixed)root.rotation.y=Math.PI;
  function play(next){if(state===next)return;actions[state].fadeOut(.22);const a=actions[next];a.reset().setLoop(config.reactions.includes(next)?THREE.LoopOnce:THREE.LoopRepeat,Infinity);a.clampWhenFinished=true;a.fadeIn(.22).play();state=next;}
  function pause(){target=null;blocked=0;timer=5+Math.random()*11;play('idle');}
@@ -46,6 +46,7 @@ export async function createTeacherNPC(worlds,config=TEACHERS[0]){
  return {
   root,id:config.id,name:config.name,
   stagePose(x,z,walking,dt){root.position.set(x,0,z);root.rotation.y=Math.PI;body.setTranslation({x,y:HALF+RADIUS+.025,z},true);body.setNextKinematicTranslation({x,y:HALF+RADIUS+.025,z});play(walking?'walk':'idle');mixer.update(dt);},
+  welcomeDance(active){if(!config.fixed||!actions.dance||active===welcomeDancing)return;welcomeDancing=active;if(active){target=null;play('dance');actions.dance.setLoop(THREE.LoopRepeat,Infinity);}else pause();},
   near(p,d=5){return Math.hypot(p.x-root.position.x,p.z-root.position.z)<d;},
   react(p){if(config.reactions.includes(state))return false;if(!this.near(p,7))return false;target=null;const next=config.reactions[reaction++%config.reactions.length];play(next);timer=actions[next].getClip().duration;turn(p.x-root.position.x,p.z-root.position.z,1);return true;},
   fixedUpdate(dt,p){
@@ -69,7 +70,7 @@ export async function createTeacherNPC(worlds,config=TEACHERS[0]){
   update(dt,p){
    if(!this.near(p,42))return;
    // Greetings follow visible elapsed time, independently of capped physics catch-up.
-   if(config.reactions.includes(state)){timer-=dt;if(timer<=0)pause();}
+   if(!welcomeDancing&&config.reactions.includes(state)){timer-=dt;if(timer<=0)pause();}
    mixer.update(config.reduced?0:dt);
   },
   snapshot(){return {id:config.id,name:config.name,state,visible:root.visible,position:root.position.toArray(),target,remaining:timer,reactions:reaction};},

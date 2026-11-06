@@ -36,30 +36,31 @@
       "sha256": "4c01f8e7c2f274b93fda3f6c11ed83c3f51268c1887fe45d2bcb5cc4b5e5b111",
       "bytes": 895
     },
-    "basil-welcome.vtt": {
-      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
-      "path": "playable-3d/assets/curios/basil-welcome.vtt",
-      "sha256": "81fcaeff14b3d0870d97398486a39442b446638142a1fdf029f1dbb54918b7e0",
-      "bytes": 1488
+    "welcome-slides.json": {
+      "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
+      "path": "playable-3d/assets/curios/welcome-slides.json",
+      "sha256": "e0afec7ddf04350abca492a104e21d941a2281b932730942d903586d6c54aca5",
+      "bytes": 1723
     },
-    "basil-welcome-poster.jpg": {
-      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
-      "path": "playable-3d/assets/curios/basil-welcome-poster.jpg",
-      "sha256": "d69323bbf16015e66222c2daf8f783b9370894423f45a74e689b10df48469250",
-      "bytes": 184032
+    "curios-campus-clean.jpg": {
+      "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
+      "path": "playable-3d/assets/curios/curios-campus-clean.jpg",
+      "sha256": "21f0f321189394d58b8a866b3b4e5313a764f9956ebeb0c5d83f33b9e4c9fb29",
+      "bytes": 220238
     },
-    "basil-welcome.mp4": {
-      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
-      "path": "playable-3d/assets/curios/basil-welcome.mp4",
-      "sha256": "26f4f8a31bf38350eb1360b4302a0436075159582e8cf396156ad71ffb233ce9",
-      "bytes": 2900973
+    "curios-app-map.jpg": {
+      "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
+      "path": "playable-3d/assets/curios/curios-app-map.jpg",
+      "sha256": "f40fd4b9a8dcbaa790f9ba9fd1548aa6a58dc35bc7a559bc81a2ca3a946dfd89",
+      "bytes": 99411
     },
-    "basil-welcome-timeline.json": {
-      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
-      "path": "playable-3d/assets/curios/basil-welcome-timeline.json",
-      "sha256": "09e82cca04dc88d81d47f83983fdf1c21b9653e846d0597ab909b0dd9b8ed5c5",
-      "bytes": 2080
+    "teacher-settings-film.jpg": {
+      "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
+      "path": "playable-3d/assets/curios/teacher-settings-film.jpg",
+      "sha256": "95131bd5f77a368ce98eb4e1d5d19dad16ff5a5563ee36f36fbc711fb57625ea",
+      "bytes": 64356
     }
   },
-  "newMotionGraphicsGenerated": true
+  "newMotionGraphicsGenerated": true,
+  "welcomePresentation": "Silent auto-advancing HTML slides; original Basil dance animation loops while playing."
 }
