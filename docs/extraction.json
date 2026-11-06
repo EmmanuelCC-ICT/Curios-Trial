@@ -126,6 +126,8 @@
     "playable-3d/world-settings.mjs",
     "playable-3d/world-storage.mjs",
     "playable-3d/world.js",
-    "teacher-editor.mjs"
+    "teacher-editor.mjs",
+    "playable-3d/curios-hub.mjs",
+    "playable-3d/welcome-player.mjs"
   ]
 }

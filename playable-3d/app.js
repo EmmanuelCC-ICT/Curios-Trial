@@ -1,3 +1,4 @@
+import {createCuriosHub,ROOM_POINTS} from './curios-hub.mjs';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs';
 import {createIsolatedStorage} from './world-storage.mjs';
 import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs';
@@ -37,7 +38,7 @@ const discoveryReview=false;
 const reviewProfiles={getItem:()=>null,setItem:()=>{}};
 const gameSession=null;
 const gameStorage=createIsolatedStorage();
-const journey=null;let discoveryHandover=null;let extraCast=null;
+const journey=null;let discoveryHandover=null;let extraCast=null,curiosHub=null;
 const state=loadProfiles(isolatedDiscovery?reviewProfiles:gameStorage);
 let discovery=null,intro=null,explorationTools=null,revealCameraStart=null;
 let frameGate,surfaceUploads,softwarePresentation,portraitCapturePending=false,lastUploadWorldPose=null;
@@ -131,7 +132,7 @@ const copy=value=>structuredClone(value);
 let headerHeight=88;
 const isMobile=()=>window.innerWidth<=620;
 const space=()=>mode==='chapel'?'chapel':mode==='interior'||mode==='careers';
-const feedbackOpen=()=>Boolean(document.querySelector('#npc-dialog[open]'));
+const feedbackOpen=()=>Boolean(document.querySelector('#npc-dialog[open]')||document.querySelector('#curios-map[open]'));
 const activeScene=()=>mode==='market'?nightMarket.scene:mode==='careers'?worlds.careers:mode==='chapel'?worlds.chapel:mode==='interior'?worlds.interior:worlds.town;
 const dirty=()=>mode==='studio' && JSON.stringify(draft)!==JSON.stringify(active());
 const bodyName=body=>OPTIONS.body.find(([id])=>id===body)?.[1] || 'avatar';
@@ -460,7 +461,7 @@ async function enterHall(){
   try{await worlds.ensureInterior();}catch{enteringHall=false;if(request===hallRequest)toast('The Learning Hall could not load. Try again.');return;}
   enteringHall=false;
   if(request!==hallRequest||mode!=='town')return;
-  worlds.teleport(true,0,5.0);actor.model.rotation.y=Math.PI;setMode('interior');toast('Explore '+config.places.hall+'.');
+  worlds.teleport(true,0,5.0);actor.model.rotation.y=Math.PI;await setMode('interior');curiosHub?.open('hall');
 }
 async function enterCareers(){
   
@@ -469,7 +470,7 @@ async function enterCareers(){
   try{await worlds.ensureCareers();}catch{enteringCareers=false;if(request===hallRequest)toast('The Learning Centre could not load. Please try again.');return;}
   enteringCareers=false;
   if(request!==hallRequest||mode!=='town')return;
-  worlds.teleport(true,0,5);setMode('careers');
+  worlds.teleport(true,0,5);await setMode('careers');curiosHub?.open('centre');
 }
 async function enterChapel(){const request=++hallRequest;toast('Opening the Chapel...');try{await worlds.ensureChapel();if(!worlds.chapel.userData.reflectionProbe){const target=new THREE.WebGLCubeRenderTarget(128,{type:THREE.HalfFloatType});const probe=new THREE.CubeCamera(.1,35,target);probe.position.set(0,2.2,-2);probe.update(renderer,worlds.chapel);worlds.chapel.environment=target.texture;worlds.chapel.environmentIntensity=.45;worlds.chapel.userData.reflectionProbe=target;}}catch{if(request===hallRequest)toast('Chapel could not load. Try entering again.');return;}if(request!==hallRequest||mode!=='town')return;worlds.teleport('chapel',...CHAPEL.entry);chapelRevealElapsed=0;setMode('chapel');}
 function leaveChapel(){const nextClue=discoveryReview;setMode('town');worlds.teleport(false,...(entryReady?[CHAPEL.x,CHAPEL.z]:[-7,23.3]));actor.model.position.copy(worlds.position(false));yaw=1.1;clearTimeout(toastTimer);$('toast').hidden=true;updateCamera(1,true);if(nextClue)discovery?.chapelCheckpoint(true);openCampusInBackground();}
@@ -561,11 +562,14 @@ function updateCamera(dt,snap=false){
 function updateMission(){$('arrival-mission').hidden=true;$('guidance-help').textContent='Help';}
 function updateInteraction(){
  interaction=null;
- if(feedbackOpen()||mode==='studio'||watchingEST||$('leave-dialog').open){$('interact').hidden=true;return;}
+ if(feedbackOpen()||!$('module-overlay').hidden||mode==='studio'||watchingEST||$('leave-dialog').open){$('interact').hidden=true;return;}
  const p=actor.model.position;
  if(mode==='market')interaction=nightMarket.interaction(p);
  else if(mode==='town'){
-  if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<2.2)interaction={label:'Enter '+config.places.hall,action:enterHall};
+  const walking=keys.size>0||Math.hypot(joystick.x,joystick.z)>.1;
+  if(walking&&!curiosHub?.blocked()){if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<1.1){enterHall();return;}if(Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<1.1){enterCareers();return;}if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<.9){curiosHub?.open('media');return;}}
+  if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<2.2)interaction={label:'Enter Loopy Tunes',action:()=>curiosHub?.open('media')};
+  else if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<2.2)interaction={label:'Enter '+config.places.hall,action:enterHall};
   else if(Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<2.2)interaction={label:'Enter '+config.places.centre,action:enterCareers};
   else if(campusReady&&Math.hypot(p.x-43,p.z+22)<3.2)interaction={label:'Enter '+config.places.market,action:requestMarket};
   else if(p.x>-13.6&&p.x<-10.8&&Math.abs(p.z-5)<1.45)interaction={label:'Open Avatar Studio',action:openStudio};
@@ -574,7 +578,7 @@ function updateInteraction(){
  }else if(['interior','careers','chapel'].includes(mode))interaction={label:'Return to campus',action:returnTown};
  $('interact').hidden=!interaction;if(interaction)$('interact').querySelector('span').textContent=interaction.label;
 }
-function closeModule(){}
+function closeModule(){curiosHub?.close();}
 function phaseChange(name){if(!Object.hasOwn(PHASES,name))return;phase=name;worlds.phase(name);$('phase').value=name;}
 function qualityChange(){const quality=renderQuality(renderBackend,$('quality').value,devicePixelRatio);renderer.setPixelRatio(quality.pixelRatio);renderer.shadowMap.enabled=quality.shadows;resize();}
 function bindEvents(){
@@ -589,7 +593,7 @@ function bindEvents(){
   $('resources-destination').addEventListener('click',()=>mode==='studio'?leaveStudio(visitResources):visitResources());
   $('market-destination').addEventListener('click',()=>mode==='studio'?leaveStudio(requestMarket):requestMarket());
   $('oval-destination').addEventListener('click',()=>campusSpot(-4,-49.8,'Oval'));
-  $('media-destination').addEventListener('click',()=>campusSpot(-4,-45,'English and Media',Math.PI));
+  $('media-destination').addEventListener('click',()=>campusSpot(ROOM_POINTS.media.x,ROOM_POINTS.media.z,'Loopy Tunes',Math.PI));
   $('space-destination').addEventListener('click',()=>campusSpot(7,-53,'SPACE',-Math.PI/2));
 
   $('retry-saved-avatar').addEventListener('click',()=>updateActor());
@@ -692,7 +696,7 @@ function advanceSoftwareNavigation(){
     updateInteraction();updateMission();
   }
   // Publish real controller/model state without inventing a rendered frame.
-  publishDiagnostics(now);updateEntryLoading();flyover?.refresh();
+  publishDiagnostics(now);updateEntryLoading();curiosHub?.updatePlayer(actor.model.position,mode);flyover?.refresh();
 }
 
 function sceneViewStamp(scene){
@@ -702,7 +706,8 @@ function sceneViewStamp(scene){
 
 function animate(){
   if(detailFailed&&worlds?.pendingSurfaceDetails===0){detailFailed=false;if(canClearDetailWarning({entryReady,campusReady,campusLoading:campusLoad,pending:worlds.pendingSurfaceDetails,campusFailed:worlds.scenery.status==='fallback'}))$('campus-progress').hidden=true;}
-  requestAnimationFrame(animate);const now=clock.getElapsedTime(),elapsed=now-lastTime,dt=Math.min(elapsed,.25);lastTime=now;const movementElapsed=takeNavigationElapsed(now,elapsed);publishDiagnostics(now);updateEntryLoading();
+  requestAnimationFrame(animate);const now=clock.getElapsedTime(),elapsed=now-lastTime,dt=Math.min(elapsed,.25);lastTime=now;const movementElapsed=takeNavigationElapsed(now,elapsed);publishDiagnostics(now);updateEntryLoading();curiosHub?.updatePlayer(actor.model.position,mode);
+  if(!$('module-overlay').hidden){accumulator=0;return;}
   // Upload arriving selected-avatar/surface assets before natural video handover.
   // Keep gameplay paused and bound the hidden-world GPU cadence to 2 fps.
   if(intro?.open()){if(now-introWarmTime<.5)return;introWarmTime=now;}
@@ -728,7 +733,7 @@ function animate(){
   const paused=renderQuality(renderBackend,$('quality').value,devicePixelRatio).software&&mode!=='studio'&&!intro?.open()&&!discovery?.cinematic()&&(discovery?.openDialog()||explorationMenuOpen()||helperPicker.open()||echo?.open()||marketDialogOpen()||!$('module-overlay').hidden||$('reflection-dialog').open);
   // Keep the current view still behind a paused software UI. Camera smoothing
   // alone must not repeatedly invalidate its cached world frame.
-  if(!paused&&!discovery?.cinematic())updateCamera(dt,discovery?.reduced());extraCast?.update(dt);if(!intro?.open()){discovery?.update(mode,actor.model.position,discovery?.cinematic()?Math.max(0,elapsed):dt);discoveryHandover?.update(mode==='market');explorationTools?.update(dt,!discovery?.open()&&!explorationMenuOpen()&&!helperPicker.open()&&!echo?.open());}echo?.update(dt,actor.model.position,camera,mode!=='studio'&&!helperPicker.open()&&!aerial&&!flyover?.active&&!feedbackOpen()&&!watchingEST&&$('module-overlay').hidden&&!$('reflection-dialog').open,activeScene());positionESTPlayButton();
+  if(!paused&&!discovery?.cinematic())updateCamera(dt,discovery?.reduced());extraCast?.update(dt,camera,mode,actor.model.position);if(!intro?.open()){discovery?.update(mode,actor.model.position,discovery?.cinematic()?Math.max(0,elapsed):dt);discoveryHandover?.update(mode==='market');explorationTools?.update(dt,!discovery?.open()&&!explorationMenuOpen()&&!helperPicker.open()&&!echo?.open());}echo?.update(dt,actor.model.position,camera,mode!=='studio'&&!helperPicker.open()&&!aerial&&!flyover?.active&&!feedbackOpen()&&!watchingEST&&$('module-overlay').hidden&&!$('reflection-dialog').open,activeScene());positionESTPlayButton();
   // Preserve the visible world while the requested Market or Stats module
   // loads. Repeated scene draws can starve the requested UI on a constrained GPU.
   const entryFrameRequired=mode==='town'&&entryPreparing&&entryGeometryReady&&!entryDrawSubmitted;
@@ -820,8 +825,9 @@ async function boot(){
     if(!marketRequested&&new URLSearchParams(location.search).get('view')==='chapel-interior')await enterChapel();
     if(viewpoint){worlds.teleport(false,viewpoint.p[0],viewpoint.p[1]);actor.model.position.copy(worlds.position(false));yaw=viewpoint.p[2];if(view==='home-economics')actor.model.rotation.y=Math.PI;aerial=false;setLocation(viewpoint.name);updateCamera(1,true);}
     if(completeView){$('loading').hidden=true;icons();}
+    curiosHub=createCuriosHub({worlds,sign,canvas,pause:()=>{resetNavigationInput();actor.setWalking(false);},resume:resetNavigationInput,travel:campusSpot,studio:openStudio});
     await loadEcho();if(npcInfo('echo').enabled)await echo.selectHelper({id:'echo',name:npcInfo('echo').name,model:'./assets/helpers/echo.glb'});
-    extraCast=createExtraCast(worlds);const castReady=extraCast.load();prepareEntry().then(async()=>{openCampusInBackground();await castReady;const greeting=config.extraNpcs.find(n=>n.enabled&&n.greetOnArrival&&n.dialogue);if(greeting&&mode==='town'){resetNavigationInput();showNpc(greeting.id,greeting);}}).catch(()=>{});
+    extraCast=createExtraCast(worlds);const castReady=extraCast.load();prepareEntry().then(async()=>{ensureCampus().then(()=>curiosHub.installSigns()).catch(()=>{});await castReady;const greeting=config.extraNpcs.find(n=>n.enabled&&n.greetOnArrival&&n.dialogue);if(greeting&&mode==='town'){resetNavigationInput();showNpc(greeting.id,greeting);}}).catch(()=>{});
     $('choose-helper').textContent='Companion';
     $('arrival-mission').hidden=true;
     document.title=config.title;document.querySelector('.brand').setAttribute('aria-label',config.title+' home');
@@ -830,7 +836,7 @@ async function boot(){
     $('est-destination').textContent=config.places.hall;$('careers-destination').textContent=config.places.centre;
     $('market-destination').textContent=config.places.market;
 
-    $('resources-destination').hidden=true;
+    $('resources-destination').hidden=true;$('media-destination').textContent='Loopy Tunes';$('world-footer').querySelector('.build-label').textContent='REUSE · REPURPOSE · RECYCLE';
     $('character-choice').onclick=openWholeCharacterChoice;
     // Wardrobe entry defers campus detail until Town is selected.
     // Normal entry is playable in Arrival Gardens while distant detail streams.

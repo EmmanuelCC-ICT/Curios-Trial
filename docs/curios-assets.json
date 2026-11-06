@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-06",
+  "newArtworkGenerated": false,
+  "assets": {
+    "curios-branding.png": {
+      "source": "User supplied /Users/tania.byrnes/Desktop/Curios.png",
+      "use": "Original image reused for Curios header/loading/teacher banner; CSS display framing only.",
+      "path": "playable-3d/assets/curios/curios-branding.png",
+      "sha256": "7ec91ececdb57795d3b2440638e1870b92084251b79222cfea10d5018043570b",
+      "bytes": 1095400
+    },
+    "archon.webp": {
+      "source": "https://raw.githubusercontent.com/EmmanuelCC-ICT/Archon-Engine/main/assets/ui/archon/title-crest-divider.webp",
+      "use": "Existing golden crest artwork used as an app badge, with CSS/texture display framing.",
+      "path": "playable-3d/assets/curios/archon.webp",
+      "sha256": "374b0b9706ed1a726032d4172d04da7e35856760a3742c9527811515f7d79cef",
+      "bytes": 1498248
+    },
+    "artquest.png": {
+      "source": "https://raw.githubusercontent.com/Emmanuel-ICT-Support/ArtQuest-RPG-V2/main/public/images/screens/startscreen-v2.png",
+      "use": "Existing start-screen artwork used as an app badge.",
+      "path": "playable-3d/assets/curios/artquest.png",
+      "sha256": "476d76a6739c1494291c2ad714fc0a05f13fd28fe7b3d0f70840e27e0796eda5",
+      "bytes": 1968874
+    },
+    "loopy.webp": {
+      "source": "https://raw.githubusercontent.com/EmmanuelCC-ICT/Loopy-Tunes/main/public/stage/music-player.webp",
+      "use": "Existing illustrated music-player artwork used as an app badge.",
+      "path": "playable-3d/assets/curios/loopy.webp",
+      "sha256": "94f0a3edde9a0a90360c537b11e185834dd67b59bfc11fed83813ba34c1a7f71",
+      "bytes": 222952
+    },
+    "basil-welcome-transcript.txt": {
+      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
+      "path": "playable-3d/assets/curios/basil-welcome-transcript.txt",
+      "sha256": "4c01f8e7c2f274b93fda3f6c11ed83c3f51268c1887fe45d2bcb5cc4b5e5b111",
+      "bytes": 895
+    },
+    "basil-welcome.vtt": {
+      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
+      "path": "playable-3d/assets/curios/basil-welcome.vtt",
+      "sha256": "81fcaeff14b3d0870d97398486a39442b446638142a1fdf029f1dbb54918b7e0",
+      "bytes": 1488
+    },
+    "basil-welcome-poster.jpg": {
+      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
+      "path": "playable-3d/assets/curios/basil-welcome-poster.jpg",
+      "sha256": "d69323bbf16015e66222c2daf8f783b9370894423f45a74e689b10df48469250",
+      "bytes": 184032
+    },
+    "basil-welcome.mp4": {
+      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
+      "path": "playable-3d/assets/curios/basil-welcome.mp4",
+      "sha256": "26f4f8a31bf38350eb1360b4302a0436075159582e8cf396156ad71ffb233ce9",
+      "bytes": 2900973
+    },
+    "basil-welcome-timeline.json": {
+      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
+      "path": "playable-3d/assets/curios/basil-welcome-timeline.json",
+      "sha256": "09e82cca04dc88d81d47f83983fdf1c21b9653e846d0597ab909b0dd9b8ed5c5",
+      "bytes": 2080
+    }
+  },
+  "newMotionGraphicsGenerated": true
+}

@@ -11,6 +11,7 @@ const labels={
  'EST PREP':config.places.hall.toUpperCase(),'EST Prep':config.places.hall,
  'MY LIFE':'EXPLORATION SPACE','SHOP DEMO':'ACTIVITY SPACE','$100,000 PRACTICE MONEY':'',
  CORE:config.stations[0],TERM:config.stations[1],VTCS:config.stations[2],BOSS:config.stations[3],
+ 'LIVE MUSIC & SUNDAY MARKETS':config.places.market.toUpperCase(),'LIVE MUSIC & SUNDAY MARKET':config.places.market.toUpperCase(),
  'MARA · START HERE':npcInfo('mara').name,'SAM · MARKET CREW':npcInfo('sam').name,
  'MARKETS ADMINISTRATION':config.places.community.toUpperCase(),
  'PHONE ORDER / ALREADY PAID':'','WALK-UP / ORDER & PAY':'','FOOD READY / COLLECT HERE':'',

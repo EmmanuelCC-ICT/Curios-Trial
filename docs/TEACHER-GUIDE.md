@@ -25,3 +25,10 @@ To replace a supplied NPC with another model, switch the supplied one off and ad
 ## What is deliberately open
 
 The four hall stations are blank spaces; they are not configured quizzes or automatic assessment. Dialogue is plain text, not AI-generated conversation or audio. The larger campus contains the original explorable routes and original exterior-only buildings; this prototype does not create interiors that did not exist in Career Empire.
+
+## App rooms and map
+The campus map shows the three supplied apps and Avatar Studio. Choose a map destination to travel to its entrance; walk towards it or press E. Each app opens inside a room panel with Return to Curios and an optional separate-tab link. The initial mappings are Archon Engine in the former EST hall, ArtQuest in the former Careers Centre and Loopy Tunes at English & Media. These are links to existing external apps, not copied app source or a shared pupil-account system.
+
+Teacher setup includes app names, HTTPS website links and availability. Names on the dedicated app signs and map follow those settings; room labels can be changed separately. Turning an app off removes its map destination/sign but keeps the underlying school building available. New app badges are local artwork files configured in world-config.json. A teacher’s draft preview does not alter the external app itself.
+
+Basil’s small welcome video plays beside him at the entrance without stopping exploration. Select Sound on to hear the synthetic narration, or use captions/Transcript. Closing it or walking away leaves the campus available. Talk to Basil to reopen. Editing his conversation switches off the stock welcome video so your own words appear instead; the “Use Basil’s welcome video” checkbox can restore it.

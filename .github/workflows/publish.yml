@@ -11,7 +11,7 @@ jobs:
     if: github.repository == 'EmmanuelCC-ICT/Curios-Trial'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
       pages: write
       id-token: write
     environment:
@@ -19,26 +19,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v6
-      - name: Unpack reviewed prototype source on first setup
-        run: |
-          if [ ! -f tools/materialize-assets.py ]; then
-            tar -xzf source-overlay.tar.gz
-          fi
-      - name: Make independent verified asset copies
+      - name: Check independent asset copies
         run: python3 tools/materialize-assets.py
-      - name: Check source and independent configuration
+      - name: Check source and teacher configuration
         run: |
           node tools/check.mjs
           node --test tests/*.test.mjs
-      - name: Save full independent source in this repository
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add AGENTS.md .gitignore .nojekyll README.md docs index.html package.json playable-3d teacher.html teacher-editor.mjs tests tools world-config.json
-          if ! git diff --cached --quiet; then
-            git commit -m "Materialise reviewed independent Curios prototype"
-            git push origin HEAD:main
-          fi
       - name: Package static site
         run: python3 tools/package-site.py
       - name: Configure Pages

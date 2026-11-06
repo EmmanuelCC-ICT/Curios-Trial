@@ -1,3 +1,4 @@
+import {neutralLabel} from './world-settings.mjs';
 import * as THREE from 'three';
 import {JUNIPER} from './market-food.js?v=stall-refine-20260924';
 import {approvedPalette,dressedBox,planter,batchStatic} from './environment/approved-campus-kit.js?v=ecc-ba60122';
@@ -8,7 +9,7 @@ export function marketSurroundings(scene,obstacles,campusPalette,campusGrass){
  const box=(x,y,z,w,h,d,m=p.stone)=>dressedBox(architecture,x,y,z,w,h,d,m);
  const canvas=new THREE.MeshStandardMaterial({color:'#eee5cf',roughness:1,side:THREE.DoubleSide});
  const green=new THREE.MeshStandardMaterial({color:'#315b50',roughness:.94});
- function plaque(text,x,y,z,w=3,h=.5){
+ function plaque(text,x,y,z,w=3,h=.5){text=neutralLabel(text);
   const c=document.createElement('canvas');c.width=1024;c.height=256;const ctx=c.getContext('2d');ctx.fillStyle='#294640';ctx.fillRect(0,0,1024,256);ctx.strokeStyle='#c6b68f';ctx.lineWidth=8;ctx.strokeRect(9,9,1006,238);ctx.fillStyle='#fff4d8';ctx.font='bold 66px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,512,132,950);
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshStandardMaterial({map:t,roughness:.85}));m.position.set(x,y,z);architecture.add(m);
  }

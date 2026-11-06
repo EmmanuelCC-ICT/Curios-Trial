@@ -84,7 +84,7 @@ export function createNightMarket({onExit,campusPalette,campusGrass,onPause=()=>
  }
  microphone(0);microphone(1.3);
  const thanks=label('THANK YOU, JUNIPER CREW',2.5,3.9,-10.8,4.5);thanks.visible=false;
- const audience=[npc(-3.7,-6.8,'#8eacbb'),npc(-4.4,-6.2,'#c6aa75'),npc(-3.2,-7.3,'#aaa0bd')];audience.forEach(p=>p.visible=false);
+ const audience=[npc(-3.7,-6.8,'#8eacbb'),npc(-4.4,-6.2,'#c6aa75'),npc(-3.2,-7.3,'#aaa0bd')];audience.forEach(p=>p.visible=true);
 
  for(const x of [-2,2])box(.6,1,.6,x,1,-10.8,'#243537');
  const stageBreakLabel=label('FREE STAGE BREAK',-5,2.1,-8,3);
