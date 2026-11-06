@@ -1,7 +1,8 @@
+import {welcomeViewShift} from './welcome-player.mjs?v=curios-3';
 import {createCuriosHub,ROOM_POINTS} from './curios-hub.mjs';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs';
 import {createIsolatedStorage} from './world-storage.mjs';
-import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=curios-2';
+import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=curios-3';
 import {estEyeHeight,estPlayTop} from './est-camera.mjs?v=broad-integrated-20261014';
 import {MARKET_APPROACH} from './landing.mjs?v=post-photo-tour-20261013';
 import {createGpuFrameGate,createTextureUploadQueue} from './frame-budget.mjs?v=interaction-upload-priority-20261016';
@@ -522,6 +523,7 @@ function resize(){
 }
 let chapelRevealElapsed=0;
 function updateCamera(dt,snap=false){
+  if(camera.view?.enabled&&(mode!=='town'||aerial||flyover?.active))camera.clearViewOffset();
   if(flyover?.active)return;
   if(mode==='studio'){orbit.update();return;}
   const p=actor.model.position;
@@ -558,6 +560,8 @@ function updateCamera(dt,snap=false){
     if((mode==='interior'||mode==='careers')||(mode!=='chapel'&&camera.position.distanceTo(p)<3.5))lookAt.set(p.x,p.y+.9,p.z);
   }
   camera.lookAt(lookAt);
+  // Reframe the welcome without moving characters, paths or collision geometry.
+  const shift=mode==='town'&&!aerial?welcomeViewShift():0;if(shift){camera.setViewOffset(innerWidth,innerHeight,innerWidth*shift,0,innerWidth,innerHeight);}else if(camera.view?.enabled)camera.clearViewOffset();
 }
 function updateMission(){$('arrival-mission').hidden=true;$('guidance-help').textContent='Help';}
 function updateInteraction(){
