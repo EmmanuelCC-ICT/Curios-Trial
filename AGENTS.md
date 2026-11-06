@@ -18,3 +18,5 @@ User supplied Curios branding; retain original campus/Avatar Studio/avatars/NPCs
 
 ## Entrance welcome refinement
 Basil now has a small non-modal narrated motion-graphics video, anchored beside his entrance model. World stays visible and walking remains enabled; autoplay muted, optional sound/captions/transcript. Teachers editing his dialogue automatically disable the stock film. Media script/provenance and checks are recorded in docs/PROGRESS.md and docs/curios-assets.json. Original Career Empire and Blueprint remain untouched. Current source checks: 67 modules; focused tests: 8. Publication and live verification pending below.
+
+Public release: Curios-Trial is live at https://emmanuelcc-ict.github.io/Curios-Trial/ . Native browser confirmed campus, Basil welcome playback, all three app rooms/return and original eight-avatar Studio. 217 original asset hashes, 67-module checks and 8 focused tests passed. Final refresh versioning added for updated narrow-screen welcome; deployment evidence in docs/PROGRESS.md. Keep future work inside this separate repository, not Career Empire/Blueprint.
