@@ -1,0 +1,102 @@
+[
+  {
+    "id": "mara",
+    "source": "Mara.glb",
+    "sourceSha256": "3452246d84febf76f2e1ddb0d46f344db7d9c5eb7b9f034eebc71b4618cc081c",
+    "sourceBytes": 6701804,
+    "outputBytes": 2124864,
+    "outputSha256": "2575e6804baad0d6d15c69e5d1543dbba38f039d3df2a0aadb64dd7a8867468a",
+    "triangles": 20870,
+    "animations": [
+      "sit.001",
+      "standing_relax.001",
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  },
+  {
+    "id": "sam",
+    "source": "Sam.glb",
+    "sourceSha256": "f1f6a33a61473e335ffc92ce4e77a942137324173ddc2bc107741e4ee8935e6d",
+    "sourceBytes": 9593240,
+    "outputBytes": 1696568,
+    "outputSha256": "c237091c8ed3b34a746aaee5c1a90f90bac8fa10e3dcfa524cde60c5ce8b0ac9",
+    "triangles": 20000,
+    "animations": [
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  },
+  {
+    "id": "customer-a",
+    "source": "NPC3.glb",
+    "sourceSha256": "07fed4dfdfa523914f510c8dc224fdb92d061198c6bb483fc83f392421407ac1",
+    "sourceBytes": 6059552,
+    "outputBytes": 1359728,
+    "outputSha256": "02c806fc0770b9fcbc18250ee7fb9e60d640e39acd757f10bb7ea63404d59dee",
+    "triangles": 15999,
+    "animations": [
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  },
+  {
+    "id": "customer-b",
+    "source": "NPC4.glb",
+    "sourceSha256": "cc70c668a4907b1e9c81d6b9ab21811e410e071ec43bce309de989b394939f46",
+    "sourceBytes": 5528528,
+    "outputBytes": 1304484,
+    "outputSha256": "fc79fb59df9a2690210a787448ca400838d53953172e71a9cc87ecdab543b824",
+    "triangles": 16000,
+    "animations": [
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  },
+  {
+    "id": "customer-c",
+    "source": "NPC5.glb",
+    "sourceSha256": "ca7ac2b45b92a98e6163fd9494b55af175b8594d43a4ee8a0f5d9450c0c444a5",
+    "sourceBytes": 9864192,
+    "outputBytes": 1553864,
+    "outputSha256": "7d62ece0cafcf545df342b1e65513831bd90a2b5802ce2ac8582bc74fb8284fd",
+    "triangles": 16000,
+    "animations": [
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  },
+  {
+    "id": "customer-d",
+    "source": "stylized+boy+3d+model.glb",
+    "sourceSha256": "e13dca0b7d0c298744e4e46fa4d7d6ade02a8a35ff6939af75818c664b5eaf00",
+    "sourceBytes": 13656304,
+    "outputBytes": 1375024,
+    "outputSha256": "9809ab28c562ff6f1c41bb85eabcb19dc6f1882cbc7ee828fe03591473782d39",
+    "triangles": 16000,
+    "animations": [
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  },
+  {
+    "id": "customer-e",
+    "source": "3d+cartoon+girl+model.glb",
+    "sourceSha256": "f01042b33315706dc7d314106e3a64c04f3943d0e7253c2bdcfc89103497e288",
+    "sourceBytes": 10868104,
+    "outputBytes": 1676640,
+    "outputSha256": "c81e6659b8da8665773f7e5a72ee2041f6bc5d03b811b5b7391ad51876aadda0",
+    "triangles": 16000,
+    "animations": [
+      "wait.001",
+      "walk.001"
+    ],
+    "textures": "1024px JPEG; originals retained"
+  }
+]

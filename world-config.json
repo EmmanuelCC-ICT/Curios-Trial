@@ -1,0 +1,72 @@
+{
+  "title": "Year 8 Learning World",
+  "welcome": "Explore the campus, choose your character and meet the people who live here.",
+  "places": {
+    "hall": "Learning Hall",
+    "centre": "Learning Centre",
+    "market": "Markets",
+    "community": "Community Centre"
+  },
+  "stations": [
+    "Space 1",
+    "Space 2",
+    "Space 3",
+    "Space 4"
+  ],
+  "npcs": {
+    "echo": {
+      "name": "Echo",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "middleton": {
+      "name": "Mr Middleton",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "psandodakis": {
+      "name": "Mr Psandodakis",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "mara": {
+      "name": "Mara",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "sam": {
+      "name": "Sam",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "nora": {
+      "name": "Nora",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "dev": {
+      "name": "Dev",
+      "enabled": true,
+      "dialogue": ""
+    },
+    "kenji": {
+      "name": "Kenji",
+      "enabled": true,
+      "dialogue": ""
+    }
+  },
+  "extraNpcs": [
+    {
+      "id": "basil",
+      "name": "Basil",
+      "enabled": true,
+      "dialogue": "Hi, I’m Basil. I said Tania wouldn’t be able to turn Career Empire into a world that Curios teachers could easily make their own. Well… here we are!\n\nThe first explorable prototype was running in about 15 minutes. More work followed on teacher controls, testing and getting it online.\n\nTania started with plain-English instructions like these:\n\n“Keep the original Career Empire untouched.”\n\n“I want the same world, avatars, buildings and NPCs, with the careers content removed so the Year 8 teachers can give it their own purpose.”\n\n“Go ahead with the separate prototype.”\n\nThe careers content has been cleared out, but the buildings, avatars and characters are still here. Think of it as an empty school waiting for your ideas.\n\nYou decide what happens here: rename the spaces, change our conversations, add or remove characters, and give this world its own purpose.\n\nApparently, you can teach an old NPC new tricks.",
+      "position": [
+        -5.4,
+        23.3
+      ],
+      "model": "./assets/mr-psandodakis-20260917.glb",
+      "greetOnArrival": true
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#24433e">
+  <title>Year 8 Learning World</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css?v=blueprint-20261014">
+  <script type="importmap">{"imports":{"three":"./vendor/three/build/three.module.js","three/addons/":"./vendor/three/examples/jsm/","@dimforge/rapier3d-compat":"./vendor/rapier/rapier.mjs"}}</script>
+  <script src="./vendor/lucide/lucide.min.js?v=dressups-entry-20260921" defer></script>
+  <link rel="stylesheet" href="./mobile-play.css?v=demo-20260914">
+  
+  <link rel="stylesheet" href="./flyover.css?v=visible-controls-20261015">
+  <link rel="stylesheet" href="./wardrobe-cards.css?v=hair-shoes-20260921">
+  <link rel="stylesheet" href="./header-controls.css?v=broad-integrated-20261014">
+  <link rel="stylesheet" href="./echo-guide.css?v=echo-staged-20260925">
+  <link rel="stylesheet" href="./helper-picker.css?v=guidance-20260928">
+<style>#arrival-mission,#resources-destination{display:none!important}.legacy-link{white-space:nowrap}#npc-dialog{position:fixed;inset:auto 20px 20px auto;margin:0;width:min(380px,calc(100vw - 40px));box-sizing:border-box;max-height:70dvh;overflow:auto;max-width:36rem;border:0;border-radius:16px;padding:2rem;background:#fff8e9;color:#24433e}#npc-dialog p{white-space:pre-wrap;line-height:1.6}#npc-dialog::backdrop{background:#122b3280}</style></head>
+<body data-feedback-mode="development">
+  <main id="experience" aria-label="Year 8 Learning World">
+    <aside id="campus-progress" class="campus-progress" role="status" hidden><span id="campus-progress-message"></span><button id="campus-retry" hidden>Retry campus</button></aside>
+    <canvas id="scene" aria-label="Interactive 3D town" tabindex="0"></canvas>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Learning World home"><span class="brand-mark"><i data-lucide="landmark"></i></span><span>YEAR 8<br><strong>WORLD</strong></span></a>
+      <div class="account"><label class="sr-only" for="profile">Local character</label><select id="profile"></select><button class="icon-button" id="retry-saved-avatar" aria-label="Retry saved avatar" title="Retry saved avatar" hidden><i data-lucide="refresh-cw"></i></button><button class="icon-button" id="new-profile" aria-label="New character" title="New character"><i data-lucide="user-round-plus"></i></button></div>
+<div class="header-controls" id="header-controls"><button id="character-choice" type="button">Characters</button>
+       <div id="header-phase"><label class="phase-control"><i data-lucide="sprout"></i><span><small>PHASE PREVIEW</small><select id="phase" aria-label="World phase"><option value="flourishing">Flourishing</option><option value="growth">Growth</option><option value="disrepair">Disrepair</option></select></span></label></div><button id="choose-helper" type="button">Guidance options</button><button id="guidance-help" type="button">Help</button><span id="flyover-slot"></span>
+       <details id="destination-menu" class="header-menu"><summary id="places-toggle">Places <span aria-hidden="true">⌄</span></summary><div class="destination-bar" id="destination-bar" aria-label="Destinations"><button id="town-view" class="active" aria-pressed="true" aria-label="Town" title="Town"><i data-lucide="map"></i><span>Town</span></button><button id="studio-view" aria-pressed="false" aria-label="Avatar Studio" title="Avatar Studio"><i data-lucide="user-round-pen"></i><span>Avatar Studio</span></button><button id="home-destination" title="Return to the ECC welcome sign"><i data-lucide="house"></i><span>Home Base</span></button><button id="est-destination"><i data-lucide="landmark"></i><span>Learning Hall</span></button><button id="careers-destination"><i data-lucide="briefcase-business"></i><span>Learning Centre</span></button><button id="chapel-destination"><i data-lucide="church"></i><span>Chapel</span></button><button id="resources-destination" title="World information">Information</button><button id="market-destination">Markets</button><button id="oval-destination">Oval</button><button id="media-destination">English &amp; Media</button><button id="space-destination">SPACE</button>       </div></details>
+
+       <details class="header-menu" id="world-tools"><summary>View <span aria-hidden="true">⌄</span></summary><div id="settings-details"><button type="button" id="replay-taster-intro" hidden>Replay intro</button><div class="tool-row"><button class="icon-button" id="aerial" aria-label="Aerial view" aria-pressed="false" title="Aerial view"><i data-lucide="scan-eye"></i></button><button class="icon-button" id="recenter" aria-label="Recenter camera" title="Recenter camera"><i data-lucide="focus"></i></button><label class="quality-control" title="Render quality"><i data-lucide="monitor"></i><select id="quality" aria-label="Render quality"><option value="auto">Auto</option><option value="low">Low</option><option value="high">High</option></select></label></div></div></details>
+       <span data-feedback-slot></span>
+       <a class="legacy-link" href="../teacher.html">Teacher setup</a>
+      </div>
+    </header>
+    <section class="arrival-mission" id="arrival-mission" aria-label="Your first day"><button class="mobile-panel-toggle" aria-expanded="false" aria-controls="mission-details" data-mobile-panel="arrival-mission"><span id="mission-summary">Find your place</span> <span aria-hidden="true">⌄</span></button><div id="mission-details"><small>YOUR FIRST DAY</small><h2 id="mission-title">Find your place</h2><p id="mission-detail">Follow the shaded walk to Avatar Studio.</p><div class="mission-progress"><span id="mission-bar"></span></div><span id="mission-hint">WASD or arrow buttons to walk · drag to look</span></div></section>
+    <section class="world-heading" id="world-heading"><div class="eyebrow" id="district-label">THE LEARNING DISTRICT</div><h1 id="location-title">Town Square</h1><div class="location-line"><span class="status-dot"></span><span id="location-subtitle">Explore the campus</span></div></section>
+
+    <button class="interaction" id="interact" hidden><i data-lucide="door-open"></i><span>Learning Hall</span><i data-lucide="arrow-right"></i></button>
+    <div class="movement" id="movement" aria-label="Movement controls"><button data-key="KeyW" aria-label="Walk forward" title="Walk forward"><i data-lucide="chevron-up"></i></button><button data-key="KeyA" aria-label="Walk left" title="Walk left"><i data-lucide="chevron-left"></i></button><button data-key="KeyS" aria-label="Walk backward" title="Walk backward"><i data-lucide="chevron-down"></i></button><button data-key="KeyD" aria-label="Walk right" title="Walk right"><i data-lucide="chevron-right"></i></button></div>
+    <div class="world-footer" id="world-footer"><span class="build-label">CAMPUS PREVIEW</span><span id="character-caption">Avery</span></div>
+    <section class="studio-heading" id="studio-heading" hidden><div class="eyebrow">HOME BASE</div><h1>Avatar Studio</h1><div class="studio-caption" id="studio-caption">Avery</div></section>
+    <div class="studio-view-tools" id="studio-view-tools" hidden><button class="icon-button" id="turn-avatar" title="Turn around" aria-label="Turn avatar around"><i data-lucide="rotate-3d"></i></button><button class="icon-button" id="pose-avatar" title="Walking preview" aria-label="Walking preview" aria-pressed="false"><i data-lucide="footprints"></i></button><button class="icon-button" id="portrait-view" title="Portrait view" aria-label="Portrait view" aria-pressed="false"><i data-lucide="scan-face"></i></button></div>
+    <aside class="studio-panel" id="studio-panel" aria-label="Avatar appearance" hidden>
+      <div class="panel-heading"><h2>Your character</h2><span class="edit-state" id="edit-state" role="status">Saved</span></div>
+      <button id="retry-outfit" type="button" hidden>Retry outfit</button>
+      <nav class="editor-tabs" aria-label="Avatar settings"><button data-tab="identity" class="active" aria-pressed="true" title="Identity"><i data-lucide="user-round"></i><span>Identity</span></button><button data-tab="style" aria-pressed="false" title="Wardrobe"><i data-lucide="shirt"></i><span>Style</span></button></nav>
+      <div id="editor-fields" class="editor-fields"></div>
+      <div class="editor-actions"><button class="icon-button" id="undo" aria-label="Undo appearance change" title="Undo"><i data-lucide="undo-2"></i></button><button class="icon-button" id="redo" aria-label="Redo appearance change" title="Redo"><i data-lucide="redo-2"></i></button><button class="primary" id="save-avatar"><i data-lucide="check"></i><span>Save &amp; return</span></button></div>
+    </aside>
+    <div class="loading" id="loading" role="status"><span class="loading-mark"><i data-lucide="landmark"></i></span><h1>Year 8 Learning World</h1><p id="loading-message">Opening the learning district...</p><progress></progress><button id="avatar-retry" type="button" hidden>Retry avatar download</button><a id="fallback-link" href="./" hidden>Reload the world</a></div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <output id="diagnostics" class="sr-only" aria-label="Prototype diagnostics"></output>
+<button id="est-watch" hidden></button></main>
+  <section id="module-overlay" hidden></section>
+  <dialog id="leave-dialog"><h2>Save your character?</h2><p>You have unsaved appearance changes.</p><div class="dialog-actions"><button id="keep-editing">Keep editing</button><button id="discard-changes">Discard</button><button class="primary" id="save-changes">Save</button></div></dialog>
+
+<dialog id="reflection-dialog"><h2>Chapel</h2><button id="close-reflection">Return</button></dialog>
+
+
+
+
+<script type="module" src="./app.js?v=year8-1"></script></body>
+</html>

@@ -1,0 +1,59 @@
+.mobile-panel-toggle{display:none}
+@media(max-width:620px),(max-height:500px) and (max-width:950px){
+ #experience{min-height:0;height:100dvh}
+ .topbar{min-height:56px;padding:6px 10px;gap:6px;padding-top:max(6px,env(safe-area-inset-top))}
+ .brand{min-width:88px;font-size:8px;gap:5px}.brand strong{font-size:15px}.brand-mark{width:28px;height:28px}
+ .mode-switch{margin-left:auto;padding:0;border:0;gap:0}.mode-switch button{min-width:44px;width:44px;height:44px;padding:10px}.mode-switch button span{display:none}
+ .account{margin-left:0;gap:0}.account select{width:65px;font-size:11px}.account .icon-button{width:40px;min-height:44px}
+ .world-heading{top:66px;left:12px;max-width:calc(100% - 24px)}.world-heading h1{font-size:18px;margin:0}.world-heading .eyebrow,.world-heading .location-line{display:none}
+ .arrival-mission,.world-tools{top:94px;bottom:auto;max-height:calc(100dvh - 280px);overflow:auto;z-index:6;pointer-events:auto;border-radius:8px;background:#f7f9f4ed;box-shadow:none;padding:0}
+ .arrival-mission{left:12px;right:auto;width:146px}.world-tools{right:12px;width:142px}
+ .mobile-panel-toggle{display:flex;justify-content:space-between;min-height:44px;width:100%;padding:8px 12px;font-size:12px}
+ .arrival-mission:not(.mobile-expanded) #mission-details,.world-tools:not(.mobile-expanded) #settings-details{display:none}
+ .arrival-mission.mobile-expanded{width:min(280px,calc(100% - 24px))}.world-tools.mobile-expanded{width:192px}
+ #mission-details{padding:0 14px 12px}#mission-details small,#mission-details h2,#mission-hint{display:none}#mission-details p{font-size:13px;line-height:1.5;margin:0 0 8px}
+ .world-tools .tool-row .icon-button{width:44px;height:44px;min-height:44px}.quality-control select{min-height:44px}.phase-control select{min-height:44px;font-size:16px}.phase-control{padding:2px 12px}
+ .destination-bar{bottom:calc(8px + env(safe-area-inset-bottom));max-width:calc(100% - 16px);gap:0;padding:3px}.destination-bar button{min-height:44px;padding:8px;font-size:11px}.destination-bar .route-line{width:6px}
+ .movement{left:12px;bottom:calc(70px + env(safe-area-inset-bottom));grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px;gap:3px}.movement button{width:44px;height:44px;min-height:44px}
+ .interaction{right:12px;left:auto;transform:none;bottom:calc(76px + env(safe-area-inset-bottom));max-width:calc(100% - 170px);min-height:44px;padding:10px;font-size:12px;white-space:normal}
+ .world-footer{display:none}
+}
+@media(max-height:500px) and (max-width:950px){
+ .world-heading{display:none}.arrival-mission,.world-tools{top:66px;max-height:calc(100dvh - 138px)}
+ .destination-bar{left:auto;right:12px;transform:none}.movement{bottom:calc(12px + env(safe-area-inset-bottom))}
+}
+@media(max-width:620px),(max-height:500px) and (max-width:950px){
+ .arrival-mission.mobile-expanded>.mobile-panel-toggle{width:146px}
+ .world-tools{z-index:7}
+}
+
+/* Keep touch-and-hold on the control, never on its decorative SVG. */
+#movement,#movement button,#movement button *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none;touch-action:none}
+#movement button *{pointer-events:none}
+
+.thumb-stick{display:none}
+@media(max-width:620px),(max-height:500px) and (max-width:950px){
+ #movement{display:block;width:120px;height:120px}
+ #movement>button{display:none}
+ .thumb-stick{display:grid;place-items:center;width:120px;height:120px;border-radius:50%;border:2px solid #f6faefd9;background:#244b3d55;box-shadow:inset 0 0 0 18px #f7faf312;touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+ .thumb-stick-knob{display:block;width:48px;height:48px;border:2px solid #fafff4;border-radius:50%;background:#edf4e4e8;box-shadow:0 2px 8px #173d3955;pointer-events:none}
+ .thumb-stick.active{background:#244b3d88}.thumb-stick:focus-visible{outline:3px solid #ce9844;outline-offset:3px}
+}
+
+/* Mission details are optional on desktop too; movement always closes the card. */
+@media(min-width:621px) and (min-height:501px){
+ .arrival-mission{padding:0;width:230px;pointer-events:auto}
+ .arrival-mission>.mobile-panel-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:44px;padding:10px 14px}
+ .arrival-mission:not(.mobile-expanded) #mission-details{display:none}
+ .arrival-mission.mobile-expanded{width:280px}
+ .arrival-mission #mission-details{padding:0 16px 14px}
+ .arrival-mission h2{font-size:20px}
+}
+
+/* Feedback stays in its own bottom row, clear of destinations and the joystick. */
+@media(max-width:620px),(max-height:500px) and (max-width:950px){
+ .destination-bar{bottom:calc(64px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100% - 16px)}
+ .destination-bar button{padding:8px 6px;font-size:10px;gap:4px}.destination-bar .route-line{width:4px}
+ .movement{bottom:calc(126px + env(safe-area-inset-bottom))}
+ .interaction{bottom:calc(132px + env(safe-area-inset-bottom))}
+}

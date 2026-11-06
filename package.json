@@ -1,0 +1,1 @@
+{"name":"year8-learning-world","private":true,"type":"module","scripts":{"dev":"python3 tools/serve.py","check":"node tools/check.mjs","test":"node --test tests/*.test.mjs"}}

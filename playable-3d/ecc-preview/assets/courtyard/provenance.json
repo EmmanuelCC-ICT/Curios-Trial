@@ -1,0 +1,27 @@
+{
+  "asset": "Sandstone Blocks 08",
+  "author": "Rob Tuytel",
+  "source": "https://polyhaven.com/a/sandstone_blocks_08",
+  "license": "CC0",
+  "licenseVerified": "2026-09-13 on the primary asset page",
+  "maps": [
+    {
+      "file": "sandstone-diffuse.jpg",
+      "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/sandstone_blocks_08/sandstone_blocks_08_diff_1k.jpg",
+      "bytes": 242776,
+      "sha256": "0cac65461ba33003b8a27b03c2b87f3393a824a9a98036c4c8de6182a1449369"
+    },
+    {
+      "file": "sandstone-normal.jpg",
+      "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/sandstone_blocks_08/sandstone_blocks_08_nor_gl_1k.jpg",
+      "bytes": 167040,
+      "sha256": "1203d5300dfc717db67220531fcdad75214d48b98d21114a155b3f01d54ab012"
+    },
+    {
+      "file": "sandstone-arm.jpg",
+      "source": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/sandstone_blocks_08/sandstone_blocks_08_arm_1k.jpg",
+      "bytes": 58846,
+      "sha256": "4a211353047f52b9f0cf545e669fa8c29ac0d4ca87dd1f74e3a17f13d9a5b50d"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "license": "Mixed; see each source",
+  "sources": [
+    "https://polyhaven.com/a/red_sandstone_pavement",
+    "https://polyhaven.com/a/garden_nook",
+    "https://polyhaven.com/a/sandstone_cracks"
+  ],
+  "files": [
+    {
+      "file": "paving-normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_pavement/red_sandstone_pavement_nor_gl_1k.jpg",
+      "md5": "0b961a8ed91b297db7dd75458b70b8d1",
+      "sha256": "f62f68a625e0e14688d23254d38532a61cb1f1ee3e53fe1bb12ed04c620b0fca",
+      "status": "rejected-and-archived"
+    },
+    {
+      "file": "paving-arm.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_pavement/red_sandstone_pavement_arm_1k.jpg",
+      "md5": "bf371e0875a6ad00483738d4df2d1d83",
+      "sha256": "09ed8c68274afc078d15e86dc50cc3ab168687ed81da47b5b614c805c53ff7ed",
+      "status": "rejected-and-archived"
+    },
+    {
+      "file": "garden-reflections.hdr",
+      "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/garden_nook_1k.hdr",
+      "md5": "cd28a312e9275e1fca8dd5e8bbd9c29d",
+      "sha256": "f8c7970483be873487fabc0f07891be7e1551220dba911ea9dadd56f8a336a00",
+      "status": "active"
+    },
+    {
+      "file": "paving-diffuse.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/red_sandstone_pavement/red_sandstone_pavement_diff_1k.jpg",
+      "md5": "c2de38e10d06a4576b820af8a474d2b5",
+      "sha256": "7dcb30ec2a5441232be39f24d701c641f1ed0fc62254c6d2e4f1e173ff755ea3",
+      "status": "rejected-and-archived"
+    },
+    {
+      "file": "stone-surface-diffuse.webp",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/sandstone_cracks/sandstone_cracks_diff_1k.jpg",
+      "md5": "94619de4f4d33ad9fe6711d3ad88ec4a",
+      "status": "active",
+      "sourceSha256": "cf381bbcf60aac570ce895719025a2b7adae7c03369b3d545b4f52f94e57e0e9",
+      "sha256": "759d73c54542c9be330d1c066027a91ea685cbed7f73bc6513bfbc34c7c91299",
+      "transportConversion": "Sharp WebP, 1024x1024 retained; quality 95 normal / 90 diffuse and packed AO/roughness. Exact JPEG source retained privately."
+    },
+    {
+      "file": "stone-surface-normal.webp",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/sandstone_cracks/sandstone_cracks_nor_gl_1k.jpg",
+      "md5": "e778ce4e2ecc6a2837800022196b4118",
+      "status": "active",
+      "sourceSha256": "cb983540cae33979e79862fe27b4ec23a5d41c627230d3730e9d5ff6671859f9",
+      "sha256": "ae1f1ef6d293706d43e512b978b12171bf10904680a95af6cea2ce70a0f00acb",
+      "transportConversion": "Sharp WebP, 1024x1024 retained; quality 95 normal / 90 diffuse and packed AO/roughness. Exact JPEG source retained privately."
+    },
+    {
+      "file": "stone-surface-arm.webp",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/sandstone_cracks/sandstone_cracks_arm_1k.jpg",
+      "md5": "cd57519bfada416f66bb450ced316012",
+      "status": "active",
+      "sourceSha256": "94697b622aeb94acb38b474c96dce2e548a1b4c706f84a340764142e17a0e697",
+      "sha256": "5a34519fc0db907a422af2c01d95c621d6e7c6cd6370e1f86311b1210fdc060b",
+      "transportConversion": "Sharp WebP, 1024x1024 retained; quality 95 normal / 90 diffuse and packed AO/roughness. Exact JPEG source retained privately."
+    }
+  ],
+  "authoredAssets": [
+    {
+      "file": "ecc-courtyard-compressed.glb",
+      "source": "Editable Blender master v4; Career Empire authored geometry",
+      "license": "Project-authored"
+    },
+    {
+      "file": "chapel-recognition-source.png",
+      "source": "Tania supplied Chapel photograph",
+      "license": "User supplied; scoped game use",
+      "sha256": "920ffad8be0c46c3a6e1967e8d7c84331dab1c41c4443df68236150c7ad52b3d",
+      "note": "Original bytes retained; runtime UVs select the tree glass and figure. Low-resolution photograph, not an exact 3D sculpture."
+    },
+    {
+      "file": "reception-backwall.jpg",
+      "source": "Built-in ImageGen, 13 September 2026; original retained privately",
+      "license": "Generated for this project",
+      "note": "Background texture behind real recessed rooms, never evidence of gameplay fidelity."
+    }
+  ]
+}

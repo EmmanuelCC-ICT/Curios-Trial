@@ -1,0 +1,50 @@
+{
+  "triangles": 131998,
+  "objects": 16,
+  "beds": [
+    [
+      -8,
+      5,
+      2.8,
+      4.6
+    ],
+    [
+      -6.3,
+      -6.5,
+      5,
+      1.7
+    ],
+    [
+      7.2,
+      10.9,
+      4.7,
+      2
+    ],
+    [
+      2.3,
+      -0.8,
+      1.1,
+      1.3
+    ],
+    [
+      -4.9,
+      6.4,
+      2.65,
+      2.6
+    ],
+    [
+      5.8,
+      5.2,
+      3,
+      2.6
+    ]
+  ],
+  "welcome": {
+    "x": 4.9,
+    "z": 6.4
+  },
+  "note": "Architecture authored in metres; gameplay collision envelopes retained in integration module. Editable pre-merge source saved separately.",
+  "compressedBytes": 2224820,
+  "rawBytes": 9250800,
+  "master": "ECC-courtyard-master-v4.blend"
+}
