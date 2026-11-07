@@ -1,7 +1,32 @@
 [
- {"title":"Hi, I’m Basil.","caption":"An old world. A new purpose.","text":"Hi, I'm Basil. I said Tania couldn't easily turn Career Empire into something Curios teachers could make their own. Well, here we are!"},
- {"title":"Keep. Clear. Repurpose.","caption":"A few plain-English prompts.","text":"Her prompts were simple: keep the world, avatars, buildings and characters; remove the careers content; and leave the original untouched. The first explorable copy took about fifteen minutes. The teacher tools, branding, app rooms and testing came afterwards."},
- {"title":"Walk in. Open an app.","caption":"Archon Engine · ArtQuest · Loopy Tunes","text":"Now the campus is a shared front door for teacher-created apps. Follow a sign and walk inside to open Archon Engine, Art Quest or Loopy Tunes. Return to Curios brings you back. Avatar Studio is still here."},
- {"title":"Make it your own.","caption":"Preview · Share with ICT","text":"Teachers can change names, conversations and room links in Teacher setup. Preview your ideas, then give ICT the settings to publish. Your curriculum gives this world its purpose."},
- {"title":"Reuse. Repurpose. Recycle.","caption":"Learning Without Limits","text":"Reuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old N P C new tricks."}
+  {
+    "title": "Hi, I’m Basil.",
+    "caption": "An old world. A new purpose.",
+    "text": "Hi, I'm Basil. I said Tania couldn't easily turn Career Empire into something Curios teachers could make their own. Well, here we are!"
+  },
+  {
+    "title": "Keep. Clear. Repurpose.",
+    "caption": "A few plain-English prompts.",
+    "text": "Her prompts were simple: keep the world, avatars, buildings and characters; remove the careers content; and leave the original untouched. The first explorable copy took about fifteen minutes. The teacher tools, branding, app rooms and testing came afterwards."
+  },
+  {
+    "title": "Walk in. Open an app.",
+    "caption": "Archon Engine · ArtQuest · Loopy Tunes",
+    "text": "Now the campus is a shared front door for teacher-created apps. Follow a sign and walk inside to open Archon Engine, Art Quest or Loopy Tunes. Return to Curios brings you back. Avatar Studio is still here."
+  },
+  {
+    "title": "Make it your own.",
+    "caption": "Preview · Share with ICT",
+    "text": "Teachers can change names, conversations and room links in Teacher setup. Preview your ideas, then give ICT the settings to publish. Your curriculum gives this world its purpose."
+  },
+  {
+    "title": "Reuse. Repurpose. Recycle.",
+    "caption": "Learning Without Limits",
+    "text": "Reuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old N P C new tricks."
+  },
+  {
+    "title": "Let’s visit the Lunar Lab.",
+    "caption": "Hop in the rover.",
+    "text": "Hop in the rover and let's go check out the Lunar Lab."
+  }
 ]

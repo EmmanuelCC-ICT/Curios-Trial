@@ -39,3 +39,9 @@ Final acceptance: cb85a24 published (run42186576110). Native live checks passed 
 User approved integrating and publishing the recovered Lunar Lab in this separate Curios repository. The new procedural pavilion is an explicit addition to the earlier no-new-assets baseline. Keep Career Empire/Blueprint/external apps untouched. Retain the unobstructed entrance, steps/floor/wall collision, map pin, and modal input guards. Lunar Lab remains an ungraded campus exhibit, not a completed curriculum. Source coverage: 69 modules; tests: 15, including actual Rapier lab navigation. See docs/PROGRESS.md for publication status.
 
 Lunar Lab release 9706d45 published successfully (run 42386238779). Native live map/dialog/entry walkthrough passed; all 15 tests and 69 module checks pass. Final evidence/limitations are in docs/PROGRESS.md. No remaining task blocker.
+
+
+## Lunar Lab reference correction — 7 November 2026
+The simple pavilion is superseded by the reference-led left geodesic dome, arched central entrance and rounded right gallery/dish. Preserve illustrated mission banners, native garden detail, low accessible forecourt, both gallery passages and localized approach-camera framing. User requested a Lunar Lab map logo; retain the new SVG in both full and mini maps. These explicit additions supersede the original no-new-assets baseline only for this feature. All 20 tests and 69 module checks pass locally. Final publication evidence and visual limitations are in docs/PROGRESS.md.
+
+Current rover specification supersedes the temporary test range: seated cockpit, parked entrance home (-10,27), manual campus driving with physical collision and optional map-selected ground routes. Do not restore the autonomous demo loop or stand-up pose. Preserve the new final Basil invitation after the existing silent introduction. Use 39 tests / 71 runtime modules as the current local baseline; publication evidence is in docs/PROGRESS.md.

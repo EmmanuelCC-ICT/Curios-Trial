@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Curios Lunar Lab moon and orbit logo">
+ <defs><radialGradient id="bg" cx="32%" cy="25%"><stop stop-color="#214c5e"/><stop offset="1" stop-color="#081d2b"/></radialGradient><radialGradient id="moon" cx="32%" cy="28%"><stop stop-color="#f1eddb"/><stop offset=".72" stop-color="#b2b9b4"/><stop offset="1" stop-color="#647f88"/></radialGradient></defs>
+ <circle cx="128" cy="128" r="120" fill="url(#bg)" stroke="#28d4d0" stroke-width="6"/>
+ <circle cx="128" cy="112" r="58" fill="url(#moon)"/>
+ <g fill="#879b9e" opacity=".5"><circle cx="104" cy="87" r="11"/><circle cx="145" cy="101" r="8"/><circle cx="118" cy="135" r="14"/><circle cx="155" cy="137" r="7"/><circle cx="93" cy="115" r="5"/></g>
+ <ellipse cx="128" cy="112" rx="91" ry="29" fill="none" stroke="#dec287" stroke-width="5" transform="rotate(-24 128 112)"/>
+ <circle cx="208" cy="74" r="7" fill="#42e0d6"/>
+ <path d="M59 52v17M50.5 60.5h17" stroke="#f7e6b7" stroke-width="3" stroke-linecap="round"/>
+ <text x="128" y="200" fill="#f6f1e5" font-family="Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="2" text-anchor="middle">LUNAR LAB</text>
+ <path d="M96 214h64" stroke="#28d4d0" stroke-width="3" stroke-linecap="round"/>
+</svg>

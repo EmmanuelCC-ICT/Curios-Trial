@@ -1,6 +1,6 @@
 {
   "date": "2026-11-06",
-  "newArtworkGenerated": false,
+  "newArtworkGenerated": true,
   "assets": {
     "curios-branding.png": {
       "source": "User supplied /Users/tania.byrnes/Desktop/Curios.png",
@@ -39,8 +39,8 @@
     "welcome-slides.json": {
       "source": "Actual Curios browser capture / welcome script; slide5 shows retained Avatar Studio.",
       "path": "playable-3d/assets/curios/welcome-slides.json",
-      "sha256": "6d422bfb0d658864b225aa76132ae9fb15f5e046e52c286bd1e501b70892b777",
-      "bytes": 1770
+      "sha256": "77a8cdd55c8e6803bba9cfe3f9a1ad475c6e798f05fd5ec1e1d0e58c44762f58",
+      "bytes": 1942
     },
     "curios-campus-clean.jpg": {
       "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
@@ -71,6 +71,13 @@
       "path": "playable-3d/assets/curios/archon-icon.webp",
       "bytes": 225412,
       "sha256": "1216fa10f501f832c77512b286627ec55c036b1c28302a213e32eedb9ae13feb"
+    },
+    "lunar-lab.svg": {
+      "source": "Authored vector moon-and-orbit badge at the user’s request. No external image or font dependency.",
+      "use": "Full campus map and persistent mini-map Lunar Lab destination.",
+      "path": "playable-3d/assets/curios/lunar-lab.svg",
+      "sha256": "f25f08096100ae6cc80d2fefc1c9947394fb418ab339768edb7c7a0989e7a6b3",
+      "bytes": 1315
     }
   },
   "newMotionGraphicsGenerated": true,
@@ -79,9 +86,23 @@
     {
       "date": "2026-11-07",
       "path": "playable-3d/curios-lunar-lab.mjs",
-      "source": "Recovered Curios_Lunar_Lab_Files.zip, with integration fixes for clear signage and tested walking/collision.",
-      "description": "Procedural Three.js geometry and canvas-rendered text. No external textures or models downloaded; original supplied screenshot is not packaged.",
-      "sha256": "83e897cd2403fb8afe8b98b4f627db373e322d168dbdf51577b26f84c62c332c"
+      "source": "Rebuilt against the user-supplied visitor-centre concept after the initial recovered ZIP did not match it.",
+      "description": "Authored Three.js geodesic dome, arched entrance, rounded gallery, rover and satellite dish; generated canvas Moon Mission signs and crater texture; reused existing supplied Curios artwork and native garden geometry. Reference screenshots are not packaged.",
+      "sha256": "2404549c6d046c0829fdffbc85b50fc4da770c1ff6a2a8a442a042d2bc6f3b27"
+    },
+    {
+      "date": "2026-11-07",
+      "path": "playable-3d/lunar-rover.mjs",
+      "sha256": "f262c7cf3da503a4750875601efc23ff4b30f76610f6fa0ed096023e9c775b25",
+      "source": "User requested an upgraded seated rover at the entrance, drivable to the Lunar Lab.",
+      "description": "Authored six-wheel Three.js rover, cockpit, steering, navigation mast, campus collision, small entrance pad and route chevrons. No downloaded artwork or vehicle model."
+    },
+    {
+      "date": "2026-11-07",
+      "path": "playable-3d/lunar-driver-pose.mjs",
+      "sha256": "af211a227291bd97cffb5773391c7ffba44ee319a91cb840243fef897b3d93fe",
+      "source": "Existing retained avatar rig posed for the user-approved seated cockpit.",
+      "description": "Temporary bone transforms and seat alignment; original rig restored on exit. No avatar asset modified."
     }
   ]
 }

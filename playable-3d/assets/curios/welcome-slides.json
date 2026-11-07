@@ -40,5 +40,11 @@
     "text": "Reuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old NPC new tricks.",
     "image": "curios-branding.png",
     "seconds": 9.7
+  },
+  {
+    "title": "Let’s visit the Lunar Lab.",
+    "text": "Hop in the rover and let's go check out the Lunar Lab.",
+    "image": "lunar-lab.svg",
+    "seconds": 11
   }
 ]

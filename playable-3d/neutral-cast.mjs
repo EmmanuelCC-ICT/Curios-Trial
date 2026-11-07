@@ -1,4 +1,4 @@
-import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=curios-11';
+import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=rover-5';
 import {createTeacherNPC,TEACHERS} from './teacher-npc.js?v=text-1';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
