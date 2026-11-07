@@ -129,6 +129,7 @@
     "teacher-editor.mjs",
     "playable-3d/curios-hub.mjs",
     "playable-3d/welcome-player.mjs",
-    "playable-3d/room-camera.mjs"
+    "playable-3d/room-camera.mjs",
+    "playable-3d/curios-lunar-lab.mjs"
   ]
 }
