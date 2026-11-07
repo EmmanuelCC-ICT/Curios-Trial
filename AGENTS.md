@@ -37,3 +37,5 @@ Final acceptance: cb85a24 published (run42186576110). Native live checks passed 
 
 ## Lunar Lab — 7 November 2026
 User approved integrating and publishing the recovered Lunar Lab in this separate Curios repository. The new procedural pavilion is an explicit addition to the earlier no-new-assets baseline. Keep Career Empire/Blueprint/external apps untouched. Retain the unobstructed entrance, steps/floor/wall collision, map pin, and modal input guards. Lunar Lab remains an ungraded campus exhibit, not a completed curriculum. Source coverage:69 modules; tests:15, including actual Rapier lab navigation. See docs/PROGRESS.md for publication status.
+
+Lunar Lab release9706d45 published successfully (run42386238779). Native live map/dialog/entry walkthrough passed; all15tests and69module checks pass. Final evidence/limitations are in docs/PROGRESS.md. No remaining task blocker.
