@@ -29,3 +29,32 @@
 .curios-wordmark{width:160px;height:58px;background-position:-60px -4px;background-size:270px auto}
 .curios-pc-pin .curios-map-logo{display:flex;width:auto;gap:3px}
 #curios-mini-map .curios-pc-pin .curios-map-logo{width:auto}
+
+/* Teacher showcase: a restrained editorial frame with persistent controls. */
+#basil-welcome{display:flex;flex-direction:column;border:1px solid #67d8d2;border-radius:20px;background:#071f2bf5;box-shadow:0 24px 64px #00111866,0 0 0 5px #0ce0cf0c;overflow:hidden;isolation:isolate}
+#basil-welcome[hidden]{display:none}
+#basil-welcome header{flex:none;padding:16px 20px 15px;background:linear-gradient(120deg,#123c46,#092634);position:relative;align-items:center}
+#basil-welcome header::after{content:'';position:absolute;bottom:0;left:0;height:3px;width:var(--welcome-progress,0%);background:linear-gradient(90deg,#32dfce,#ffda78);transition:width .22s ease-out}
+#basil-welcome .welcome-identity{display:flex;flex-direction:column;gap:6px;min-width:0}
+#basil-welcome [data-chapter]{font:700 10px/1.25 system-ui;letter-spacing:.15em;color:#80d8d3}
+#basil-welcome strong{font:600 18px/1.25 system-ui;color:#f0fff9;white-space:normal}
+#basil-welcome header button{width:40px;height:40px;flex:none;border-color:#77b8b66b;background:#17414b;font-size:24px;padding:0}
+#basil-welcome .welcome-slide{min-height:0;overflow:auto;overscroll-behavior:contain;background:#082b36}
+#basil-welcome .welcome-slide>img{height:180px;background:#e8efea;border-bottom:1px solid #528c8c4d;object-fit:contain}
+#basil-welcome .welcome-copy{padding:24px 28px 28px}
+#basil-welcome .welcome-slide h3{font:700 29px/1.12 system-ui;letter-spacing:-.025em;margin:0 0 16px;color:#ffdd85;text-wrap:balance}
+#basil-welcome .welcome-slide p{font:400 19px/1.55 system-ui;color:#f1f9f7;margin:0}
+#basil-welcome footer{flex:none;padding:12px 16px;background:#061d27;border-top:1px solid #518b8959;gap:8px;flex-wrap:nowrap}
+#basil-welcome footer button{min-height:42px;padding:10px 15px;font:600 13px/1.2 system-ui;border-radius:9px;background:#113c46;border-color:#588f91}
+#basil-welcome [data-next]{background:#e9d593;color:#173c3c;border-color:#f9e3a4;margin-left:auto}
+#basil-welcome [data-count]{font:600 11px/1.2 system-ui;color:#9acac5;min-width:40px;text-align:right;margin-left:4px}
+#basil-welcome button:focus-visible{outline:3px solid #f9df8b;outline-offset:2px}
+#basil-welcome button:disabled{opacity:.35}
+@media(max-width:899px){#basil-welcome{border-radius:16px}#basil-welcome header{padding:12px}#basil-welcome strong{font-size:15px}#basil-welcome [data-chapter]{font-size:9px;letter-spacing:.1em}#basil-welcome .welcome-slide>img{height:120px}#basil-welcome .welcome-copy{padding:18px}#basil-welcome .welcome-slide h3{font-size:22px;margin-bottom:12px}#basil-welcome .welcome-slide p{font-size:15px;line-height:1.5}#basil-welcome footer{padding:10px;gap:6px}#basil-welcome footer button{padding:9px 11px;font-size:12px}#basil-welcome [data-count]{min-width:32px;font-size:10px;margin-left:0}}
+@media(prefers-reduced-motion:reduce){#basil-welcome header::after{transition:none}}
+
+/* The entrance and distant Lab remain visible above/beside the editorial panel. */
+@media(min-width:900px){#basil-welcome .welcome-slide>img{height:145px}#basil-welcome .welcome-copy{padding:20px 24px 24px}#basil-welcome .welcome-slide h3{font-size:26px}#basil-welcome .welcome-slide p{font-size:18px;line-height:1.5}}
+@media(max-width:599px){#basil-welcome header{padding:9px 12px}#basil-welcome .welcome-slide>img{height:86px}#basil-welcome .welcome-copy{padding:14px 16px}#basil-welcome .welcome-slide h3{font-size:21px;margin-bottom:9px}#basil-welcome .welcome-slide p{font-size:15px;line-height:1.45}#basil-welcome footer{padding:8px 10px}#basil-welcome footer button{min-height:42px}}
+/* Keep redundant floating navigation clear of the visible showcase copy. */
+.showing-basil-welcome #movement,.showing-basil-welcome #interact,.showing-basil-welcome #flyover-quick-controls{display:none!important}

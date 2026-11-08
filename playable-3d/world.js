@@ -1,12 +1,12 @@
-import {neutralLabel} from './world-settings.mjs?v=navigation-final1';
+import {neutralLabel} from './world-settings.mjs?v=entrance-stage-4';
 import {approvedPalette} from './environment/approved-campus-kit.js?v=ecc-ba60122';
 import {createESTWallVideo} from './est-wall-video.js?v=load1-20260914';
 import {buildChapel} from './chapel.js?v=opt2-20260914';
-import {buildExterior} from './ecc-preview/model.js?v=ecc-ba60122';
+import {buildExterior} from './ecc-preview/model.js?v=entrance-stage-4';
 import {LEGACY} from './destinations.js?v=ecc1';
 import {findSafeLanding} from './landing.mjs?v=post-photo-tour-20261013';
 import {createDeferredTextures} from './deferred-textures.js?v=ecc-ba60122';
-import {createCampusLandscape,createCampusPaths,createCampusBuildingExteriors} from './campus-landscape.js?v=curios-navigation-4';
+import {createCampusLandscape,createCampusPaths,createCampusBuildingExteriors} from './campus-landscape.js?v=entrance-stage-4';
 import {arrivalPrecinct} from './arrival-precinct.js?v=curios-navigation-4';
 /**
  * Modular tile-kit plaza ground (Career Empire daytime campus).
@@ -378,21 +378,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
   mesh(fountain,new THREE.CylinderGeometry(.22,.34,1.25,20),materials.edge,0,.9,0);
   mesh(fountain,new THREE.CylinderGeometry(.8,.7,.16,32),materials.edge,0,1.54,0);
   const spray=mesh(fountain,new THREE.CylinderGeometry(.018,.035,1.0,8),new THREE.MeshStandardMaterial({color:0xc2e6e2,transparent:true,opacity:.55}),0,2.1,0);
-  const pondMaterial=materials.water.clone();pondMaterial.color.setHex(0x316c72);pondMaterial.roughness=.26;pondMaterial.metalness=.28;const pond=mesh(town,new THREE.CircleGeometry(7.5,96),pondMaterial,23,.045,-10);pond.name='Garden pond rippled water';pond.rotation.x=-Math.PI/2;pond.scale.set(1,.75,1);
-  const pondTime={value:0};pondMaterial.onBeforeCompile=s=>{s.uniforms.pondTime=pondTime;
-    s.vertexShader='varying vec2 pondUv;\n'+s.vertexShader;s.vertexShader=s.vertexShader.replace('#include <uv_vertex>','#include <uv_vertex>\n pondUv=uv;');
-    s.fragmentShader='uniform float pondTime; varying vec2 pondUv;\n'+s.fragmentShader;
-    s.fragmentShader=s.fragmentShader.replace('#include <color_fragment>',`#include <color_fragment>
-      float pondDepth = 1.0-smoothstep(.30,.5,length(pondUv-.5));
-      diffuseColor.rgb *= mix(vec3(1.3,1.5,1.35),vec3(.68,.87,.92),pondDepth);
-      diffuseColor.rgb *= 1.0+.012*sin(pondUv.x*143.0+sin(pondUv.y*57.0)*2.0+pondTime*.65)*cos(pondUv.y*97.0-pondTime*.3);`);
-    s.fragmentShader=s.fragmentShader.replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
-      float rippleA=sin(pondUv.x*143.0+sin(pondUv.y*57.0)*2.0+pondTime*.7)*cos(pondUv.y*97.0-pondTime*.3);
-      float rippleB=cos(pondUv.y*131.0+sin(pondUv.x*63.0)*1.5-pondTime*.5)*sin(pondUv.x*83.0+pondTime*.4);
-      normal=normalize(normal+vec3(.065*rippleA,.045*rippleB,0.0));`);
-  };pondMaterial.customProgramCacheKey=()=> 'garden-pond-ripples-v2';
-  const bankMaterial=palette.stone.clone();const bank=mesh(town,new THREE.RingGeometry(7.5,7.95,96),bankMaterial,23,.12,-10);bank.name='Garden pond limestone coping';bank.rotation.x=-Math.PI/2;bank.scale.set(1,.75,1);
-  const pondWall=mesh(town,new THREE.CylinderGeometry(7.5,7.5,.11,96,1,true),bankMaterial,23,.065,-10);pondWall.scale.z=.75;pondWall.material.side=THREE.DoubleSide;
+  // Curios entrance showcase: the former Garden pond is open lawn for the rover.
   // The old freestanding courtyard light assemblies overlapped the Arrival
   // forecourt and produced the reported flickering pole. They are omitted so
   // this area remains an open, stable pedestrian space.
@@ -471,7 +457,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
       block(LEGACY.x,1,LEGACY.z,2.5,2,.18);
       for(const b of precinct.colliders)block(...b);
       world.createCollider(RAPIER.ColliderDesc.cylinder(.45,1.8).setTranslation(0,.45,4));
-      world.createCollider(RAPIER.ColliderDesc.cylinder(2,7.4).setTranslation(23,1,-10));
+      // No invisible pond collider remains in the entrance-to-Lab corridor.
     }
     const body=world.createRigidBody(RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(0,inside?.8:.9,inside?5:17));
     const collider=world.createCollider(RAPIER.ColliderDesc.capsule(.56,.20),body);
@@ -546,7 +532,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
     tileKits:{grass:tileKits.grass.count,path:tileKits.path.count,asphalt:tileKits.asphalt.count,plaza:tileKits.plaza.count},
     get pendingSurfaceDetails(){return textures.pending;},
     plazaTextures:{grass:!!grassMap,stone:!!stoneMap,asphalt:!!asphaltMap,dash:!!dashMap,crosswalk:!!crosswalkMap,curb:!!curbMap},
-    update(time,camera){pondTime.value=time;if(importedTrees&&camera){importedTrees.update(time,camera);trunks.visible=crowns.visible=false;scenery.lod=importedTrees.stats();}if(spray.visible)spray.scale.y=1+Math.sin(time*3)*.075;materials.water.roughness=.2+Math.sin(time*.8)*.025;},
+    update(time,camera){if(importedTrees&&camera){importedTrees.update(time,camera);trunks.visible=crowns.visible=false;scenery.lod=importedTrees.stats();}if(spray.visible)spray.scale.y=1+Math.sin(time*3)*.075;materials.water.roughness=.2+Math.sin(time*.8)*.025;},
     move(inside,delta){const physics=physical(inside);
       // Static campus surfaces need no new downward contact solve at rest.
       // Re-solving triangle contacts with zero travel creates tiny alternating
@@ -555,7 +541,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
       // Keep gravity for airborne players and all collision solves for travel.
       if(physics.groundedRest&&delta.x===0&&delta.z===0&&physics.controller.computedGrounded()){physics.world.step();const p=physics.body.translation();return {x:p.x,y:p.y-.785,z:p.z};}
       physics.groundedRest=false;physics.verticalVelocity=physics.controller.computedGrounded()?-.1:Math.max(-12,physics.verticalVelocity-9.81/60);physics.controller.computeColliderMovement(physics.collider,{x:delta.x,y:physics.verticalVelocity/60,z:delta.z});const movement=physics.controller.computedMovement(),p=physics.body.translation();const next={x:p.x+movement.x,y:p.y+movement.y,z:p.z+movement.z};
-      if(!inside&&arrivalOnly){next.x=Math.max(-13,Math.min(-5.2,next.x));next.z=Math.max(3.5,Math.min(29,next.z));}
+      if(!inside&&arrivalOnly){next.x=Math.max(4.5,Math.min(14,next.x));next.z=Math.max(.5,Math.min(8,next.z));}
       next.x=Math.max(inside==='chapel'?-10.5:inside?-6.9:-38,Math.min(inside==='chapel'?10.5:inside?6.9:50,next.x));next.z=Math.max(inside==='chapel'?-8.3:inside?-6.8:-76,Math.min(inside==='chapel'?8.3:inside?6.9:36,next.z));physics.body.setNextKinematicTranslation(next);physics.world.step();physics.groundedRest=delta.x===0&&delta.z===0&&physics.controller.computedGrounded();return {x:next.x,y:next.y-.785,z:next.z};},
     protectCamera(inside,position,target){
       const physics=physical(inside),origin={x:position.x,y:position.y+1.35,z:position.z};

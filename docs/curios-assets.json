@@ -31,16 +31,16 @@
       "bytes": 222952
     },
     "basil-welcome-transcript.txt": {
-      "source": "Local motion-graphics composition of supplied branding and actual Curios screenshots; installed macOS Daniel synthetic narration, not a recording or voice clone of Mr Psandodakis.",
+      "source": "Silent teacher-facing Basil welcome. User-supplied weeks-to-build/hours-to-clone distinction, modular reuse, easier customisation, and playful prototype Lab/rover possibilities. No narration or audio.",
       "path": "playable-3d/assets/curios/basil-welcome-transcript.txt",
-      "sha256": "4c01f8e7c2f274b93fda3f6c11ed83c3f51268c1887fe45d2bcb5cc4b5e5b111",
-      "bytes": 895
+      "sha256": "62b77a8fe3c1241fd43145a004803fa2d06eb1a2a7e28e91879bd0a3e460fc4a",
+      "bytes": 1667
     },
     "welcome-slides.json": {
-      "source": "Actual Curios browser capture / welcome script; slide5 shows retained Avatar Studio.",
+      "source": "Silent teacher-facing Basil welcome. User-supplied weeks-to-build/hours-to-clone distinction, modular reuse, easier customisation, and playful prototype Lab/rover possibilities. No narration or audio.",
       "path": "playable-3d/assets/curios/welcome-slides.json",
-      "sha256": "77a8cdd55c8e6803bba9cfe3f9a1ad475c6e798f05fd5ec1e1d0e58c44762f58",
-      "bytes": 1942
+      "sha256": "9154b09c02acdcf9baf86dfba045c6db36f5375f98efea17fe4ec035b2f91341",
+      "bytes": 2977
     },
     "curios-campus-clean.jpg": {
       "source": "Silent welcome text from tools/welcome-script.json and actual Curios browser captures. No narration or audio.",
@@ -93,7 +93,7 @@
     {
       "date": "2026-11-07",
       "path": "playable-3d/lunar-rover.mjs",
-      "sha256": "f262c7cf3da503a4750875601efc23ff4b30f76610f6fa0ed096023e9c775b25",
+      "sha256": "263c49b2dab8b2ddae9f0bf5553419ea50eda78b706ba6d802a8a591af0b7f5c",
       "source": "User requested an upgraded seated rover at the entrance, drivable to the Lunar Lab.",
       "description": "Authored six-wheel Three.js rover, cockpit, steering, navigation mast, campus collision, small entrance pad and route chevrons. No downloaded artwork or vehicle model."
     },
@@ -103,6 +103,13 @@
       "sha256": "af211a227291bd97cffb5773391c7ffba44ee319a91cb840243fef897b3d93fe",
       "source": "Existing retained avatar rig posed for the user-approved seated cockpit.",
       "description": "Temporary bone transforms and seat alignment; original rig restored on exit. No avatar asset modified."
+    },
+    {
+      "date": "2026-11-08",
+      "path": "playable-3d/entrance-showcase.mjs",
+      "sha256": "5f6a038080cf9f9b3db651724fb5b0c63c72b826a43d51cc595d0b1537b15e52",
+      "source": "User requested an opening beside the school entrance, with ECC and the Curios Lab visible, plus a nearby rover and clear drive.",
+      "description": "Dedicated responsive welcome framing and default forecourt staging. Three obstructing tree instances and the Garden pond are omitted with their matching collision/exclusion; original model assets and the remaining planted bed are retained. User reference screenshot is not packaged."
     }
   ]
 }

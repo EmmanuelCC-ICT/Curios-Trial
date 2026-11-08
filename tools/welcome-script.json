@@ -2,31 +2,46 @@
   {
     "title": "Hi, I’m Basil.",
     "caption": "An old world. A new purpose.",
-    "text": "Hi, I'm Basil. I said Tania couldn't easily turn Career Empire into something Curios teachers could make their own. Well, here we are!"
+    "text": "Hi, I'm Basil. This is a prototype for teachers to explore and make their own. I said Tania couldn't easily turn Career Empire into something Curios teachers could adapt. Well, here we are!"
   },
   {
     "title": "Keep. Clear. Repurpose.",
     "caption": "A few plain-English prompts.",
-    "text": "Her prompts were simple: keep the world, avatars, buildings and characters; remove the careers content; and leave the original untouched. The first explorable copy took about fifteen minutes. The teacher tools, branding, app rooms and testing came afterwards."
+    "text": "Her prompts were simple: keep the world, avatars, buildings and characters; remove the careers content; and leave the original untouched. Tania spent weeks building Career Empire, then hours cloning it for Curios. The teacher tools, branding, app rooms and testing came afterwards."
   },
   {
     "title": "Walk in. Open an app.",
     "caption": "Archon Engine · ArtQuest · Loopy Tunes",
-    "text": "Now the campus is a shared front door for teacher-created apps. Follow a sign and walk inside to open Archon Engine, Art Quest or Loopy Tunes. Return to Curios brings you back. Avatar Studio is still here."
+    "text": "Walk into the ArtQuest + Loopy Tunes centre. Walk up to either desktop PC and press E to open the app shown on its monitor. Archon Engine is in the Learning Hall. Return to Curios brings you back. Avatar Studio is still here."
   },
   {
     "title": "Make it your own.",
     "caption": "Preview · Share with ICT",
-    "text": "Teachers can change names, conversations and room links in Teacher setup. Preview your ideas, then give ICT the settings to publish. Your curriculum gives this world its purpose."
+    "text": "Try Teacher setup in the top bar: change names, conversations and app links, then preview your ideas. Download the settings for ICT when you're ready to publish. New activities and game rules still need development."
   },
   {
     "title": "Reuse. Repurpose. Recycle.",
     "caption": "Learning Without Limits",
-    "text": "Reuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old N P C new tricks."
+    "text": "Reuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old NPC new tricks."
   },
   {
-    "title": "Let’s visit the Lunar Lab.",
-    "caption": "Hop in the rover.",
-    "text": "Hop in the rover and let's go check out the Lunar Lab."
+    "title": "A world we can reshape.",
+    "caption": "Modular software. Different uses.",
+    "text": "This prototype is for teachers. It shows how we can modularise the software we're creating, repurpose it for different uses, and add or remove the parts we want."
+  },
+  {
+    "title": "Build once. Keep experimenting.",
+    "caption": "The world is the starting point.",
+    "text": "Once the world is built, customisation becomes much easier. The final additions were the Curios Lunar Lab building and a moon rover you can drive."
+  },
+  {
+    "title": "Prototypes and possibilities.",
+    "caption": "Have fun. Experiment. Explore.",
+    "text": "It's all still a prototype: kicking around ideas, having fun and experimenting with what's possible. What could you add, swap or take out for your own use?"
+  },
+  {
+    "title": "Hop in. Let’s explore!",
+    "caption": "Where could your ideas take you?",
+    "text": "Hop in the rover and let's take a drive to the Curios Lunar Lab. Who knows what could come next? Maybe one day I'll hop into a rocket and blast off into the Mooniverse!"
   }
 ]

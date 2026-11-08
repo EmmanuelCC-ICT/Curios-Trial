@@ -1,0 +1,20 @@
+#lunar-driving-controls{position:fixed;z-index:25;bottom:calc(10px + env(safe-area-inset-bottom));left:16px;width:355px;max-width:calc(100vw - 24px);color:#f3fff8;font:600 13px/1.25 system-ui;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#lunar-driving-controls[hidden]{display:none!important}
+#lunar-driving-controls button{font:700 14px/1.2 system-ui;min-height:48px;padding:10px;border:1px solid #9ce1db;border-radius:12px;background:#0b343ced;color:white;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;box-shadow:0 2px 9px #001b2480}
+#lunar-driving-controls button.pressed{background:#12a99f;color:#042930;transform:translateY(1px)}
+#lunar-driving-controls button:focus-visible{outline:3px solid #ffe18b;outline-offset:2px}
+.rover-toolbar{display:flex;gap:8px;margin-bottom:8px}.rover-toolbar button{flex:1}.rover-toolbar [data-recover]{background:#69521ff2!important;border-color:#ffe18b!important}
+.rover-pedals{display:grid;grid-template-columns:1fr 1fr 58px;gap:8px}.rover-steering,.rover-gears{display:grid;grid-template-columns:1fr 1fr;gap:6px}.rover-gears{grid-template-columns:1fr}.rover-pedals [data-brake]{align-self:stretch;background:#692f39ed!important;border-color:#f9bcc0!important}
+#lunar-driving-controls p{margin:7px 0 0;text-shadow:0 1px 3px #000;background:#092b35dd;padding:5px 8px;border-radius:6px;font-size:11px}
+.driving-lunar-rover #movement,.driving-lunar-rover #flyover-quick-controls,.driving-lunar-rover #flyover-slot{display:none!important}
+.driving-lunar-rover #interact{bottom:225px;left:16px;right:auto;transform:none;max-width:355px;min-height:44px}
+.driving-lunar-rover #curios-mini-map{transform:scale(.72);transform-origin:bottom right}
+@media(max-width:620px),(max-height:500px) and (max-width:950px){
+ #lunar-driving-controls{left:12px;right:12px;width:auto}#lunar-driving-controls button{min-height:48px;font-size:13px}
+ .driving-lunar-rover #curios-mini-map,.driving-lunar-rover #header-phase,.driving-lunar-rover #character-choice,.driving-lunar-rover #choose-helper,.driving-lunar-rover #guidance-help,.driving-lunar-rover .legacy-link,.driving-lunar-rover #world-tools{display:none!important}
+ .driving-lunar-rover #interact{left:12px;right:auto;bottom:223px;padding:10px 13px;max-width:calc(100% - 24px)}
+ .driving-lunar-rover .topbar .curios-wordmark{width:125px;height:40px;background-size:240px auto;background-position:-58px -5px}
+ .driving-lunar-rover .topbar .account{margin-left:auto}.driving-lunar-rover .header-controls{flex-basis:auto;flex:1;justify-content:flex-end}.driving-lunar-rover #destination-menu{display:none}
+ .driving-lunar-rover .world-heading{top:calc(var(--game-header-height,90px) + 8px)}
+}
+@media(max-height:500px) and (max-width:950px){#lunar-driving-controls{width:355px;right:auto}.driving-lunar-rover #interact{left:auto;right:12px;bottom:12px}.driving-lunar-rover .world-heading{display:none}#lunar-driving-controls p{display:none}}

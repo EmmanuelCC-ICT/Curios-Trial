@@ -5,14 +5,18 @@ import RAPIER from '@dimforge/rapier3d-compat';
 // Campus driving stays within the supported ground, with the complete rover
 // footprint protected by both bounds and the existing town collision world.
 export const ROVER_COURSE=Object.freeze({minX:-36,maxX:48,minZ:-74,maxZ:34,radius:2.65,groundY:.04});
-export const LUNAR_ROVER_HOME=Object.freeze({x:-10,z:27});
-export const ROVER_DOCK=Object.freeze({...LUNAR_ROVER_HOME,heading:Math.PI/2,boardX:-7.25,boardZ:27});
+export const LUNAR_ROVER_HOME=Object.freeze({x:12,z:3});
+export const ROVER_DOCK=Object.freeze({...LUNAR_ROVER_HOME,heading:Math.atan2(26,-57.5),boardX:9,boardZ:3});
 export const ROVER_SPEC=Object.freeze({maxSpeed:5.2,reverseSpeed:2.3,wheelRadius:.56,wheelbase:2.50,steeringAngle:.68,stopDistance:4.2,seatHeight:1.23});
+// The entrance Garden pond was removed with its collider. Keep the fountain protected.
+export const ROVER_WATER_AREAS=Object.freeze([Object.freeze({x:0,z:4,radius:1.85})]);
 const TAU=Math.PI*2,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const finite=(v,fallback=0)=>Number.isFinite(v)?v:fallback;
 const angle=v=>Math.atan2(Math.sin(v),Math.cos(v));
 const approach=(v,target,step)=>v<target?Math.min(target,v+step):Math.max(target,v-step);
 const inside=(x,z)=>x>=ROVER_COURSE.minX+ROVER_COURSE.radius&&x<=ROVER_COURSE.maxX-ROVER_COURSE.radius&&z>=ROVER_COURSE.minZ+ROVER_COURSE.radius&&z<=ROVER_COURSE.maxZ-ROVER_COURSE.radius;
+const dry=(x,z,margin=0)=>ROVER_WATER_AREAS.every(area=>Math.hypot(x-area.x,z-area.z)>area.radius+margin+.05);
+function drySegment(a,b){const dx=b.x-a.x,dz=b.z-a.z,lengthSquared=dx*dx+dz*dz;return ROVER_WATER_AREAS.every(area=>{const t=lengthSquared?clamp(((area.x-a.x)*dx+(area.z-a.z)*dz)/lengthSquared,0,1):0;return Math.hypot(a.x+dx*t-area.x,a.z+dz*t-area.z)>area.radius+ROVER_COURSE.radius+.05;});}
 
 function materials(){
  const standard=(color,roughness=.5,metalness=.35,extra={})=>new THREE.MeshStandardMaterial({color,roughness,metalness,...extra});
@@ -136,6 +140,7 @@ export function createLunarRover(scene,physics){
  const m=materials(),course=buildCourse(scene,m),{root,body,seat,wheels,scanner,steering}=buildVehicle(scene,m);
  root.position.set(ROVER_DOCK.x,ROVER_COURSE.groundY,ROVER_DOCK.z);root.rotation.y=ROVER_DOCK.heading;
  let driving=false,speed=0,steerAngle=0,wheelTravel=0,elapsed=0,disposed=false,route=null;
+ const safePoses=[];
  const world=physics?.world,centreY=1.76;
  const rigidBody=world?world.createRigidBody(RAPIER.RigidBodyDesc.kinematicPositionBased().setTranslation(root.position.x,centreY,root.position.z)):null;
  const collider=rigidBody?world.createCollider(RAPIER.ColliderDesc.cuboid(1.43,1.45,2.04),rigidBody):null;
@@ -149,18 +154,47 @@ export function createLunarRover(scene,physics){
  function syncPhysics(){if(!rigidBody)return;orientation.setFromAxisAngle(rotationAxis,root.rotation.y);const p={x:root.position.x,y:root.position.y-ROVER_COURSE.groundY+centreY,z:root.position.z};rigidBody.setTranslation(p,true);rigidBody.setNextKinematicTranslation(p);rigidBody.setRotation(orientation,true);rigidBody.setNextKinematicRotation(orientation);world.propagateModifiedBodyPositionsToColliders();}
  syncPhysics();
  function ground(x,z){
+  if(!dry(x,z))return null;
   if(!world)return 0;
-  const hit=world.castRayAndGetNormal(new RAPIER.Ray({x,y:.55,z},{x:0,y:-1,z:0}),.7,true,undefined,undefined,collider,rigidBody,obstacle);
+  const origin={x,y:.55,z};
+  // A wheel corner in a shallow wall contact still has ground beneath it.
+  // Ignore solids enclosing the ray origin here, not in the body sweep. Their
+  // collisions remain mandatory; otherwise terrain checks prevent any escape.
+  const hit=world.castRayAndGetNormal(new RAPIER.Ray(origin,{x:0,y:-1,z:0}),.7,true,undefined,undefined,collider,rigidBody,other=>obstacle(other)&&!other.containsPoint(origin));
   if(!hit||hit.normal.y<.85)return null;const y=.55-hit.timeOfImpact;
   return y>=-.025&&y<=.34?Math.max(0,y):null;
  }
+ function footprintGround(x,z,heading){
+  const y=ground(x,z);if(y===null)return null;
+  const sin=Math.sin(heading),cos=Math.cos(heading);let low=y,high=y;
+  // Verify all wheel corners, not just a centre ray over an invisible ground
+  // plate. A missing corner or a ledge cannot become a saved recovery point.
+  for(const a of [-1.46,1.46])for(const b of [-2.08,2.08]){
+   const corner=ground(x+a*cos+b*sin,z-a*sin+b*cos);if(corner===null)return null;
+   low=Math.min(low,corner);high=Math.max(high,corner);
+  }
+  return high-low<=.34?high:null;
+ }
  function blocked(x,z,heading,dx=0,dz=0){
-  if(!inside(x,z))return true;if(!world)return false;
-  const y=ground(x,z);if(y===null)return true;
+  if(!inside(x,z)||!dry(x,z,ROVER_COURSE.radius))return true;if(!world)return false;
+  const y=footprintGround(x,z,heading);if(y===null)return true;
   orientation.setFromAxisAngle(rotationAxis,heading);
   const p={x,y:centreY+y,z};
-  if(world.intersectionWithShape(p,orientation,shape,undefined,undefined,collider,rigidBody,obstacle))return true;
-  if(dx||dz){const hit=world.castShape({x:x-dx,y:centreY+y,z:z-dz},orientation,{x:dx,y:0,z:dz},shape,.015,1,true,undefined,undefined,collider,rigidBody,obstacle);if(hit&&hit.time_of_impact<=1)return true;}
+  let overlaps=false;
+  world.intersectionsWithShape(p,orientation,shape,other=>{
+   // A loaded collider or round-off can leave a shallow initial overlap.
+   // Permit only straight motion that reduces that same contact and points
+   // out of its surface. Never ignore a new obstacle or cross through a wall.
+   const old=other.contactShape(shape,{x:x-dx,y:root.position.y-ROVER_COURSE.groundY+centreY,z:z-dz},orientation,.02);
+   const next=other.contactShape(shape,p,orientation,.02);
+   const separating=(dx||dz)&&Math.abs(angle(heading-root.rotation.y))<1e-6&&old&&next&&old.distance>=-.12&&old.distance<=0&&next.distance>old.distance+1e-7&&dx*old.normal1.x+dz*old.normal1.z>1e-8;
+   if(!separating){overlaps=true;return false;}return true;
+  },undefined,undefined,collider,rigidBody,obstacle);
+  if(overlaps)return true;
+  // stopAtPenetration=false is essential: an initial safety-margin contact
+  // must not report TOI=0 while reversing away. Rapier still stops inward
+  // movement and new contacts; the checks above constrain real penetration.
+  if(dx||dz){const hit=world.castShape({x:x-dx,y:centreY+y,z:z-dz},orientation,{x:dx,y:0,z:dz},shape,.015,1,false,undefined,undefined,collider,rigidBody,obstacle);if(hit&&hit.time_of_impact<=1)return true;}
   return false;
  }
  function seatPosition(target=new THREE.Vector3()){root.updateWorldMatrix(true,true);return seat.getWorldPosition(target);}
@@ -175,18 +209,46 @@ export function createLunarRover(scene,physics){
   }
   if(!choices.length)return null;choices.sort((a,b)=>b.margin-a.margin);return target.copy(choices[0].point);
  }
- function board(){if(disposed)return null;driving=true;speed=0;steerAngle=0;collider?.setSensor(true);return seatPosition();}
+ function board(){if(disposed)return null;rememberSafePose();driving=true;speed=0;steerAngle=0;collider?.setSensor(true);return seatPosition();}
+ /** Immediate brake; the caller clears held controls. No movement or dismount. */
+ function stop(){speed=0;steerAngle=0;steering.rotation.z=0;for(const wheel of wheels)wheel.pivot.rotation.y=0;}
  function exit(){if(disposed)return null;const point=exitPosition(exitPoint);if(!point)return null;driving=false;speed=0;steerAngle=0;collider?.setSensor(false);return point.clone();}
  function clearRoute(){route=null;for(const child of [...routeRoot.children]){child.geometry?.dispose();child.removeFromParent();}}
- function routeFree(x,z){if(!inside(x,z))return false;const y=ground(x,z);return y!==null&&!world.intersectionWithShape({x,y:centreY+y,z},identity,routeShape,undefined,undefined,collider,rigidBody,obstacle);}
+ function routeFree(x,z){if(!world||!inside(x,z)||!dry(x,z,ROVER_COURSE.radius))return false;const y=ground(x,z);if(y===null)return false;for(let i=0;i<8;i++)if(ground(x+Math.sin(i*TAU/8)*ROVER_COURSE.radius,z+Math.cos(i*TAU/8)*ROVER_COURSE.radius)===null)return false;return !world.intersectionWithShape({x,y:centreY+y,z},identity,routeShape,undefined,undefined,collider,rigidBody,obstacle);}
  function lineClear(a,b){
-  if(!routeFree(a.x,a.z)||!routeFree(b.x,b.z))return false;
+  if(!routeFree(a.x,a.z)||!routeFree(b.x,b.z)||!drySegment(a,b))return false;
   const dx=b.x-a.x,dz=b.z-a.z,n=Math.ceil(Math.hypot(dx,dz)/.75);
   // Verify terrain as well as the swept body. No guidance over missing ground.
-  for(let i=1;i<n;i++)if(ground(a.x+dx*i/n,a.z+dz*i/n)===null)return false;
+  for(let i=1;i<n;i++)if(!routeFree(a.x+dx*i/n,a.z+dz*i/n))return false;
   const y=Math.max(ground(a.x,a.z),ground(b.x,b.z));
   const hit=world.castShape({x:a.x,y:centreY+y,z:a.z},identity,{x:dx,y:0,z:dz},routeShape,.035,1,true,undefined,undefined,collider,rigidBody,obstacle);
   return !hit||hit.time_of_impact>1;
+ }
+ function rememberSafePose(){
+  const previous=safePoses.at(-1),x=root.position.x,z=root.position.z;
+  if(previous&&Math.hypot(x-previous.x,z-previous.z)<1.2)return;
+  if(!routeFree(x,z)||blocked(x,z,root.rotation.y))return;
+  safePoses.push({x,z,heading:root.rotation.y});if(safePoses.length>128)safePoses.shift();
+ }
+ /** Explicit reset, never an autonomous drive or an animated passage through
+  * obstacles. Recheck stored destinations against today's collision world;
+  * retain the seated/driving state and replan any existing route from there.
+  * Pass {home:true} to request only the entrance dock. A blocked dock and no
+  * safe history returns recovered:false without moving.
+  */
+ function recover({home=false}={}){
+  const fail=reason=>({recovered:false,reason,position:null,heading:null,source:null});
+  if(disposed||!world)return fail('Town collision data is not available yet.');
+  stop();
+  const choices=home?[]:[...safePoses].reverse().filter(p=>Math.hypot(p.x-root.position.x,p.z-root.position.z)>=1.2).map(p=>({...p,source:'recent-safe'}));
+  choices.push({...ROVER_DOCK,source:'dock'});
+  const safe=choices.find(p=>routeFree(p.x,p.z)&&!blocked(p.x,p.z,p.heading));
+  if(!safe)return fail('No clear recovery point is available. Try reversing into the open space.');
+  const destination=route?.points.at(-1);clearRoute();
+  root.position.set(safe.x,footprintGround(safe.x,safe.z,safe.heading)+ROVER_COURSE.groundY,safe.z);root.rotation.y=safe.heading;
+  body.position.y=0;body.rotation.z=0;steering.rotation.z=0;for(const wheel of wheels)wheel.pivot.rotation.y=0;
+  syncPhysics();rememberSafePose();if(destination)routeTo(destination);
+  return {recovered:true,reason:null,position:root.position.clone(),heading:safe.heading,source:safe.source};
  }
  /** Return safe ground points without moving the rover. Targets must be outdoors. */
  function findRoute(target){
@@ -251,15 +313,21 @@ export function createLunarRover(scene,physics){
    const throttle=clamp(finite(input.throttle),-1,1),turn=clamp(finite(input.steer),-1,1);
    const desired=throttle*(throttle<0?ROVER_SPEC.reverseSpeed:ROVER_SPEC.maxSpeed);
    speed=approach(speed,desired,h*(throttle===0?4.5:2.0));steerAngle=approach(steerAngle,turn*ROVER_SPEC.steeringAngle,h*2.8);
-   const heading=angle(root.rotation.y+speed*Math.tan(steerAngle)/ROVER_SPEC.wheelbase*h),dx=Math.sin(heading)*speed*h,dz=Math.cos(heading)*speed*h;
-   if(blocked(root.position.x+dx,root.position.z+dz,heading,dx,dz)){speed=0;continue;}
-   root.rotation.y=heading;root.position.x+=dx;root.position.z+=dz;root.position.y=(ground(root.position.x,root.position.z)??0)+ROVER_COURSE.groundY;wheelTravel+=speed*h/ROVER_SPEC.wheelRadius;
+   let heading=angle(root.rotation.y+speed*Math.tan(steerAngle)/ROVER_SPEC.wheelbase*h),dx=Math.sin(heading)*speed*h,dz=Math.cos(heading)*speed*h;
+   if(blocked(root.position.x+dx,root.position.z+dz,heading,dx,dz)){
+    // Steering can swing the nose farther into a corner while reversing.
+    // Try a straight, fully collision-checked retreat before stopping.
+    heading=root.rotation.y;dx=Math.sin(heading)*speed*h;dz=Math.cos(heading)*speed*h;
+    if(speed>=0||blocked(root.position.x+dx,root.position.z+dz,heading,dx,dz)){speed=0;continue;}
+    steerAngle=0;
+   }
+   root.rotation.y=heading;root.position.x+=dx;root.position.z+=dz;root.position.y=(footprintGround(root.position.x,root.position.z,heading)??0)+ROVER_COURSE.groundY;wheelTravel+=speed*h/ROVER_SPEC.wheelRadius;
   }
   for(const wheel of wheels){wheel.pivot.rotation.y=wheel.z>0?steerAngle:wheel.z<0?-steerAngle*.48:0;wheel.spin.rotation.x=wheelTravel;}
   steering.rotation.z=-steerAngle*.65;body.position.y=reduced?0:Math.sin(wheelTravel*1.7)*Math.min(.018,Math.abs(speed)*.006);body.rotation.z=reduced?0:-steerAngle*Math.abs(speed)*.009;scanner.rotation.y=reduced?0:Math.sin(elapsed*.6)*.20;
-  syncPhysics();updateRoute();
+  syncPhysics();rememberSafePose();updateRoute();
  }
  function dispose(){if(disposed)return;disposed=true;clearRoute();routeMaterial.dispose();routeRoot.removeFromParent();if(rigidBody)world.removeRigidBody(rigidBody);const geometries=new Set(),materialSet=new Set(),textures=new Set();for(const object of [root,course]){object.traverse(o=>{if(o.geometry)geometries.add(o.geometry);for(const material of(Array.isArray(o.material)?o.material:[o.material]))if(material){materialSet.add(material);if(material.map)textures.add(material.map);}});object.removeFromParent();}geometries.forEach(g=>g.dispose());materialSet.forEach(mat=>mat.dispose());textures.forEach(t=>t.dispose());delete root.userData.rover;}
- const api={root,course,update,board,exit,seatPosition,exitPosition,findRoute,routeTo,clearRoute,dispose,get route(){return route;},get position(){return root.position;},get heading(){return root.rotation.y;},get speed(){return speed;},get driving(){return driving;}};
+ const api={root,course,update,board,exit,stop,recover,seatPosition,exitPosition,findRoute,routeTo,clearRoute,dispose,get route(){return route;},get position(){return root.position;},get heading(){return root.rotation.y;},get speed(){return speed;},get driving(){return driving;}};
  root.userData.rover=api;return api;
 }

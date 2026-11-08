@@ -235,7 +235,10 @@ test('Lunar Lab has the reference silhouette and detailed visitor exhibits',()=>
 test('Lunar map marker supplies a self-contained moon logo and mini map deep-clones its image',async()=>{
   const hub=await readFile(new URL('../playable-3d/curios-hub.mjs',import.meta.url),'utf8');
   const svg=await readFile(new URL('../playable-3d/assets/curios/lunar-lab.svg',import.meta.url),'utf8');
-  assert.match(hub,/marker\('Curios Lunar Lab',LUNAR_SITE\.arrivalX,LUNAR_SITE\.arrivalZ,[^;]+,'\.\/assets\/curios\/lunar-lab\.svg'\)/);
+  const {campusMapDestinations}=await import('../playable-3d/campus-destinations.mjs');
+  const pin=campusMapDestinations({apps:[]}).find(pin=>pin.key==='lunar');
+  assert.equal(pin.label,'Curios Lunar Lab');assert.equal(pin.x,LUNAR_SITE.arrivalX);assert.equal(pin.z,LUNAR_SITE.arrivalZ);assert.deepEqual(pin.badges,['./assets/curios/lunar-lab.svg']);
+  assert.match(hub,/marker\(target.label,point.x,point.z,\(\)=>visit\(target.key\),target.badges\?\.\[0\]\)/);
   // Source-level DOM contract: the marker embeds the supplied image, and the
   // mini map keeps all descendants rather than rebuilding text-only pins.
   assert.match(hub,/if\(image\)\{const img=document\.createElement\('img'\);img\.src=image;[^}]*logo\.append\(img\);b\.append\(logo\)/);

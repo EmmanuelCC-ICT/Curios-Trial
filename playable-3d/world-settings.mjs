@@ -1,5 +1,5 @@
 import {validateConfig,previewStorageKey} from './world-content.mjs?v=navigation-final1';
-const response=await fetch('../world-config.json?v=navigation-final1');
+const response=await fetch('../world-config.json?v=entrance-stage-4');
 if(!response.ok)throw Error('World settings could not load.');
 let settings=await response.json();
 if(new URLSearchParams(location.search).get('teacher-preview')==='1'){try{const draft=localStorage.getItem(previewStorageKey(new URL('../',location.href).pathname));if(draft)settings=validateConfig(JSON.parse(draft));}catch(error){console.warn('Teacher preview settings unavailable; using published settings.',error);}}

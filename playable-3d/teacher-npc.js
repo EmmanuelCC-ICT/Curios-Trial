@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {createTeacherGrounding,sampleTeacherSurface} from './teacher-grounding.mjs?v=entrance-stage-4';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {downloadAvatar} from './avatar-download.js?v=avatarfix1-20260914';
@@ -19,6 +20,11 @@ export async function createTeacherNPC(worlds,config=TEACHERS[0]){
  model.scale.multiplyScalar(HEIGHT/size.y);model.updateMatrixWorld(true);model.traverse(o=>{if(o.isSkinnedMesh)o.skeleton.update();});
  bounds.setFromObject(model,true);model.position.y-=bounds.min.y;
  model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+ // Combine marked rendered paths with static ground, including the ECC courtyard plate.
+ function groundAt(x,z){const rendered=sampleTeacherSurface(worlds.town,x,z),hit=worlds.townPhysics.world.castRayAndGetNormal(new RAPIER.Ray({x,y:.65,z},{x:0,y:-1,z:0}),.8,true,undefined,undefined,undefined,undefined,c=>!c.isSensor()&&c.parent()===null);return Math.max(rendered,hit?.normal.y>=.9?.65-hit.timeOfImpact:0);}
+ // Follow the authored walking surface at Basil’s configured position.
+ const grounding=config.fixed&&config.id==='basil'?createTeacherGrounding(model,root,{surfaceY:groundAt(config.spawn.x,config.spawn.z)}):null;
+ let groundingReady=!worlds.arrivalOnly;
  const mixer=new THREE.AnimationMixer(model),actions={};
  for(const [key,pattern] of Object.entries(config.clips)){
   const clip=kit.animations.find(a=>pattern.test(a.name));
@@ -38,13 +44,14 @@ export async function createTeacherNPC(worlds,config=TEACHERS[0]){
  const controller=world.createCharacterController(.025);controller.enableSnapToGround(.25);controller.setSlideEnabled(true);
  root.position.set(config.spawn.x,0,config.spawn.z);worlds.town.add(root);
  let state='idle',timer=3,target=null,reaction=0,blocked=0,welcomeDancing=false;
- actions.idle.play();mixer.update(.1);if(config.fixed)root.rotation.y=Math.PI;
+ actions.idle.play();mixer.update(.1);if(config.fixed)root.rotation.y=Math.PI;grounding?.update();
  function play(next){if(state===next)return;actions[state].fadeOut(.22);const a=actions[next];a.reset().setLoop(config.reactions.includes(next)?THREE.LoopOnce:THREE.LoopRepeat,Infinity);a.clampWhenFinished=true;a.fadeIn(.22).play();state=next;}
  function pause(){target=null;blocked=0;timer=5+Math.random()*11;play('idle');}
  function chooseTarget(){const angle=Math.random()*Math.PI*2,r=Math.sqrt(Math.random())*.92;target={x:CENTER.x+Math.cos(angle)*RX*r,z:CENTER.z+Math.sin(angle)*RZ*r};timer=18;play('walk');}
  function turn(x,z,dt){const angle=Math.atan2(x,z),delta=Math.atan2(Math.sin(angle-root.rotation.y),Math.cos(angle-root.rotation.y));root.rotation.y+=delta*Math.min(1,dt*5);}
  return {
   root,id:config.id,name:config.name,
+  refreshGrounding(){if(grounding){const surface=groundAt(root.position.x,root.position.z);grounding.setSurfaceY(surface);const pose={x:root.position.x,y:surface+HALF+RADIUS+.025,z:root.position.z};body.setTranslation(pose,true);body.setNextKinematicTranslation(pose);groundingReady=true;grounding.update();}},
   stagePose(x,z,walking,dt){root.position.set(x,0,z);root.rotation.y=Math.PI;body.setTranslation({x,y:HALF+RADIUS+.025,z},true);body.setNextKinematicTranslation({x,y:HALF+RADIUS+.025,z});play(walking?'walk':'idle');mixer.update(dt);},
   welcomeDance(active){if(!config.fixed||!actions.dance||active===welcomeDancing)return;welcomeDancing=active;if(active){target=null;play('dance');actions.dance.setLoop(THREE.LoopRepeat,Infinity);}else pause();},
   near(p,d=5){return Math.hypot(p.x-root.position.x,p.z-root.position.z)<d;},
@@ -72,6 +79,8 @@ export async function createTeacherNPC(worlds,config=TEACHERS[0]){
    // Greetings follow visible elapsed time, independently of capped physics catch-up.
    if(!welcomeDancing&&config.reactions.includes(state)){timer-=dt;if(timer<=0)pause();}
    mixer.update(config.reduced?0:dt);
+   if(grounding&&!groundingReady&&!worlds.arrivalOnly)this.refreshGrounding();
+   grounding?.update();
   },
   snapshot(){return {id:config.id,name:config.name,state,visible:root.visible,position:root.position.toArray(),target,remaining:timer,reactions:reaction};},
   dispose(){mixer.stopAllAction();mixer.uncacheRoot(model);world.removeCharacterController(controller);world.removeRigidBody(body);root.removeFromParent();const textures=new Set(),materials=new Set(),geometries=new Set();model.traverse(o=>{if(o.isMesh){geometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material]){materials.add(m);for(const v of Object.values(m))if(v?.isTexture)textures.add(v);}}});textures.forEach(t=>t.dispose());materials.forEach(m=>m.dispose());geometries.forEach(g=>g.dispose());}

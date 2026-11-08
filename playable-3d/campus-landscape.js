@@ -64,13 +64,12 @@ const placements=[];const colliders=[];
 const paving=palette.paving,soil=palette.soil,edge=palette.stone;
 function rect(x,z,w,d,material,y=.095){const geo=new THREE.PlaneGeometry(w,d);geo.rotateX(-Math.PI/2);const uv=geo.attributes.uv,pos=geo.attributes.position;for(let i=0;i<uv.count;i++)uv.setXY(i,(pos.getX(i)+x)/3,(pos.getZ(i)+z)/3);const m=new THREE.Mesh(geo,material);m.position.set(x,y,z);m.userData.walkable=material===paving;m.receiveShadow=true;group.add(m);return m;}
 createCampusPaths(scene,palette);
-// The long southern display pond is intentionally removed. The smaller Garden
-// pond beside the buildings remains part of the active landscape.
+// Both display ponds are absent in Curios, leaving a clear entrance-to-Lab drive.
 function add(id,x,z,scale=1,rotation=0){placements.push({id,x,z,scale,rotation});}
 // Keep a clear walking line around the Avatar Studio mural and its garden.
 const beds=[[-19,-8.6,7,2.3],[-16,-1.7,4.4,1.15],[7.5,-2.5,1.7,7],[15.7,-16.8,2.2,5],[3,-20,5,1.4],[-17,-19.5,5,1.5],[22,3,6,1.8]];
 beds.forEach(([x,z,w,d],j)=>{rect(x,z,w,d,soil,.1);colliders.push([x,.25,z,w,.5,d]);rect(x-w/2-.09,z,.18,d+.3,edge,.13);rect(x+w/2+.09,z,.18,d+.3,edge,.13);rect(x,z-d/2-.09,w,.18,edge,.13);rect(x,z+d/2+.09,w,.18,edge,.13);for(let i=0;i<5;i++){const along=[-.37,-.19,.035,.20,.37][i],cross=Math.sin((i+1)*2.1+j)*.12;const px=x+(w>d?along*w:cross),pz=z+(d>w?along*d:cross);const size=.59+.035*((i+j)%4);add((i+j)%3===0?'silver-shrub':'olive-shrub',px,pz,size,(i+j)*1.3);add('tufted-grass',px+(w>d?.14:.22),pz+(d>w?.14:.22),.61+.04*((i+2*j)%4),i+j*.7);if(i%2===0)add('yellow-flower-clump',px-.19,pz-.17,.50+.04*((i+j)%3),j+i*.6);}});
-[[-11,20],[-3,21],[-13,10],[-1,13],[-22,-11],[-17,-12],[-8,-18],[-20,-19],[8,-18],[18,-21],[16,-3],[23,4],[6,12],[25,21]].forEach(([x,z],i)=>add(i%2?'mature-eucalypt-a':'mature-eucalypt-b',x,z,.78,i));
+[[-11,20],[-3,21],[-13,10],[-1,13],[-22,-11],[-17,-12],[-8,-18],[-20,-19],[8,-18],[18,-21],[16,-3],[23,4],[6,12],[25,21]].forEach(([x,z],i)=>{if((x===16&&z===-3)||(x===18&&z===-21))return;add(i%2?'mature-eucalypt-a':'mature-eucalypt-b',x,z,.78,i);});
 [[-20,-2],[-14,-9],[7,-6],[18,1],[-3,9]].forEach(([x,z],i)=>add('small-multistem-a',x,z,.65,i));
 [[-19,-8.6],[7.5,-4],[15.7,-16],[-17,-19.5]].forEach(([x,z],i)=>add('boulder-a',x,z,.58,i));
 
@@ -78,7 +77,7 @@ for(let i=placements.length-1;i>=0;i--)if(/shrub|grass|flower/.test(placements[i
 for(const [x,z,w,d]of beds)planter(group,x,z,w,d,palette);
 const planting=new THREE.Group();planting.name='Supporting campus native gardens';group.add(planting);addAuthoredGarden(planting,beds,{treeSites:[],baseY:.43,density:3.5,detail:'supporting'});
 for(const id of [...new Set(placements.map(p=>p.id))]){const asset=loaded.get(id);asset.scene=mergeStatic(asset.scene);if(id==='boulder-a'){const bounds=new THREE.Box3().setFromObject(asset.scene),c=bounds.getCenter(new THREE.Vector3()),size=bounds.getSize(new THREE.Vector3());const scale=1/Math.hypot(size.x,size.z);asset.scene.traverse(o=>{if(o.isMesh){o.geometry=o.geometry.clone();o.geometry.translate(-c.x,-bounds.min.y,-c.z);o.geometry.scale(scale,scale,scale);}});}asset.scene.updateMatrixWorld(true);const ps=placements.filter(p=>p.id===id);asset.scene.traverse(o=>{if(!o.isMesh)return;const inst=new THREE.InstancedMesh(o.geometry,o.material,ps.length);ps.forEach((p,i)=>{const m=new THREE.Matrix4().compose(new THREE.Vector3(p.x,id==='boulder-a'?.40:.12,p.z),new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),p.rotation),new THREE.Vector3(p.scale,p.scale,p.scale));m.multiply(o.matrixWorld);inst.setMatrixAt(i,m);});inst.castShadow=true;inst.receiveShadow=true;
-// Original trees retain every trunk and placement. Software Auto draws a
+// Retained original trees keep their trunks and authored orientations. Software Auto draws a
 // sampled version of the same leaf quads; hardware/High keep the authored asset.
 if(id!=='boulder-a'&&/^leaf/i.test(o.material.name)){const low=new THREE.InstancedMesh(thinGeometry(o.geometry,6,4),o.material,ps.length);low.instanceMatrix.copy(inst.instanceMatrix);low.castShadow=low.receiveShadow=true;low.computeBoundingSphere();const lod=new THREE.LOD();lod.name='Campus original tree detail';lod.userData.softwareDetail=true;lod.addLevel(inst,0);lod.addLevel(low,Infinity);group.add(lod);}else group.add(inst);});}
 // Cull off-screen plants as soon as they appear, without waiting for the rest
@@ -91,7 +90,7 @@ partitionInstances(group,{filter:o=>!o.userData.distanceDetail});
 for(const p of placements.filter(p=>p.id.includes('eucalypt')||p.id.includes('multistem')))colliders.push([p.x,1.5,p.z,.4,3,.4]);
 const buildings=installCampusBuildings(scene,palette,loaded,rect,colliders);
 for(const b of colliders)physics.block(...b);
-// Northern water remains outside the walking boundary; eastern pond and fountain use existing bodies.
+// Northern water remains outside the walking boundary; the courtyard fountain retains its body.
 return {group,buildings:buildings.map(({model,...spec})=>spec),placements,colliders:colliders.length,treeSource:loaded.get('mature-eucalypt-a')?.scene};
 }
 

@@ -107,7 +107,7 @@ export async function buildAuthoredCourtyard(doors,{textures,deferDetail=false}=
  let detailLoad;
  function loadDetail(){return detailLoad||=(async()=>{
   const {addAuthoredGarden}=await import('./authored-garden.js?v=ecc-ba60122');
-  const detail=new T.Group();detail.name='ECC courtyard garden detail';addAuthoredGarden(detail,beds);
+  const detail=new T.Group();detail.name='ECC courtyard garden detail';addAuthoredGarden(detail,beds,{treeSites:[[-8.2,4.9,1.1,.4],[-6.6,-6.4,1.32,2.1],[-10,-4,1.4,.6],[10.8,-3,1.5,2.3]]}); // Omit only the foreground showcase tree; retain its planted bed.
   const stones=rock||await new GLTFLoader().loadAsync(new URL('../assets/campus-landscape/boulder-a.glb',import.meta.url).href);
   stones.scene.updateMatrixWorld(true);const rockBounds=new T.Box3().setFromObject(stones.scene),rockCentre=rockBounds.getCenter(new T.Vector3()),rockSize=rockBounds.getSize(new T.Vector3()),rockDiameter=Math.hypot(rockSize.x,rockSize.z);
   stones.scene.traverse(o=>{if(!o.isMesh)return;const sites=[[-7.7,3.5,.7],[-8.5,5.7,.55],[-6.5,-6.5,.5],[6.6,11,.55],[7.9,10.8,.35],[-5.25,5.95,.40],[-4.45,6.90,.28],[5.35,4.50,.34],[6.6,5.3,.40]];const geo=o.geometry.clone().applyMatrix4(o.matrixWorld);geo.translate(-rockCentre.x,-rockBounds.min.y,-rockCentre.z);geo.scale(1/rockDiameter,1/rockDiameter,1/rockDiameter);const inst=new T.InstancedMesh(geo,o.material,sites.length);inst.name='ECC garden stone outcrops';const d=new T.Object3D();sites.forEach(([x,z,s],i)=>{d.position.set(x,.36,z);d.rotation.y=i*1.71;d.scale.setScalar(s);d.updateMatrix();inst.setMatrixAt(i,d.matrix);});inst.castShadow=inst.receiveShadow=true;detail.add(inst);});
