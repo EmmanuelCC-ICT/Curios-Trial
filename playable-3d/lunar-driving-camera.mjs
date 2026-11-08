@@ -6,14 +6,25 @@ export function dragCameraElevation(start,deltaY,base=.3,lookUp=0){return THREE.
 // Orbit vertically around the existing subject, keeping distance and horizontal
 // heading. Bounds prevent flipping overhead or dropping beneath the ground.
 // The caller still applies its normal scene collision checks after this step.
-export function applyCameraElevation(position,target,elevation=0){
+export function applyCameraElevation(position,target,elevation=0,minElevation=.08){
  if(!elevation)return position;
  const dx=position.x-target.x,dy=position.y-target.y,dz=position.z-target.z;
  const horizontal=Math.hypot(dx,dz),radius=Math.hypot(horizontal,dy);
  if(horizontal<.0001||radius<.0001)return position;
- const angle=THREE.MathUtils.clamp(Math.atan2(dy,horizontal)+elevation,.08,1.4),scale=Math.cos(angle)*radius/horizontal;
+ const angle=THREE.MathUtils.clamp(Math.atan2(dy,horizontal)+elevation,minElevation,1.4),scale=Math.cos(angle)*radius/horizontal;
  return position.set(target.x+dx*scale,target.y+Math.sin(angle)*radius,target.z+dz*scale);
 }
+const MAX_WALK_PITCH=1.46;
+
+export function dragWalkingElevation(start,deltaY,base){
+ return THREE.MathUtils.clamp(start+deltaY*.006,Math.min(0,-MAX_WALK_PITCH-base),Math.max(0,1.4-base));
+}
+
+export function walkingLensTilt(position,target,elevation){
+ // Upward drag tilts the lens without lowering the collision-tested eye.
+ return Math.min(Math.max(0,-elevation),Math.max(0,MAX_WALK_PITCH+cameraElevation(position,target)));
+}
+
 export function roverCameraPose(position,heading,{view=0,orbit=0,elevation=0,aspect=1}={}){
  const angle=heading+orbit,portrait=aspect<.8;
  const distance=view===0?(portrait?6:7):view===2?8:(portrait?10:8.5);

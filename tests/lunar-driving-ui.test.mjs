@@ -5,7 +5,7 @@ import {createLunarDrivingUI} from '../playable-3d/lunar-driving-ui.mjs';
 import * as THREE from '../playable-3d/vendor/three/build/three.module.js';
 const three=new URL('../playable-3d/vendor/three/build/three.module.js',import.meta.url).href;
 const cameraSource=await readFile(new URL('../playable-3d/lunar-driving-camera.mjs',import.meta.url),'utf8');
-const {roverCameraPose,createRoverTreeClearance,dragCameraElevation,applyCameraElevation}=await import('data:text/javascript;base64,'+Buffer.from(cameraSource.replace("'three'",JSON.stringify(three))).toString('base64'));
+const {roverCameraPose,createRoverTreeClearance,dragCameraElevation,applyCameraElevation,dragWalkingElevation,walkingLensTilt,cameraElevation}=await import('data:text/javascript;base64,'+Buffer.from(cameraSource.replace("'three'",JSON.stringify(three))).toString('base64'));
 
 class Element {
  constructor(command){this.dataset={};if(command)this.dataset.drive=command;this.listeners={};this.classes=new Set();this.classList={add:c=>this.classes.add(c),remove:c=>this.classes.delete(c)};this.attributes={};}
@@ -70,7 +70,7 @@ test('Real canvas mouse/touch handlers consume both axes and stop on release or 
  const source=app.split('\n').find(line=>line.trim().startsWith("canvas.addEventListener('pointerdown'"));
  function fixture(driving){
   const setup="let mode='town',entryReady=true,curiosHub=null,intro=null,discovery=null,echo=null,flyover=null,drag=null,yaw=0,lunarCameraOrbit=0,lunarCameraElevation=0,lookElevation=0,lookBaseElevation=.3,lunarCameraView=1,lunarCameraBaseElevation=.3,chapelTilt=0;const lunarRover={driving},explorationMenuOpen=()=>false,helperPicker={open:()=>false},tapTeacher=()=>{},listeners={},canvas={addEventListener:(type,fn)=>listeners[type]=fn,focus(){},setPointerCapture(){}};";
-  return new Function('driving','dragCameraElevation',setup+source+";return {fire:(type,e)=>listeners[type]({clientX:100,clientY:100,pointerId:1,...e}),read:()=>({yaw,lunarCameraOrbit,lunarCameraElevation,lookElevation,drag})};")(driving,dragCameraElevation);
+  return new Function('driving','dragCameraElevation','dragWalkingElevation',setup+source+";return {fire:(type,e)=>listeners[type]({clientX:100,clientY:100,pointerId:1,...e}),read:()=>({yaw,lunarCameraOrbit,lunarCameraElevation,lookElevation,drag})};")(driving,dragCameraElevation,dragWalkingElevation);
  }
  for(const pointerType of ['mouse','touch'])for(const driving of [false,true]){
   const f=fixture(driving);f.fire('pointerdown',{pointerType});f.fire('pointermove',{clientX:160,clientY:180,pointerType});
@@ -79,8 +79,8 @@ test('Real canvas mouse/touch handlers consume both axes and stop on release or 
   f.fire('pointerup',{});f.fire('pointermove',{clientX:300,clientY:400});assert.deepEqual(f.read(),{...reversed,drag:null});
   for(const event of ['pointercancel','lostpointercapture']){f.fire('pointerdown',{});f.fire(event,{});assert.equal(f.read().drag,null);}
  }
- assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')>app.indexOf('const rocket=mode'));
- assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')<app.indexOf('worlds.protectCamera(space(),p,desiredCamera)'));
+ assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,Math.max(0,lookElevation)')>app.indexOf('const rocket=mode'));
+ assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,Math.max(0,lookElevation)')<app.indexOf('worlds.protectCamera(space(),p,desiredCamera)'));
  assert.match(app,/roverCameraPose[^;]+elevation:lunarCameraElevation/);
  assert.equal((app.match(/lunarCameraOrbit=0;lunarCameraElevation=0;/g)||[]).length,4,'board, view, recovery and Recenter reset both axes');
  assert.match(app,/\$\('recenter'\)[^\n]+lookElevation=0/);
@@ -110,4 +110,22 @@ test('Follow view shows the horizon and can pitch well above it without lowering
  assert.ok(pitch(raised)>.8);
  assert.ok(raised.position.y>raised.target.y);
  assert.equal(raised.target.z,0);
+});
+test('Walking camera can aim at the rocket nose from close range without dropping the eye',()=>{
+ const eye=new THREE.Vector3(0,3.1,7),target=new THREE.Vector3(0,1.25,0);
+ const nose=new THREE.Vector3(0,36.3,-5);
+ const base=cameraElevation(eye,target);
+ const drag=dragWalkingElevation(0,-210,base);
+ const camera=new THREE.PerspectiveCamera(55,1,.08,275);
+ camera.position.copy(eye);
+ camera.lookAt(target);
+ assert.ok(nose.clone().project(camera).y>1);
+ camera.rotateX(walkingLensTilt(eye,target,drag));
+ camera.updateMatrixWorld();
+ assert.ok(Math.abs(nose.clone().project(camera).y)<.8);
+ assert.ok(camera.position.equals(eye));
+ const upwardTarget=new THREE.Vector3(0,14,0),upwardBase=cameraElevation(eye,upwardTarget);
+ assert.equal(dragWalkingElevation(0,0,upwardBase),0,'authored upward framing survives without drag');
+ const limit=dragWalkingElevation(0,-10000,upwardBase);
+ assert.ok(dragWalkingElevation(limit,1,upwardBase)>limit);
 });
