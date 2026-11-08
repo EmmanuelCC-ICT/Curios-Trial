@@ -11,7 +11,7 @@ const dataModule=text=>'data:text/javascript;base64,'+Buffer.from(text).toString
 const resolveThree=text=>text.replaceAll("'three'",JSON.stringify(threeURL));
 const utilsURL=dataModule(resolveThree(await readFile(new URL('../playable-3d/vendor/three/examples/jsm/utils/BufferGeometryUtils.js',import.meta.url),'utf8')));
 const gardenURL=dataModule(resolveThree(await readFile(new URL('../playable-3d/ecc-preview/authored-garden.js',import.meta.url),'utf8')).replace("'three/addons/utils/BufferGeometryUtils.js'",JSON.stringify(utilsURL)));
-const {installLunarLab, LUNAR_SITE, LUNAR_LAYOUT,lunarApproachFraming,updateLunarLab} = await import(dataModule(resolveThree(source).replace("'./ecc-preview/authored-garden.js'",JSON.stringify(gardenURL))));
+const {installLunarLab, lunarLoopPoints, LUNAR_SITE, LUNAR_LAYOUT,lunarApproachFraming,updateLunarLab} = await import(dataModule(resolveThree(source).replace("'./ecc-preview/authored-garden.js'",JSON.stringify(gardenURL))));
 const worldSource = await readFile(new URL('../playable-3d/world.js', import.meta.url), 'utf8');
 await RAPIER.init();
 
@@ -38,7 +38,8 @@ function fixture() {
     blocks.push([x,y,z,w,h,d]);
     return world.createCollider(RAPIER.ColliderDesc.cuboid(w/2,h/2,d/2).setTranslation(x,y,z));
   };
-  block(6,-.1,-20,92,.2,116);
+  const floor=worldSource.match(/else block\(([^)]+)\); \/\/ Match the continued grass footprint/)[1].split(',').map(Number);
+  block(...floor);
   const root = install(scene, {block});
   // Execute the app's actual walking-surface converter, not a test-only approximation.
   const start = worldSource.indexOf('function addWalkingSurfaces(root){');
@@ -229,7 +230,7 @@ test('Lunar Lab has the reference silhouette and detailed visitor exhibits',()=>
   const forecourt=named('Low curved entrance forecourt');
   assert.ok(forecourt.geometry.attributes.normal.getY(0)>.99,'forecourt must face upwards');
   const bounds=new THREE.Box3().setFromObject(root);
-  assert.ok(bounds.max.x<52 && bounds.min.z> -78,'building and forecourt must remain within campus ground');
+  assert.ok(bounds.max.x<72 && bounds.min.z> -94,'building and forecourt must remain within campus ground');
 });
 
 test('Lunar map marker supplies a self-contained moon logo and mini map deep-clones its image',async()=>{
@@ -273,4 +274,31 @@ test('Lunar dialog guards repeat opening, keyboard input and both navigation loo
   assert.match(app,/function canStepNavigation\(\)\{\s*return !curiosHub\?\.dialogOpen\(\)/);
   assert.match(app,/else if\(!curiosHub\?\.dialogOpen\(\)&&!discoveryHandover/);
   assert.match(app,/const paused=[^\n]*curiosHub\?\.dialogOpen\(\)/);
+});
+
+test('The full perimeter is walkable and the closed rover circuit has supported clearance',()=>{
+ const f=fixture();
+ try {
+  const walk=lunarLoopPoints(false),w=walker(f.world,walk[0].x,walk[0].z);
+  for(const point of [...walk.slice(1),walk[0]]){
+   const start=w.position(),dx=point.x-start.x,dz=point.z-start.z;
+   const steps=Math.max(1,Math.ceil(Math.hypot(dx,dz)/.05));
+   for(let i=0;i<steps;i++)assert.ok(w.step(dx/steps,dz/steps).y>-.025);
+   const end=w.position();
+   assert.ok(Math.hypot(end.x-point.x,end.z-point.z)<.25,'pedestrian loop blocked at '+JSON.stringify({point,end}));
+   assert.ok(end.y>-.025,'walking ground must support the capsule');
+  }
+  const circuit=lunarLoopPoints(true);
+  for(let i=0;i<circuit.length;i++){
+   const a=circuit[i],b=circuit[(i+1)%circuit.length];
+   const steps=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.25);
+   for(let j=0;j<=steps;j++){
+    const x=a.x+(b.x-a.x)*j/steps,z=a.z+(b.z-a.z)*j/steps;
+    for(const [dx,dz] of [[0,0],[-2.65,0],[2.65,0],[0,-2.65],[0,2.65]]){
+     assert.ok(f.world.castRay(new RAPIER.Ray({x:x+dx,y:.09,z:z+dz},{x:0,y:-1,z:0}),.2,true),'rover footprint must have ground');
+    }
+    assert.equal(f.world.intersectionWithShape({x,y:1.76,z},{x:0,y:0,z:0,w:1},new RAPIER.Cylinder(1.45,2.65),undefined,undefined,undefined,undefined,c=>c.parent()===null),null,'rover footprint must clear the Lab');
+   }
+  }
+ }finally{f.world.free();}
 });

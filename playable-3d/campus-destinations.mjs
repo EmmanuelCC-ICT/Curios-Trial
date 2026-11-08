@@ -16,6 +16,7 @@ const PLACES={
  market:{label:'Markets',x:43,z:-22,pin:{x:43,z:-26},action:'market'},
  oval:{label:'Oval',x:-4,z:-49.8,pin:{x:-4,z:-61}},
  space:{label:'SPACE',x:7,z:-53,yaw:-Math.PI/2},
+ circuit:{label:'Lunar Rover Circuit',x:51,z:-56,pin:{x:62,z:-69},rover:{x:60,z:-50}},
  lunar:{label:'Curios Lunar Lab',x:38,z:-54.5,badges:['./assets/curios/lunar-lab.svg']}
 };
 export function resolveCampusDestination(config,key,{driving=false,enter=false,roverDock}={}){
@@ -44,5 +45,5 @@ export function campusMapDestinations(config){
  return [...rooms.map(room=>{
   const target=resolveCampusDestination(config,'room:'+room);
   return target&&{...target,label:config.apps.filter(app=>app.enabled!==false&&app.room===room).map(app=>app.name).join(' + ')};
- }),...['studio','chapel','market','oval','lunar','arrival'].map(key=>resolveCampusDestination(config,key))].filter(Boolean);
+ }),...['studio','chapel','market','oval','lunar','circuit','arrival'].map(key=>resolveCampusDestination(config,key))].filter(Boolean);
 }

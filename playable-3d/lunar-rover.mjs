@@ -4,7 +4,7 @@ import RAPIER from '@dimforge/rapier3d-compat';
 
 // Campus driving stays within the supported ground, with the complete rover
 // footprint protected by both bounds and the existing town collision world.
-export const ROVER_COURSE=Object.freeze({minX:-36,maxX:48,minZ:-74,maxZ:34,radius:2.65,groundY:.04});
+export const ROVER_COURSE=Object.freeze({minX:-36,maxX:70,minZ:-92,maxZ:34,radius:2.65,groundY:.04});
 export const LUNAR_ROVER_HOME=Object.freeze({x:12,z:3});
 export const ROVER_DOCK=Object.freeze({...LUNAR_ROVER_HOME,heading:Math.atan2(26,-57.5),boardX:9,boardZ:3});
 export const ROVER_SPEC=Object.freeze({maxSpeed:5.2,reverseSpeed:2.3,wheelRadius:.56,wheelbase:2.50,steeringAngle:.68,stopDistance:4.2,seatHeight:1.23});
@@ -311,7 +311,9 @@ export function createLunarRover(scene,physics){
   const steps=Math.ceil(dt*120),h=dt/steps;
   for(let i=0;i<steps;i++){
    const throttle=clamp(finite(input.throttle),-1,1),turn=clamp(finite(input.steer),-1,1);
-   const desired=throttle*(throttle<0?ROVER_SPEC.reverseSpeed:ROVER_SPEC.maxSpeed);
+   const nearLab=root.position.x>=16&&root.position.z<=-46;
+   const forwardLimit=nearLab?3.2:ROVER_SPEC.maxSpeed;
+   const desired=throttle*(throttle<0?ROVER_SPEC.reverseSpeed:forwardLimit);
    speed=approach(speed,desired,h*(throttle===0?4.5:2.0));steerAngle=approach(steerAngle,turn*ROVER_SPEC.steeringAngle,h*2.8);
    let heading=angle(root.rotation.y+speed*Math.tan(steerAngle)/ROVER_SPEC.wheelbase*h),dx=Math.sin(heading)*speed*h,dz=Math.cos(heading)*speed*h;
    if(blocked(root.position.x+dx,root.position.z+dz,heading,dx,dz)){

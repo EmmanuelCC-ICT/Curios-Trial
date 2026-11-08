@@ -103,6 +103,48 @@ function roundedWing(root,art){
  dish(root,5.1,5.15,-2.0);
 }
 function dish(root,x,y,z){const p=new THREE.Group();p.name='Roof satellite dish';p.position.set(x,y,z);root.add(p);for(const s of [-1,1])tube(p,[[s*.7,0,.55],[0,1.1,0],[s*.7,0,-.55]],.07,metal);const bowl=new THREE.Group();bowl.position.y=1.0;bowl.rotation.x=.56;bowl.rotation.z=-.20;p.add(bowl);const pts=[];for(let i=0;i<=24;i++){const r=i/24*1.7;pts.push(new THREE.Vector2(r,r*r*.18));}add(bowl,new THREE.LatheGeometry(pts,64),new THREE.MeshStandardMaterial({color:0xced5d4,roughness:.38,metalness:.5,side:THREE.DoubleSide}));ring(bowl,1.7,.52,0,0,metal,.045);for(let a=0;a<Math.PI*2;a+=Math.PI/4){tube(bowl,[[Math.sin(a)*1.66,.5,Math.cos(a)*1.66],[Math.sin(a)*.45,1.45,Math.cos(a)*.45],[0,1.6,0]],.025,metal);}sphere(bowl,.13,navy,0,1.6,0,16);}
+// Rounded corners leave room for the rover's steering radius. The inner
+// walking loop stays separate from the marked driving lane.
+export function lunarLoopPoints(rover){
+ const [left,right,rear,front,radius]=rover?[55,65,-85,-50,5]:[24,51,-78.5,-56,2];
+ const corners=[[right-radius,front-radius,0],[right-radius,rear+radius,-Math.PI/2],
+  [left+radius,rear+radius,-Math.PI],[left+radius,front-radius,-Math.PI*1.5]];
+ const points=[];
+ for(const [x,z,end] of corners){
+  for(let i=0;i<=8;i++){
+   const angle=end+Math.PI/2-i*Math.PI/16;
+   points.push({x:x+Math.cos(angle)*radius,z:z+Math.sin(angle)*radius});
+  }
+ }
+ return points;
+}
+function installWalkaround(root){
+ function strip(points,width,material,height,name){
+  const positions=[],indices=[];
+  for(let i=0;i<points.length;i++){
+   const a=points[(i+points.length-1)%points.length],b=points[(i+1)%points.length],p=points[i];
+   const length=Math.hypot(b.x-a.x,b.z-a.z);
+   const dx=(b.z-a.z)/length*width/2,dz=-(b.x-a.x)/length*width/2;
+   positions.push(p.x-LUNAR_SITE.x+dx,height,p.z-LUNAR_SITE.z+dz,p.x-LUNAR_SITE.x-dx,height,p.z-LUNAR_SITE.z-dz);
+   const j=2*i,k=2*((i+1)%points.length);indices.push(j,k,j+1,k,k+1,j+1);
+  }
+  const geometry=new THREE.BufferGeometry();
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+  geometry.setIndex(indices);geometry.computeVertexNormals();
+  const mesh=add(root,geometry,material,0,0,0,name);
+  mesh.receiveShadow=true;
+ }
+ const lane=mat(0x455260,.96,0),walk=mat(0xcac4b4,.95,0),mark=mat(0xd7ddc9,.85,0);
+ for(const material of [lane,walk,mark])material.side=THREE.DoubleSide;
+ const circuit=lunarLoopPoints(true);
+ strip(circuit,4.4,lane,.016,'Lunar Lab marked rover circuit');
+ strip(circuit,.10,mark,.022,'Rover circuit centre guide');
+ strip(lunarLoopPoints(false),1.8,walk,.014,'Lunar Lab perimeter footpath');
+ // A transverse start stripe is visible from the southern approach.
+ for(let i=0;i<7;i++)box(root,.55,.008,.30,mark,22,.026,17.3+i*.4);
+ const notice=textPanel(root,{title:'ROVER CIRCUIT',subtitle:'SLOW · GIVE WAY',w:4,h:1,x:22,y:.03,z:20.5});
+ if(notice)notice.rotation.x=-Math.PI/2;
+}
 function grounds(root){
  const courtyard=new THREE.Shape();courtyard.moveTo(-11,-3);courtyard.quadraticCurveTo(-12,5,-8.7,7);courtyard.quadraticCurveTo(-4,8.8,-1.8,8.2);courtyard.lineTo(-1.8,16.2);courtyard.lineTo(1.8,16.2);courtyard.lineTo(1.8,8.2);courtyard.quadraticCurveTo(7,9,10,5);courtyard.quadraticCurveTo(11,2,9.7,-3);courtyard.closePath();
  // Shape coordinates map to X/Z; keep the paving low and continuous with lawn.
@@ -133,7 +175,7 @@ function colliders(root,physics){if(!physics)return;const block=(x,y,z,w,h,d)=>p
 export function installLunarLab(scene,physics){
  const existing=scene.getObjectByName('Curios Lunar Lab');if(existing)return existing;
  const root=new THREE.Group();root.name='Curios Lunar Lab';root.position.set(LUNAR_SITE.x,0,LUNAR_SITE.z);scene.add(root);
- const art=artwork();grounds(root);const dome=geodesicDome(root);rover(dome,-1.3,0,2.55);centralHall(root,art);roundedWing(root,art);colliders(root,physics);
+ const art=artwork();grounds(root);installWalkaround(root);const dome=geodesicDome(root);rover(dome,-1.3,0,2.55);centralHall(root,art);roundedWing(root,art);colliders(root,physics);
  root.userData.design='Left geodesic dome, arched centre and rounded gallery matched to the supplied concept';
  return root;
 }

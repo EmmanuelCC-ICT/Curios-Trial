@@ -45,7 +45,7 @@ test('Full and mini map share configured room groups, labels and the same click 
  const pins=campusMapDestinations(config),centre=pins.find(pin=>pin.key==='room:centre');
  assert.equal(centre.label,'ArtQuest + Loopy Tunes');assert.equal(centre.badges.length,2);
  assert.ok(!pins.some(pin=>pin.key==='room:media'));
- assert.deepEqual(pins.map(pin=>pin.key),['room:hall','room:centre','studio','chapel','market','oval','lunar','arrival']);
+ assert.deepEqual(pins.map(pin=>pin.key),['room:hall','room:centre','studio','chapel','market','oval','lunar','circuit','arrival']);
  for(const pin of pins){assert.ok(resolve(pin.key));assert.equal(resolve(pin.key,{driving:true}).action,'route');}
  const custom=structuredClone(config);custom.apps.find(app=>app.id==='loopy').enabled=false;
  assert.equal(campusMapDestinations(custom).find(pin=>pin.key==='room:centre').badges.length,1);

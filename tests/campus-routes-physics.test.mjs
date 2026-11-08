@@ -60,6 +60,32 @@ test('Every Places/full-map rover destination and dock return clears the authore
    r.root.position.set(target.x,.04,target.z);const home=r.routeTo(ROVER_DOCK.x,ROVER_DOCK.z);assert.equal(home.reachable,true,key+' return: '+home.reason);
   }
   r.root.position.set(ROVER_DOCK.x,.04,ROVER_DOCK.z);assert.equal(r.routeTo(38,-54.5).reachable,true);
+  // Drive a complete lap with the actual kinematic rover, including every
+  // corner and the extended ground, using the same throttle/steer API as play.
+  const loopStart=labSource.indexOf('export function lunarLoopPoints');
+  const loopEnd=labSource.indexOf('function installWalkaround',loopStart);
+  const loop=new Function(labSource.slice(loopStart,loopEnd).replace('export function','function')+';return lunarLoopPoints(true);')();
+  physics.block(18,3,-53,11,6,24); // Conservative SPACE footprint.
+  w.step();
+  const samples=[];
+  for(let i=0;i<loop.length;i++){
+   const a=loop[i],b=loop[(i+1)%loop.length],steps=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.4);
+   for(let j=0;j<steps;j++)samples.push({x:a.x+(b.x-a.x)*j/steps,z:a.z+(b.z-a.z)*j/steps});
+  }
+  r.root.position.set(samples[0].x,.04,samples[0].z);
+  r.root.rotation.y=Math.atan2(samples[1].x-samples[0].x,samples[1].z-samples[0].z);
+  r.stop();
+  const lap=[...samples,...samples.slice(0,10)];
+  let progress=0;
+  for(let frame=0;frame<2500&&progress<samples.length;frame++){
+   while(progress<samples.length&&Math.hypot(r.position.x-lap[progress].x,r.position.z-lap[progress].z)<1.25)progress++;
+   const target=lap[Math.min(progress+4,lap.length-1)];
+   const desired=Math.atan2(target.x-r.position.x,target.z-r.position.z);
+   const angle=Math.atan2(Math.sin(desired-r.heading),Math.cos(desired-r.heading));
+   r.update(.05,{throttle:.75,steer:Math.max(-1,Math.min(1,angle*2))});
+   assert.ok(Math.min(...samples.map(p=>Math.hypot(r.position.x-p.x,r.position.z-p.z)))<2.2,'rover must stay inside the marked lane');
+  }
+  assert.equal(progress,samples.length,'rover must complete a full lap');
   const before=r.position.clone();assert.equal(r.routeTo(-3.15,-8.8).reachable,false,'the pedestrian chapel door is too tight');
   assert.equal(r.route,null,'failure clears old route markers');assert.ok(r.position.equals(before));assert.equal(r.driving,true);
  }finally{r.dispose();w.free();}
