@@ -133,6 +133,7 @@
     "playable-3d/curios-lunar-lab.mjs",
     "playable-3d/curios-rocket.mjs",
     "playable-3d/rocket-site.mjs",
+    "playable-3d/rocket-launch.mjs",
     "playable-3d/lunar-rover.mjs",
     "playable-3d/lunar-driver-pose.mjs",
     "playable-3d/lunar-driving-camera.mjs",

@@ -1,13 +1,13 @@
-import {rocketApproachFraming} from "./rocket-site.mjs";
+import {isRocketViewingArea,rocketApproachFraming} from "./rocket-site.mjs?v=rocket-launch-1";
 import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=rocket-pad-1';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {createLunarDrivingUI} from './lunar-driving-ui.mjs';
-import {roverCameraPose,ROVER_VIEWS,createRoverTreeClearance,dragCameraElevation,applyCameraElevation,cameraElevation} from './lunar-driving-camera.mjs?v=vertical-look-1';
+import {roverCameraPose,ROVER_VIEWS,createRoverTreeClearance,dragCameraElevation,applyCameraElevation,cameraElevation} from './lunar-driving-camera.mjs?v=forward-look-2';
 import {createLunarDriverPose} from './lunar-driver-pose.mjs';
 import {roomCameraPose} from './room-camera.mjs';
 import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=entrance-stage-4';
 import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=entrance-stage-4';
-import {createCuriosHub} from './curios-hub.mjs?v=rocket-pad-1';
+import {createCuriosHub} from './curios-hub.mjs?v=rocket-launch-1';
 import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=rocket-pad-1';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=entrance-stage-4';
 import {createIsolatedStorage} from './world-storage.mjs';
@@ -574,8 +574,14 @@ function updateCamera(dt,snap=false){
     camera.position.lerp(desiredCamera,snap?1:1-Math.exp(-dt*7));
     const finalDelta=camera.position.clone().sub(lookAt),finalLength=finalDelta.length();
     if(finalLength>.01){const finalHit=physics.world.castRay(new RAPIER.Ray(lookAt,finalDelta.normalize()),finalLength,true,RAPIER.QueryFilterFlags.EXCLUDE_SENSORS,undefined,physics.collider,physics.body);if(finalHit)camera.position.copy(lookAt).addScaledVector(finalDelta,Math.max(.05,finalHit.timeOfImpact-.35));}
-    camera.lookAt(lookAt);camera.updateMatrixWorld();
+    camera.lookAt(lookAt);camera.rotateX(pose.tilt);camera.updateMatrixWorld();
     lunarTreeClearance?.update(camera,lookAt,clock.getElapsedTime(),snap);return;
+  }
+  const launchPose=mode==='town'&&!aerial&&!stagedWelcome?curiosHub?.rocketLaunch?.cameraPose(p):null;
+  if(launchPose){
+    if(camera.fov!==launchPose.fov){camera.fov=launchPose.fov;camera.updateProjectionMatrix();}
+    desiredCamera.set(...launchPose.eye);lookAt.set(...launchPose.target);
+    camera.position.lerp(desiredCamera,snap?1:1-Math.exp(-dt*7));camera.lookAt(lookAt);return;
   }
   if(stagedWelcome){
     const pose=entranceShowcasePose(camera.aspect);camera.fov=pose.fov;camera.updateProjectionMatrix();
@@ -644,7 +650,7 @@ function boardLunarRover(){
  lunarTreeClearance ||= createRoverTreeClearance(worlds.town);
  lunarDriverPose=createLunarDriverPose(actor.model,lunarRover);lunarDriverPose.update();
  yaw=lunarRover.heading+Math.PI;aerial=false;$('aerial').setAttribute('aria-pressed','false');
- $('location-title').textContent='Lunar Rover · Campus Drive';$('location-subtitle').textContent='Hold Drive / Reverse · Camera changes view · Unstick rover restores clear ground';
+ $('location-title').textContent='Lunar Rover · Campus Drive';$('location-subtitle').textContent='Hold Drive / Reverse · Drag up in Follow view to look higher';
  document.querySelectorAll('.movement [data-key]').forEach(b=>{b.dataset.walkLabel=b.getAttribute('aria-label');b.setAttribute('aria-label',{'KeyW':'Drive rover forward','KeyS':'Reverse rover','KeyA':'Steer rover left','KeyD':'Steer rover right'}[b.dataset.key]||b.dataset.walkLabel);});
  canvas.focus();updateInteraction();updateCamera(1,true);
 }
@@ -664,9 +670,11 @@ function updateInteraction(){
  else if(mode==='town'&&lunarRover&&Math.hypot(p.x-lunarRover.position.x,p.z-lunarRover.position.z)<3.6)interaction={label:'Drive the lunar rover · E',action:boardLunarRover};
  else if(mode==='market')interaction=nightMarket.interaction(p);
  else if(mode==='town'){
+  const launchAction=curiosHub?.rocketLaunch?.interaction(p);
   const walking=keys.size>0||Math.hypot(joystick.x,joystick.z)>.1;
   if(walking&&!curiosHub?.blocked()){if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<1.1){enterHall();return;}if(Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<1.1){enterCareers();return;}if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<.9){curiosHub?.openRoom('media');return;}}
-  if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<2.2)interaction={label:'Enter '+curiosHub.forRoom('media').name,action:()=>curiosHub?.openRoom('media')};
+  if(launchAction)interaction=launchAction;
+  else if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<2.2)interaction={label:'Enter '+curiosHub.forRoom('media').name,action:()=>curiosHub?.openRoom('media')};
   else if(Math.hypot(p.x-ROOM_POINTS.hall.x,p.z-ROOM_POINTS.hall.z)<2.2||Math.hypot(p.x-EST.x,p.z-EST.doorZ)<2.2)interaction={label:'Enter '+config.places.hall,action:enterHall};
   else if(Math.hypot(p.x-ROOM_POINTS.centre.x,p.z-ROOM_POINTS.centre.z)<2.2||Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<2.2)interaction={label:'Enter '+config.places.centre,action:enterCareers};
   else if(curiosHub?.moonInteraction(p))interaction=curiosHub.moonInteraction(p);
@@ -712,7 +720,7 @@ function bindEvents(){
   window.addEventListener('keyup',e=>{if(keys.has(e.code))advanceSoftwareNavigation();keys.delete(e.code);});window.addEventListener('blur',()=>{resetNavigationInput();actor?.setWalking(false);flyover?.stop();});document.addEventListener('visibilitychange',()=>{flyover?.stop();resetNavigationInput();actor?.setWalking(false);lastTime=clock.getElapsedTime();});window.addEventListener('resize',resize);
   window.addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue='';}});
   document.querySelectorAll('[data-key]').forEach(b=>{b.addEventListener('contextmenu',e=>e.preventDefault());b.addEventListener('dragstart',e=>e.preventDefault());b.addEventListener('selectstart',e=>e.preventDefault());let pressedAt=0;b.addEventListener('pointerdown',e=>{if(curiosHub?.dialogOpen()||(mode==='town'&&!entryReady)||explorationMenuOpen()||intro?.open()||discovery?.open()||helperPicker.open()||echo?.open())return;e.preventDefault();b.setPointerCapture(e.pointerId);pressedAt=performance.now();keys.add(b.dataset.key);b.classList.add('pressed');});const release=e=>{if(b.classList.contains('pressed')&&e.type==='pointerup'&&performance.now()-pressedAt<180)tapMovement={key:b.dataset.key,until:performance.now()+220};keys.delete(b.dataset.key);b.classList.remove('pressed');};b.addEventListener('pointerup',release);b.addEventListener('pointercancel',release);b.addEventListener('lostpointercapture',release);});
-  canvas.addEventListener('pointerdown',e=>{if(curiosHub?.dialogOpen()||(mode==='town'&&!entryReady)||explorationMenuOpen()||intro?.open()||discovery?.open()||helperPicker.open()||echo?.open())return;if(flyover?.pointerdown(e))return;canvas.focus();if(mode==='studio'||mode==='careers'||mode==='interior')return;drag={x:e.clientX,y:e.clientY,lastY:e.clientY,yaw,roverOrbit:lunarCameraOrbit,elevation:lookElevation,roverElevation:lunarCameraElevation,tilt:chapelTilt,moved:false};canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(flyover?.pointermove(e))return;if(drag && mode!=='studio'){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8)drag.moved=true;if(!drag.moved)return;if(lunarRover?.driving){lunarCameraOrbit=drag.roverOrbit-(e.clientX-drag.x)*.006;lunarCameraElevation=dragCameraElevation(lunarCameraElevation,e.clientY-drag.lastY,lunarCameraBaseElevation);}else{yaw=drag.yaw-(e.clientX-drag.x)*.006;if(mode==='town'||mode==='market')lookElevation=dragCameraElevation(lookElevation,e.clientY-drag.lastY,lookBaseElevation);}if(mode==='chapel')chapelTilt=THREE.MathUtils.clamp(drag.tilt+(e.clientY-drag.y)*.014,-1.6,4.5);drag.lastY=e.clientY;}});canvas.addEventListener('pointerup',e=>{if(flyover?.active){flyover.pointerup(e);return;}if(drag&&!drag.moved)tapTeacher(e);drag=null;});canvas.addEventListener('pointercancel',()=>{drag=null;flyover?.pointerup();});canvas.addEventListener('lostpointercapture',()=>{drag=null;flyover?.pointerup();});
+  canvas.addEventListener('pointerdown',e=>{if(curiosHub?.dialogOpen()||(mode==='town'&&!entryReady)||explorationMenuOpen()||intro?.open()||discovery?.open()||helperPicker.open()||echo?.open())return;if(flyover?.pointerdown(e))return;canvas.focus();if(mode==='studio'||mode==='careers'||mode==='interior')return;drag={x:e.clientX,y:e.clientY,lastY:e.clientY,yaw,roverOrbit:lunarCameraOrbit,elevation:lookElevation,roverElevation:lunarCameraElevation,tilt:chapelTilt,moved:false};canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(flyover?.pointermove(e))return;if(drag && mode!=='studio'){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8)drag.moved=true;if(!drag.moved)return;if(lunarRover?.driving){lunarCameraOrbit=drag.roverOrbit-(e.clientX-drag.x)*.006;lunarCameraElevation=dragCameraElevation(lunarCameraElevation,e.clientY-drag.lastY,lunarCameraBaseElevation,lunarCameraView===1?1:0);}else{yaw=drag.yaw-(e.clientX-drag.x)*.006;if(mode==='town'||mode==='market')lookElevation=dragCameraElevation(lookElevation,e.clientY-drag.lastY,lookBaseElevation);}if(mode==='chapel')chapelTilt=THREE.MathUtils.clamp(drag.tilt+(e.clientY-drag.y)*.014,-1.6,4.5);drag.lastY=e.clientY;}});canvas.addEventListener('pointerup',e=>{if(flyover?.active){flyover.pointerup(e);return;}if(drag&&!drag.moved)tapTeacher(e);drag=null;});canvas.addEventListener('pointercancel',()=>{drag=null;flyover?.pointerup();});canvas.addEventListener('lostpointercapture',()=>{drag=null;flyover?.pointerup();});
 }
 let renderedFrames=0,lastPixelColours=null,lastPixelReadAt=-Infinity;
 function publishDiagnostics(now,rendered=false){
@@ -810,6 +818,8 @@ function animate(){
   if(intro?.open()){if(now-introWarmTime<.5)return;introWarmTime=now;}
   // Background game tabs must not compete with the visible game for the GPU.
   if(document.hidden){accumulator=0;frames=0;metricsTime=now;return;}
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  curiosHub?.rocketLaunch?.update(Math.min(elapsed,1),mode==='town'&&!lunarRover?.driving&&!flyover?.active&&!aerial&&isRocketViewingArea(actor.model.position),reducedMotion);
   orientationTour?.update();flyover?.refresh();if(lunarRover&&!lunarRover.driving)lunarRover.update(dt,{player:actor.model.position,paused:mode!=='town'||!canStepNavigation(),reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches});curiosHub?.updateLunarLab(now,{reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,paused:mode!=='town'||!canStepNavigation()});
   if(flyover?.active){if(!document.hidden&&!feedbackOpen()){flyover.update(dt);worlds.update(now,camera);}}
   else if(!curiosHub?.dialogOpen()&&!discoveryHandover?.open()&&(mode!=='town'||entryReady)&&!marketOpening&&!intro?.open()&&!discovery?.open()&&!document.hidden&&!feedbackOpen()&&!marketDialogOpen()&&mode!=='studio'&&!watchingEST&&$('module-overlay').hidden&&!$('reflection-dialog').open&&!$('leave-dialog').open){

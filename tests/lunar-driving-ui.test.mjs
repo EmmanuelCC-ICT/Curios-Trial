@@ -69,7 +69,7 @@ test('Real canvas mouse/touch handlers consume both axes and stop on release or 
  const app=await readFile(new URL('../playable-3d/app.js',import.meta.url),'utf8');
  const source=app.split('\n').find(line=>line.trim().startsWith("canvas.addEventListener('pointerdown'"));
  function fixture(driving){
-  const setup="let mode='town',entryReady=true,curiosHub=null,intro=null,discovery=null,echo=null,flyover=null,drag=null,yaw=0,lunarCameraOrbit=0,lunarCameraElevation=0,lookElevation=0,lookBaseElevation=.3,lunarCameraBaseElevation=.3,chapelTilt=0;const lunarRover={driving},explorationMenuOpen=()=>false,helperPicker={open:()=>false},tapTeacher=()=>{},listeners={},canvas={addEventListener:(type,fn)=>listeners[type]=fn,focus(){},setPointerCapture(){}};";
+  const setup="let mode='town',entryReady=true,curiosHub=null,intro=null,discovery=null,echo=null,flyover=null,drag=null,yaw=0,lunarCameraOrbit=0,lunarCameraElevation=0,lookElevation=0,lookBaseElevation=.3,lunarCameraView=1,lunarCameraBaseElevation=.3,chapelTilt=0;const lunarRover={driving},explorationMenuOpen=()=>false,helperPicker={open:()=>false},tapTeacher=()=>{},listeners={},canvas={addEventListener:(type,fn)=>listeners[type]=fn,focus(){},setPointerCapture(){}};";
   return new Function('driving','dragCameraElevation',setup+source+";return {fire:(type,e)=>listeners[type]({clientX:100,clientY:100,pointerId:1,...e}),read:()=>({yaw,lunarCameraOrbit,lunarCameraElevation,lookElevation,drag})};")(driving,dragCameraElevation);
  }
  for(const pointerType of ['mouse','touch'])for(const driving of [false,true]){
@@ -79,7 +79,7 @@ test('Real canvas mouse/touch handlers consume both axes and stop on release or 
   f.fire('pointerup',{});f.fire('pointermove',{clientX:300,clientY:400});assert.deepEqual(f.read(),{...reversed,drag:null});
   for(const event of ['pointercancel','lostpointercapture']){f.fire('pointerdown',{});f.fire(event,{});assert.equal(f.read().drag,null);}
  }
- assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')>app.indexOf('const lunar=mode'));
+ assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')>app.indexOf('const rocket=mode'));
  assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')<app.indexOf('worlds.protectCamera(space(),p,desiredCamera)'));
  assert.match(app,/roverCameraPose[^;]+elevation:lunarCameraElevation/);
  assert.equal((app.match(/lunarCameraOrbit=0;lunarCameraElevation=0;/g)||[]).length,4,'board, view, recovery and Recenter reset both axes');
@@ -100,4 +100,14 @@ test('App wires mobile recovery, drag view and camera collision; touch controls 
  const app=await readFile(new URL('../playable-3d/app.js',import.meta.url),'utf8'),css=await readFile(new URL('../playable-3d/lunar-driving.css',import.meta.url),'utf8');
  assert.match(app,/function resetNavigationInput\(\)\{lunarDrivingUI\?\.reset\(\);if\(lunarRover\?\.driving\)lunarRover\.stop\(\)/);assert.match(app,/const result=lunarRover\.recover\(\)/);assert.match(app,/lunarRover\.stop\(\)/);assert.match(app,/lunarCameraOrbit=drag\.roverOrbit/);assert.match(app,/RAPIER\.QueryFilterFlags\.EXCLUDE_SENSORS/);assert.match(app,/lunarTreeClearance\?\.restore\(\)/);assert.match(app,/z-=drivingInput\.throttle/);
  assert.match(css,/\.driving-lunar-rover #movement/);assert.match(css,/\.driving-lunar-rover #flyover-quick-controls/);assert.match(css,/#curios-mini-map[^}]+display:none!important/s);assert.match(css,/min-height:48px/);
+});
+test('Follow view shows the horizon and can pitch well above it without lowering the eye below its safe orbit',()=>{
+ const rover=new THREE.Vector3(0,0,0);
+ const neutral=roverCameraPose(rover,0,{view:1});
+ const raised=roverCameraPose(rover,0,{view:1,elevation:-2});
+ const pitch=pose=>pose.tilt-Math.atan2(pose.position.y-pose.target.y,Math.abs(pose.position.z-pose.target.z));
+ assert.ok(pitch(neutral)>-.12);
+ assert.ok(pitch(raised)>.8);
+ assert.ok(raised.position.y>raised.target.y);
+ assert.equal(raised.target.z,0);
 });

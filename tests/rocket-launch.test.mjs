@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import * as THREE from '../playable-3d/vendor/three/build/three.module.js';
+import {ROCKET_SITE} from '../playable-3d/rocket-site.mjs';
+
+const three=new URL('../playable-3d/vendor/three/build/three.module.js',import.meta.url).href;
+const siteModule=new URL('../playable-3d/rocket-site.mjs',import.meta.url).href;
+const source=await readFile(new URL('../playable-3d/rocket-launch.mjs',import.meta.url),'utf8');
+const {launchFrame,createRocketLaunch}=await import('data:text/javascript;base64,'+Buffer.from(source.replace("'three'",JSON.stringify(three)).replace("'./rocket-site.mjs?v=rocket-launch-1'",JSON.stringify(siteModule))).toString('base64'));
+
+test('Launch can only be started from the viewing area, ignites before lift, and can be replayed',()=>{
+ const site=new THREE.Group(),rocket=new THREE.Group(),status={};
+ rocket.name='Curios Rocket Assembly';rocket.position.y=1.3;site.add(rocket);
+ const launch=createRocketLaunch(site,status);
+ const viewing={x:ROCKET_SITE.x,z:ROCKET_SITE.viewingZ};
+ assert.equal(launch.interaction(ROCKET_SITE),null);
+ launch.interaction(viewing).action();
+ launch.update(0,true,false);
+ assert.match(status.textContent,/T−8/);
+ assert.equal(launch.interaction(viewing),null);
+ launch.update(8.5,true,false);
+ assert.equal(status.textContent,'Engine ignition');
+ assert.equal(rocket.position.y,1.3);
+ assert.equal(rocket.children[0].visible,true);
+ launch.update(5,true,false);
+ assert.equal(status.textContent,'Liftoff!');
+ assert.ok(rocket.position.y>20);
+ assert.ok(launch.cameraPose(viewing).target[1]>30);
+ launch.update(6,true,false);
+ assert.equal(rocket.visible,false);
+ assert.equal(launch.cameraPose(viewing),null);
+ launch.interaction(viewing).action();
+ launch.update(0,true,false);
+ assert.equal(rocket.visible,true);
+ assert.equal(rocket.position.y,1.3);
+ assert.equal(rocket.children[0].visible,false);
+ assert.equal(launchFrame(1).count,7);
+});

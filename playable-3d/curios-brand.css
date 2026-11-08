@@ -58,3 +58,6 @@
 @media(max-width:599px){#basil-welcome header{padding:9px 12px}#basil-welcome .welcome-slide>img{height:86px}#basil-welcome .welcome-copy{padding:14px 16px}#basil-welcome .welcome-slide h3{font-size:21px;margin-bottom:9px}#basil-welcome .welcome-slide p{font-size:15px;line-height:1.45}#basil-welcome footer{padding:8px 10px}#basil-welcome footer button{min-height:42px}}
 /* Keep redundant floating navigation clear of the visible showcase copy. */
 .showing-basil-welcome #movement,.showing-basil-welcome #interact,.showing-basil-welcome #flyover-quick-controls{display:none!important}
+
+#rocket-launch-status{position:absolute;z-index:4;left:50%;bottom:4%;transform:translateX(-50%);max-width:85%;padding:.65rem 1.15rem;border:1px solid #69e8e3;border-radius:12px;background:#071a29f2;color:#f0fffd;font:700 clamp(1rem,2.5vw,1.5rem) system-ui;text-align:center;pointer-events:none}
+#rocket-launch-status[hidden]{display:none}

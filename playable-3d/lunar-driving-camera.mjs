@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export const ROVER_VIEWS=['Top view','Follow view','Reverse view'];
 export function cameraElevation(position,target){return Math.atan2(position.y-target.y,Math.hypot(position.x-target.x,position.z-target.z));}
-export function dragCameraElevation(start,deltaY,base=.3){return THREE.MathUtils.clamp(start+deltaY*.006,.08-base,1.4-base);}
+export function dragCameraElevation(start,deltaY,base=.3,lookUp=0){return THREE.MathUtils.clamp(start+deltaY*.006,.08-base-lookUp,1.4-base);}
 // Orbit vertically around the existing subject, keeping distance and horizontal
 // heading. Bounds prevent flipping overhead or dropping beneath the ground.
 // The caller still applies its normal scene collision checks after this step.
@@ -17,11 +17,14 @@ export function applyCameraElevation(position,target,elevation=0){
 export function roverCameraPose(position,heading,{view=0,orbit=0,elevation=0,aspect=1}={}){
  const angle=heading+orbit,portrait=aspect<.8;
  const distance=view===0?(portrait?6:7):view===2?8:(portrait?10:8.5);
- const height=view===0?(portrait?19:17):view===2?6:5.5;
+ const height=view===0?(portrait?19:17):view===2?6:3.35;
  const sign=view===2?1:-1;
  const target=new THREE.Vector3(position.x,position.y+1.15,position.z),eye=new THREE.Vector3(position.x+Math.sin(angle)*distance*sign,position.y+height,position.z+Math.cos(angle)*distance*sign);
- const baseElevation=cameraElevation(eye,target),boundedElevation=dragCameraElevation(elevation,0,baseElevation);
- return {position:applyCameraElevation(eye,target,boundedElevation),target,fov:55,baseElevation,elevation:boundedElevation};
+ const baseElevation=cameraElevation(eye,target),boundedElevation=dragCameraElevation(elevation,0,baseElevation,view===1?1:0);
+ // Follow view can tilt the lens above the horizon after the eye reaches
+ // its ground-safe limit. Wall and tree checks still aim at the actual rover.
+ const tilt=view===1?.16+Math.max(0,.08-baseElevation-boundedElevation):0;
+ return {position:applyCameraElevation(eye,target,boundedElevation),target,tilt,fov:view===1?60:55,baseElevation,elevation:boundedElevation};
 }
 
 function isTree(mesh){

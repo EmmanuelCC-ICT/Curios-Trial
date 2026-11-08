@@ -36,3 +36,7 @@ export function rocketApproachFraming(position, yaw, aspect) {
     lookY: 14
   };
 }
+
+export function isRocketViewingArea(position) {
+  return Math.hypot(position.x-ROCKET_SITE.x,position.z-ROCKET_SITE.viewingZ) < 3.1;
+}
