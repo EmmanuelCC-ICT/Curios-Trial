@@ -5,7 +5,7 @@ import {createLunarDrivingUI} from '../playable-3d/lunar-driving-ui.mjs';
 import * as THREE from '../playable-3d/vendor/three/build/three.module.js';
 const three=new URL('../playable-3d/vendor/three/build/three.module.js',import.meta.url).href;
 const cameraSource=await readFile(new URL('../playable-3d/lunar-driving-camera.mjs',import.meta.url),'utf8');
-const {roverCameraPose,createRoverTreeClearance}=await import('data:text/javascript;base64,'+Buffer.from(cameraSource.replace("'three'",JSON.stringify(three))).toString('base64'));
+const {roverCameraPose,createRoverTreeClearance,dragCameraElevation,applyCameraElevation}=await import('data:text/javascript;base64,'+Buffer.from(cameraSource.replace("'three'",JSON.stringify(three))).toString('base64'));
 
 class Element {
  constructor(command){this.dataset={};if(command)this.dataset.drive=command;this.listeners={};this.classes=new Set();this.classList={add:c=>this.classes.add(c),remove:c=>this.classes.delete(c)};this.attributes={};}
@@ -37,6 +37,53 @@ test('Accessible click gives a bounded nudge and cannot leave the rover driving 
 test('Rover camera has distinct overhead, follow and reverse views; drag orbit changes the view without steering',()=>{
  const p=new THREE.Vector3(0,0,0),top=roverCameraPose(p,0,{view:0,aspect:.46}),follow=roverCameraPose(p,0,{view:1,aspect:.46}),reverse=roverCameraPose(p,0,{view:2,aspect:.46}),orbit=roverCameraPose(p,0,{view:1,orbit:Math.PI/2});
  assert.ok(top.position.y>=17);assert.ok(follow.position.z<0);assert.ok(reverse.position.z>0);assert.ok(orbit.position.x<0);assert.equal(orbit.target.x,0);assert.ok(follow.position.distanceTo(p)<13);
+});
+test('Vertical orbit preserves the default pose, distance and heading with safe elevation bounds',()=>{
+ const target=new THREE.Vector3(2,1.25,3),base=new THREE.Vector3(4,3.1,9),radius=base.distanceTo(target);
+ assert.ok(applyCameraElevation(base.clone(),target,0).equals(base));
+ const up=applyCameraElevation(base.clone(),target,dragCameraElevation(0,100)),down=applyCameraElevation(base.clone(),target,dragCameraElevation(0,-100));
+ assert.ok(up.y>base.y);assert.ok(down.y<base.y);
+ for(const offset of [-1e6,-1.2,0,.6,1.2,1e6]){
+  const eye=applyCameraElevation(base.clone(),target,offset),delta=eye.clone().sub(target),angle=Math.atan2(delta.y,Math.hypot(delta.x,delta.z));
+  assert.ok(Math.abs(eye.distanceTo(target)-radius)<1e-12);assert.ok(angle>=.08-1e-12&&angle<=1.4+1e-12);
+  assert.ok(Math.abs(delta.x/delta.z-1/3)<1e-12);
+ }
+ assert.equal(dragCameraElevation(0,1e9),1.4-.3);assert.equal(dragCameraElevation(0,-1e9),.08-.3);
+ for(const base of [.26,1.2]){const top=dragCameraElevation(0,1e6,base),bottom=dragCameraElevation(0,-1e6,base);assert.ok(dragCameraElevation(top,-1,base)<top);assert.ok(dragCameraElevation(bottom,1,base)>bottom);}
+});
+test('All rover presets allow independent vertical and horizontal drag in portrait and desktop',()=>{
+ const p=new THREE.Vector3(12,.085,3),saved=p.clone();
+ for(const aspect of [.46,1.78])for(const view of [0,1,2]){
+  const base=roverCameraPose(p,2.7,{view,aspect}),neutral=roverCameraPose(p,2.7,{view,aspect,elevation:0});
+  assert.ok(base.position.equals(neutral.position));
+  for(const elevation of [-.6,.6]){
+   const changed=roverCameraPose(p,2.7,{view,aspect,orbit:.4,elevation});
+   assert.ok(changed.target.equals(base.target));assert.ok(!changed.position.equals(base.position));
+   assert.ok(Math.abs(changed.position.distanceTo(changed.target)-base.position.distanceTo(base.target))<1e-12);
+   assert.ok(changed.position.y>changed.target.y);
+  }
+ }
+ assert.ok(p.equals(saved),'looking must not move or steer the vehicle');
+});
+test('Real canvas mouse/touch handlers consume both axes and stop on release or cancellation',async()=>{
+ const app=await readFile(new URL('../playable-3d/app.js',import.meta.url),'utf8');
+ const source=app.split('\n').find(line=>line.trim().startsWith("canvas.addEventListener('pointerdown'"));
+ function fixture(driving){
+  const setup="let mode='town',entryReady=true,curiosHub=null,intro=null,discovery=null,echo=null,flyover=null,drag=null,yaw=0,lunarCameraOrbit=0,lunarCameraElevation=0,lookElevation=0,lookBaseElevation=.3,lunarCameraBaseElevation=.3,chapelTilt=0;const lunarRover={driving},explorationMenuOpen=()=>false,helperPicker={open:()=>false},tapTeacher=()=>{},listeners={},canvas={addEventListener:(type,fn)=>listeners[type]=fn,focus(){},setPointerCapture(){}};";
+  return new Function('driving','dragCameraElevation',setup+source+";return {fire:(type,e)=>listeners[type]({clientX:100,clientY:100,pointerId:1,...e}),read:()=>({yaw,lunarCameraOrbit,lunarCameraElevation,lookElevation,drag})};")(driving,dragCameraElevation);
+ }
+ for(const pointerType of ['mouse','touch'])for(const driving of [false,true]){
+  const f=fixture(driving);f.fire('pointerdown',{pointerType});f.fire('pointermove',{clientX:160,clientY:180,pointerType});
+  const a=f.read();assert.equal(driving?a.lunarCameraOrbit:a.yaw,-.36);assert.equal(driving?a.lunarCameraElevation:a.lookElevation,.48);
+  f.fire('pointermove',{clientX:160,clientY:10000});const limit=driving?f.read().lunarCameraElevation:f.read().lookElevation;f.fire('pointermove',{clientX:160,clientY:9990});const reversed=f.read();assert.ok((driving?reversed.lunarCameraElevation:reversed.lookElevation)<limit,'reverse immediately after overshooting a limit');
+  f.fire('pointerup',{});f.fire('pointermove',{clientX:300,clientY:400});assert.deepEqual(f.read(),{...reversed,drag:null});
+  for(const event of ['pointercancel','lostpointercapture']){f.fire('pointerdown',{});f.fire(event,{});assert.equal(f.read().drag,null);}
+ }
+ assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')>app.indexOf('const lunar=mode'));
+ assert.ok(app.indexOf('applyCameraElevation(desiredCamera,lookAt,lookElevation)')<app.indexOf('worlds.protectCamera(space(),p,desiredCamera)'));
+ assert.match(app,/roverCameraPose[^;]+elevation:lunarCameraElevation/);
+ assert.equal((app.match(/lunarCameraOrbit=0;lunarCameraElevation=0;/g)||[]).length,4,'board, view, recovery and Recenter reset both axes');
+ assert.match(app,/\$\('recenter'\)[^\n]+lookElevation=0/);
 });
 test('Driving view clears only occluding tree instances and restores them without changing walls or assets',()=>{
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera();camera.position.set(0,5,8);camera.lookAt(0,1,0);camera.updateMatrixWorld();
