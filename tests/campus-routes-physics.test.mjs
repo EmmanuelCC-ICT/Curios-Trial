@@ -1,3 +1,4 @@
+import {launchObstacles,ROCKET_SITE} from '../playable-3d/rocket-site.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -43,8 +44,18 @@ test('Every Places/full-map rover destination and dock return clears the authore
  for(const b of specs)physics.block(b.x,1.8,b.z,b.width,3.6,b.depth);
  const start=labSource.indexOf('function colliders(root,physics){'),end=labSource.indexOf('export function installLunarLab',start);
  new Function('LUNAR_SITE',labSource.slice(start,end)+';return colliders;')({x:38,z:-68.5})(null,physics);
+ for(const obstacle of launchObstacles())physics.block(...obstacle);
  const r=createLunarRover(scene,physics);w.step();
  try{
+  const pedestrian=new RAPIER.Capsule(.48,.3);
+  const fixed=c=>!c.isSensor()&&c.parent()===null;
+  for(let i=0;i<360;i++){
+   const angle=i*Math.PI/180;
+   const x=ROCKET_SITE.x+Math.cos(angle)*ROCKET_SITE.perimeterRadius;
+   const z=ROCKET_SITE.z+Math.sin(angle)*ROCKET_SITE.perimeterRadius;
+   assert.equal(w.intersectionWithShape({x,y:.8,z},{x:0,y:0,z:0,w:1},pedestrian,undefined,undefined,undefined,undefined,fixed),null,'launch pad perimeter must stay walkable');
+   assert.ok(w.castRay(new RAPIER.Ray({x,y:.5,z},{x:0,y:-1,z:0}),1,true,undefined,undefined,undefined,undefined,fixed),'launch pad perimeter must have ground support');
+  }
   const keys=new Set([...Object.values(MENU_DESTINATIONS),...campusMapDestinations(config).map(pin=>pin.key),'room:media']);
   const footprint=new RAPIER.Cylinder(1.45,ROVER_COURSE.radius);r.board();
   for(const key of keys){

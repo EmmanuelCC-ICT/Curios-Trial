@@ -1,4 +1,5 @@
-import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=lunar-circuit-1';
+import {rocketApproachFraming} from "./rocket-site.mjs";
+import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=rocket-pad-1';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {createLunarDrivingUI} from './lunar-driving-ui.mjs';
 import {roverCameraPose,ROVER_VIEWS,createRoverTreeClearance,dragCameraElevation,applyCameraElevation,cameraElevation} from './lunar-driving-camera.mjs?v=vertical-look-1';
@@ -6,8 +7,8 @@ import {createLunarDriverPose} from './lunar-driver-pose.mjs';
 import {roomCameraPose} from './room-camera.mjs';
 import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=entrance-stage-4';
 import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=entrance-stage-4';
-import {createCuriosHub} from './curios-hub.mjs?v=lunar-circuit-1';
-import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=lunar-circuit-1';
+import {createCuriosHub} from './curios-hub.mjs?v=rocket-pad-1';
+import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=rocket-pad-1';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=entrance-stage-4';
 import {createIsolatedStorage} from './world-storage.mjs';
 import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=entrance-stage-4';
@@ -28,7 +29,7 @@ import {afterFirstPaint} from './deferred-textures.js?v=ecc-ba60122';
 import {CHAPEL} from './chapel.js?v=opt2-20260914';
 import * as THREE from 'three';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {createWorlds,sign} from './world.js?v=lunar-circuit-1';
+import {createWorlds,sign} from './world.js?v=rocket-pad-1';
 import {LEGACY,EST,CAREERS} from './destinations.js?v=demo-20260914';
 import {loadCharacterKit,loadProfileKit,createCharacter,createFallbackCharacter,isSimpleBody} from './characters.js?v=test-characters-20261013';
 import {loadProfiles,saveProfiles,normaliseProfile,OPTIONS,SKIN,PHASES,TEST_CHARACTER_INFO,COLOUR_PRESETS} from './profiles.js?v=test-characters-20261013';
@@ -588,7 +589,7 @@ function updateCamera(dt,snap=false){
     camera.position.lerp(desiredCamera,snap?1:1-Math.exp(-dt*5));camera.lookAt(lookAt);return;
   }
   if(watchingEST){const viewingDistance=Math.max(7.9,6.8/(2*Math.tan(THREE.MathUtils.degToRad(camera.fov/2))*camera.aspect));desiredCamera.set(0,3.3,-6.48+viewingDistance);lookAt.set(0,3.3,-6.48);camera.position.lerp(desiredCamera,snap?1:1-Math.exp(-dt*7));camera.lookAt(lookAt);return;}
-  if(mode==='town'&&worlds.town.fog){worlds.town.fog.near=aerial?200:64;worlds.town.fog.far=aerial?320:175;}
+  if(mode==='town'&&worlds.town.fog){worlds.town.fog.near=aerial?200:75;worlds.town.fog.far=aerial?320:215;}
   if(aerial&&mode==='town'&&camera.fov!==(isMobile()?62:55)){camera.fov=isMobile()?62:55;camera.updateProjectionMatrix();}
   // Small app rooms use a stable room-centred view. Following the avatar into
   // corners forced the old collision ray to collapse the camera onto its head.
@@ -601,10 +602,10 @@ function updateCamera(dt,snap=false){
   else if(mode==='town'||mode==='market'){
     // Keep head-to-foot framing steady through the Studio approach and camera turns.
     const office=mode==='market'&&p.x<-12.8;const framing=mode==='town'&&discoveryReview?campusEntryFraming(p,isMobile()):{distance:office?5.2:6.4,height:office?5.4:3.1,lookAhead:.6,bias:0,fov:isMobile()?62:55};
-    const lunar=mode==='town'?curiosHub?.lunarApproachFraming(p,yaw,camera.aspect):null;const lunarWeight=lunar?.weight||0;if(lunarWeight){framing.distance=THREE.MathUtils.lerp(framing.distance,lunar.distance,lunarWeight);framing.height=THREE.MathUtils.lerp(framing.height,lunar.height,lunarWeight);framing.fov=THREE.MathUtils.lerp(framing.fov,lunar.fov,lunarWeight);}
+    const rocket=mode==='town'?rocketApproachFraming(p,yaw,camera.aspect):null;const landmark=rocket?.weight?rocket:mode==='town'?curiosHub?.lunarApproachFraming(p,yaw,camera.aspect):null;const landmarkWeight=landmark?.weight||0;if(landmarkWeight){framing.distance=THREE.MathUtils.lerp(framing.distance,landmark.distance,landmarkWeight);framing.height=THREE.MathUtils.lerp(framing.height,landmark.height,landmarkWeight);framing.fov=THREE.MathUtils.lerp(framing.fov,landmark.fov,landmarkWeight);}
     if(camera.fov!==framing.fov){camera.fov=framing.fov;camera.updateProjectionMatrix();}
     desiredCamera.set(p.x+Math.sin(yaw)*framing.distance,p.y+framing.height,p.z+Math.cos(yaw)*framing.distance);
-    lookAt.set(p.x-Math.sin(yaw)*framing.lookAhead+Math.cos(yaw)*framing.bias,p.y+THREE.MathUtils.lerp(1.25,lunar?.lookY||1.25,lunarWeight),p.z-Math.cos(yaw)*framing.lookAhead-Math.sin(yaw)*framing.bias);
+    lookAt.set(p.x-Math.sin(yaw)*framing.lookAhead+Math.cos(yaw)*framing.bias,p.y+THREE.MathUtils.lerp(1.25,landmark?.lookY||1.25,landmarkWeight),p.z-Math.cos(yaw)*framing.lookAhead-Math.sin(yaw)*framing.bias);
   }else{
     const distance=mode==='chapel'?3.5:4.2;
     if(mode==='chapel')chapelRevealElapsed+=dt;
@@ -891,7 +892,7 @@ async function boot(){
     softwarePresentation=createSoftwarePresentation(canvas,softwareBuffer&&renderQuality(renderBackend,'auto',devicePixelRatio).software);
     frameGate=createGpuFrameGate(renderer,renderQuality(renderBackend,'auto',devicePixelRatio).software,completeWorldPresentation);
     surfaceUploads=createTextureUploadQueue({waitForFrame:()=>new Promise(resolve=>{const next=()=>requestAnimationFrame(()=>{if(document.hidden||!frameGate.ready()||(frameGate.constrained&&(softwareMovementActive()||(surfaceUploads?.worldFrameDue&&softwareWorldActive()))))next();else resolve();});next();}),upload:texture=>{renderer.initTexture(texture);frameGate.uploadSubmitted();}});
-    camera=new THREE.PerspectiveCamera(55,1,.08,220);
+    camera=new THREE.PerspectiveCamera(55,1,.08,275);
     const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();const environment=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();
     $('loading-message').textContent=studioFirst?'Opening your wardrobe…':'Loading your character and learning district...';
     const avatarReady=loadProfileKit(copy(active())).then(()=>true,()=>false);entryAvatarPriority=avatarReady;

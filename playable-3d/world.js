@@ -155,7 +155,7 @@ function buildTileKits(town,materials){
     }
   }
   // Fill the north and east extensions without overlapping the existing lawn.
-  for(let z=-94;z<38;z+=TILE){
+  for(let z=-136;z<38;z+=TILE){
     const startX=z< -78?-40:52;
     for(let x=startX;x<72;x+=TILE)buckets.grass.push({x:x+TILE_HALF,z:z+TILE_HALF});
   }
@@ -215,7 +215,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
   onProgress('Building the learning district...');
   const town=new THREE.Scene(),interior=new THREE.Scene();
   // Brighter daytime sky / fog (clean ECC-campus atmosphere, not portal neon).
-  town.background=campusSkyTexture();town.fog=new THREE.Fog(0xd7e8dc,64,175);
+  town.background=campusSkyTexture();town.fog=new THREE.Fog(0xd7e8dc,75,215);
   interior.background=new THREE.Color(0xc4c2b4);
 
   const materials={
@@ -453,7 +453,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
     const world=new RAPIER.World({x:0,y:-9.81,z:0});
     const block=(x,y,z,w,h,d)=>world.createCollider(RAPIER.ColliderDesc.cuboid(w/2,h/2,d/2).setTranslation(x,y,z));
     if(inside)block(0,-.1,0,120,.2,120);
-    else block(16,-.1,-28,112,.2,132); // Match the continued grass footprint.
+    else block(16,-.1,-49,112,.2,174); // Match the continued grass footprint.
     if(inside===true){block(-7.3,3,0,.35,6,14);block(7.3,3,0,.35,6,14);block(0,3,-7,15,6,.35);block(0,3,7.3,15,6,.35);
       for(const s of stations)block(s.x,.65,s.z,2.35,1.3,1.1);
     }else if(!inside){
@@ -529,7 +529,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
       const occupied=p.world.intersectionWithShape({x,y:y+.82,z},{x:0,y:0,z:0,w:1},new RAPIER.Capsule(.56,.2),undefined,undefined,p.collider,p.body);
       return occupied?null:y;
     };
-    return findSafeLanding(point,probe,{excluded,bounds:{minX:-38,maxX:70,minZ:-92,maxZ:36}});
+    return findSafeLanding(point,probe,{excluded,bounds:{minX:-38,maxX:70,minZ:-134,maxZ:36}});
   }
   for(const o of [trunks,crowns,shrubs,garden,flowers,planting,marks,wear])o.visible=false;
   let arrivalOnly=true;
@@ -547,7 +547,7 @@ export async function createWorlds(onProgress=()=>{},onSurfaceFailure=()=>{},sch
       if(physics.groundedRest&&delta.x===0&&delta.z===0&&physics.controller.computedGrounded()){physics.world.step();const p=physics.body.translation();return {x:p.x,y:p.y-.785,z:p.z};}
       physics.groundedRest=false;physics.verticalVelocity=physics.controller.computedGrounded()?-.1:Math.max(-12,physics.verticalVelocity-9.81/60);physics.controller.computeColliderMovement(physics.collider,{x:delta.x,y:physics.verticalVelocity/60,z:delta.z});const movement=physics.controller.computedMovement(),p=physics.body.translation();const next={x:p.x+movement.x,y:p.y+movement.y,z:p.z+movement.z};
       if(!inside&&arrivalOnly){next.x=Math.max(4.5,Math.min(14,next.x));next.z=Math.max(.5,Math.min(8,next.z));}
-      next.x=Math.max(inside==='chapel'?-10.5:inside?-6.9:-38,Math.min(inside==='chapel'?10.5:inside?6.9:70,next.x));next.z=Math.max(inside==='chapel'?-8.3:inside?-6.8:-92,Math.min(inside==='chapel'?8.3:inside?6.9:36,next.z));physics.body.setNextKinematicTranslation(next);physics.world.step();physics.groundedRest=delta.x===0&&delta.z===0&&physics.controller.computedGrounded();return {x:next.x,y:next.y-.785,z:next.z};},
+      next.x=Math.max(inside==='chapel'?-10.5:inside?-6.9:-38,Math.min(inside==='chapel'?10.5:inside?6.9:70,next.x));next.z=Math.max(inside==='chapel'?-8.3:inside?-6.8:-134,Math.min(inside==='chapel'?8.3:inside?6.9:36,next.z));physics.body.setNextKinematicTranslation(next);physics.world.step();physics.groundedRest=delta.x===0&&delta.z===0&&physics.controller.computedGrounded();return {x:next.x,y:next.y-.785,z:next.z};},
     protectCamera(inside,position,target){
       const physics=physical(inside),origin={x:position.x,y:position.y+1.35,z:position.z};
       const dx=target.x-origin.x,dy=target.y-origin.y,dz=target.z-origin.z,length=Math.hypot(dx,dy,dz);

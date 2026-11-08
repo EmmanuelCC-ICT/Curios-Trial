@@ -4,7 +4,7 @@ import RAPIER from '@dimforge/rapier3d-compat';
 
 // Campus driving stays within the supported ground, with the complete rover
 // footprint protected by both bounds and the existing town collision world.
-export const ROVER_COURSE=Object.freeze({minX:-36,maxX:70,minZ:-92,maxZ:34,radius:2.65,groundY:.04});
+export const ROVER_COURSE=Object.freeze({minX:-36,maxX:70,minZ:-134,maxZ:34,radius:2.65,groundY:.04});
 export const LUNAR_ROVER_HOME=Object.freeze({x:12,z:3});
 export const ROVER_DOCK=Object.freeze({...LUNAR_ROVER_HOME,heading:Math.atan2(26,-57.5),boardX:9,boardZ:3});
 export const ROVER_SPEC=Object.freeze({maxSpeed:5.2,reverseSpeed:2.3,wheelRadius:.56,wheelbase:2.50,steeringAngle:.68,stopDistance:4.2,seatHeight:1.23});

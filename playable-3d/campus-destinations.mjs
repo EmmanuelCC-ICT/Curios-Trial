@@ -1,3 +1,5 @@
+import {ROCKET_SITE} from './rocket-site.mjs';
+
 /** Shared destination identity. App IDs are not room IDs: teachers can move apps. */
 export const ROOM_POINTS={hall:{x:16,z:11.2,sign:[16,4.2,12.1],yaw:Math.PI},centre:{x:-18,z:12.2,sign:[-18,4.2,13.1],yaw:Math.PI},media:{x:-4,z:-41.3,sign:[-4,7.2,-40.3],yaw:Math.PI}};
 export const MENU_DESTINATIONS=Object.freeze({
@@ -16,6 +18,7 @@ const PLACES={
  market:{label:'Markets',x:43,z:-22,pin:{x:43,z:-26},action:'market'},
  oval:{label:'Oval',x:-4,z:-49.8,pin:{x:-4,z:-61}},
  space:{label:'SPACE',x:7,z:-53,yaw:-Math.PI/2},
+ rocket:{label:'Rocket Launch Pad',x:ROCKET_SITE.x,z:ROCKET_SITE.viewingZ,pin:{x:ROCKET_SITE.x,z:ROCKET_SITE.z},rover:{x:ROCKET_SITE.roverX,z:ROCKET_SITE.roverZ},badges:['./assets/curios/rocket-pad.svg']},
  circuit:{label:'Lunar Rover Circuit',x:51,z:-56,pin:{x:62,z:-69},rover:{x:60,z:-50}},
  lunar:{label:'Curios Lunar Lab',x:38,z:-54.5,badges:['./assets/curios/lunar-lab.svg']}
 };
@@ -45,5 +48,5 @@ export function campusMapDestinations(config){
  return [...rooms.map(room=>{
   const target=resolveCampusDestination(config,'room:'+room);
   return target&&{...target,label:config.apps.filter(app=>app.enabled!==false&&app.room===room).map(app=>app.name).join(' + ')};
- }),...['studio','chapel','market','oval','lunar','circuit','arrival'].map(key=>resolveCampusDestination(config,key))].filter(Boolean);
+ }),...['studio','chapel','market','oval','lunar','circuit','rocket','arrival'].map(key=>resolveCampusDestination(config,key))].filter(Boolean);
 }
