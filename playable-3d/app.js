@@ -7,7 +7,7 @@ import {createLunarDriverPose} from './lunar-driver-pose.mjs';
 import {roomCameraPose} from './room-camera.mjs';
 import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=entrance-stage-4';
 import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=entrance-stage-4';
-import {createCuriosHub} from './curios-hub.mjs?v=rocket-launch-1';
+import {createCuriosHub} from './curios-hub.mjs?v=curios-finale-2';
 import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=rocket-pad-1';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=entrance-stage-4';
 import {createIsolatedStorage} from './world-storage.mjs';

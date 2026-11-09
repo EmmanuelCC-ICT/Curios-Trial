@@ -61,3 +61,38 @@
 
 #rocket-launch-status{position:absolute;z-index:4;left:50%;bottom:4%;transform:translateX(-50%);max-width:85%;padding:.65rem 1.15rem;border:1px solid #69e8e3;border-radius:12px;background:#071a29f2;color:#f0fffd;font:700 clamp(1rem,2.5vw,1.5rem) system-ui;text-align:center;pointer-events:none}
 #rocket-launch-status[hidden]{display:none}
+
+.rocket-finale {
+ position:absolute; z-index:5; left:50%; top:40%; transform:translate(-50%,-50%);
+ display:grid; justify-items:center; gap:.6rem; width:min(78vw,31rem); padding:1.4rem;
+ box-sizing:border-box; isolation:isolate; pointer-events:none;
+ background:#092330f2; color:#fff8df; border:1px solid #79e6e0; border-radius:1rem;
+ box-shadow:0 0 3rem #50d6db77;
+}
+.rocket-finale[hidden]{display:none}
+.rocket-finale::before {
+ content:""; position:absolute; z-index:-1; inset:-45%; opacity:0;
+ background:repeating-conic-gradient(from 8deg,transparent 0deg 11deg,#a9fcf3 12deg 14deg,transparent 15deg 28deg);
+ mask-image:radial-gradient(ellipse,transparent 29%,black 46%,transparent 68%);
+ animation:rocket-brand-burst 950ms ease-out both;
+}
+.rocket-finale .curios-wordmark{width:min(62vw,24rem);aspect-ratio:150/43;height:auto;background-size:180% auto;background-position:52% top}
+.rocket-finale strong{font-size:clamp(1.15rem,3vw,2rem);text-align:center}
+@keyframes rocket-brand-burst{0%{transform:scale(.38);opacity:0}30%{opacity:.75}100%{transform:scale(1.18);opacity:0}}
+@media (prefers-reduced-motion:reduce){.rocket-finale::before{animation:none}}
+.rocket-finale::before {
+ inset:-85%;
+ background:repeating-conic-gradient(from 8deg,transparent 0deg 9deg,#a9fcf3 10deg 12deg,transparent 13deg 20deg,#ffd15b 21deg 23deg,transparent 24deg 30deg);
+ animation-duration:1.6s;
+}
+.rocket-finale::after {
+ content:"✦  ✧  ✦"; position:absolute; top:-1.1em; color:#ffd15b;
+ font-size:clamp(1.6rem,5vw,3.5rem); letter-spacing:.55em; padding-left:.55em;
+ text-shadow:0 0 1rem #ffd15b; animation:rocket-brand-pop 900ms ease-out both;
+}
+.rocket-finale .curios-wordmark{animation:rocket-brand-pop 560ms ease-out both}
+.rocket-finale strong{color:#ffd979;animation:rocket-brand-pop 550ms .65s ease-out both}
+@keyframes rocket-brand-pop{0%{opacity:0;transform:translateY(.35em) scale(.88)}65%{opacity:1;transform:scale(1.06)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+ .rocket-finale::before,.rocket-finale::after,.rocket-finale .curios-wordmark,.rocket-finale strong{animation:none}
+}

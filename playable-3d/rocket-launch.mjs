@@ -4,6 +4,8 @@ import {ROCKET_SITE, isRocketViewingArea} from './rocket-site.mjs?v=rocket-launc
 const COUNTDOWN = 8;
 const IGNITION = 1.5;
 const FLIGHT = 9;
+const FINALE = 4;
+const FLIGHT_END = COUNTDOWN + IGNITION + FLIGHT;
 
 export function launchFrame(elapsed) {
   if (elapsed < COUNTDOWN) return {phase:'countdown', count:Math.ceil(COUNTDOWN-elapsed), rise:0, thrust:0};
@@ -15,7 +17,7 @@ export function launchFrame(elapsed) {
   return {phase:'complete', rise:0, thrust:0};
 }
 
-export function createRocketLaunch(site, status) {
+export function createRocketLaunch(site, status, finale) {
   const rocket = site.getObjectByName('Curios Rocket Assembly');
   const restingY = rocket.position.y;
   const exhaust = new THREE.Group();
@@ -83,7 +85,7 @@ export function createRocketLaunch(site, status) {
   let elapsed = 0;
   let label = '';
   function update(dt, viewing, reducedMotion) {
-    if (frame && frame.phase !== 'complete') frame = launchFrame(elapsed += dt);
+    if (frame && elapsed < FLIGHT_END + FINALE) frame = launchFrame(elapsed += dt);
     const {phase, count, rise, thrust} = frame || {rise:0,thrust:0};
     rocket.visible = phase !== 'complete';
     rocket.position.y = restingY + rise;
@@ -112,16 +114,17 @@ export function createRocketLaunch(site, status) {
       phase==='ignition' ? 'Engine ignition' : phase==='flight' ? 'Liftoff!' : '';
     if (next !== label) status.textContent = label = next;
     status.hidden = !viewing || !label;
+    if (finale) finale.hidden = !viewing || phase !== 'complete' || elapsed >= FLIGHT_END + FINALE;
   }
   function interaction(position) {
     if (!isRocketViewingArea(position)) return null;
     if (!frame) return {label:'Start launch countdown · E', action:()=>{ if (!frame) frame = launchFrame(elapsed=0); }};
-    if (frame.phase==='complete') return {label:'Reset rocket for another launch · E', action:()=>{ if (frame?.phase==='complete') frame = null; }};
+    if (frame.phase==='complete' && elapsed >= FLIGHT_END + FINALE) return {label:'Reset rocket for another launch · E', action:()=>{ if (frame?.phase==='complete') frame = null; }};
     return null;
   }
   function cameraPose(position) {
-    if (!isRocketViewingArea(position) || !frame || frame.phase==='complete') return null;
-    const rise = frame.rise;
+    if (!isRocketViewingArea(position) || !frame || elapsed >= FLIGHT_END + FINALE) return null;
+    const rise = frame.phase==='complete' ? 1.65*FLIGHT*FLIGHT : frame.rise;
     return {
       eye:[ROCKET_SITE.x,4.5,ROCKET_SITE.viewingZ+17],
       target:[ROCKET_SITE.x,15+rise*.86,ROCKET_SITE.z+10],
