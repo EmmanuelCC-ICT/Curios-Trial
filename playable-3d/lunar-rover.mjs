@@ -47,7 +47,11 @@ function buildCourse(scene,m){
  box(p,3.6,.018,4.6,m.graphite,ROVER_DOCK.x,.018,ROVER_DOCK.z);
  for(const x of [ROVER_DOCK.x-1.75,ROVER_DOCK.x+1.75])box(p,.055,.012,4.5,m.cyan,x,.034,ROVER_DOCK.z);
  for(const z of [ROVER_DOCK.z-2.24,ROVER_DOCK.z+2.24])box(p,3.5,.012,.055,m.gold,ROVER_DOCK.x,.034,z);
- const dock=label(p,'LUNAR EXPLORER 06','E: BOARD  /  MAP: ROUTE  /  W A S D: DRIVE',3.3,.75,ROVER_DOCK.x,.05,ROVER_DOCK.z+2.85);if(dock)dock.rotation.x=-Math.PI/2;
+ // Stand the boarding sign beside the dock, above the entrance paving.
+ const signX=ROVER_DOCK.x+1.95,signZ=ROVER_DOCK.z+1.6;
+ const dock=label(p,'LUNAR ROVER','PRESS E OR TAP DRIVE TO BOARD',2.1,.62,signX,1.06,signZ);
+ if(dock)dock.rotation.y=-Math.PI/2;
+ for(const offset of [-.76,.76])box(p,.09,.85,.09,m.graphite,signX+.035,.425,signZ+offset);
  batch(p);return p;
 }
 function buildVehicle(scene,m){

@@ -1,5 +1,5 @@
 import {isRocketViewingArea,rocketApproachFraming} from "./rocket-site.mjs?v=rocket-launch-1";
-import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=rocket-pad-1';
+import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=dock-sign-1';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {createLunarDrivingUI} from './lunar-driving-ui.mjs';
 import {roverCameraPose,ROVER_VIEWS,createRoverTreeClearance,dragCameraElevation,applyCameraElevation,cameraElevation,dragWalkingElevation,walkingLensTilt} from './lunar-driving-camera.mjs?v=walking-sky-1';
@@ -638,11 +638,14 @@ function updateCamera(dt,snap=false){
   }
   if(mode==='interior'||mode==='careers'){desiredCamera.x=THREE.MathUtils.clamp(desiredCamera.x,-6.65,6.65);desiredCamera.z=THREE.MathUtils.clamp(desiredCamera.z,-6.55,6.75);}
   if(mode==='chapel'){desiredCamera.x=THREE.MathUtils.clamp(desiredCamera.x,-10.5,10.5);desiredCamera.z=THREE.MathUtils.clamp(desiredCamera.z,-8.05,8.05);}
-  if(discoveryReview&&!aerial&&(mode==='town'||mode==='chapel')){worlds.protectCamera(space(),p,desiredCamera);const view={position:desiredCamera};if(mode==='chapel')keepChapelClearance(THREE,worlds,p,view,yaw);else keepOutdoorClearance(THREE,worlds,p,view,yaw);}
+  const nearParkedRover=mode==='town'&&lunarRover&&!lunarRover.driving&&
+    Math.hypot(p.x-lunarRover.position.x,p.z-lunarRover.position.z)<5;
+  const recoverOutdoorCamera=mode==='town'&&(discoveryReview||nearParkedRover);
+  if(!aerial&&(recoverOutdoorCamera||(discoveryReview&&mode==='chapel'))){worlds.protectCamera(space(),p,desiredCamera);const view={position:desiredCamera};if(mode==='chapel')keepChapelClearance(THREE,worlds,p,view,yaw);else keepOutdoorClearance(THREE,worlds,p,view,yaw);}
   camera.position.lerp(desiredCamera,snap?1:1-Math.exp(-dt*7));
   // Resolve after smoothing too: an old camera position may be across a wall.
   if(!aerial&&mode!=='market'){
-    worlds.protectCamera(space(),p,camera.position);if(discoveryReview&&mode==='town')keepOutdoorClearance(THREE,worlds,p,camera,yaw);if(discoveryReview&&mode==='chapel')keepChapelClearance(THREE,worlds,p,camera,yaw);
+    worlds.protectCamera(space(),p,camera.position);if(recoverOutdoorCamera)keepOutdoorClearance(THREE,worlds,p,camera,yaw);if(discoveryReview&&mode==='chapel')keepChapelClearance(THREE,worlds,p,camera,yaw);
     if(mode==='interior'){camera.position.y=Math.min(camera.position.y,p.y+estEyeHeight(Math.hypot(camera.position.x-p.x,camera.position.z-p.z)));worlds.protectCamera(space(),p,camera.position);}
     if((mode==='interior'||mode==='careers')||(mode!=='chapel'&&camera.position.distanceTo(p)<3.5))lookAt.set(p.x,p.y+.9,p.z);
   }
@@ -861,7 +864,9 @@ function animate(){
   // Preserve the visible world while the requested Market or Stats module
   // loads. Repeated scene draws can starve the requested UI on a constrained GPU.
   const entryFrameRequired=mode==='town'&&entryPreparing&&entryGeometryReady&&!entryDrawSubmitted;
-  if((mode==='town'&&entryPreparing&&(!entryGeometryReady||entryDrawSubmitted))||(marketOpening&&mode!=='market')||explorationTools?.preparing()||(discovery?.preparingTravel()&&!entryFrameRequired))return;
+  // Show the existing arrival scene once while the authored entrance loads.
+  // Walking still waits for the collision-ready entrance frame.
+  if((mode==='town'&&entryPreparing&&(entryDrawSubmitted||(!entryGeometryReady&&entrySceneFrame>0)))||(marketOpening&&mode!=='market')||explorationTools?.preparing()||(discovery?.preparingTravel()&&!entryFrameRequired))return;
   // Preserve the completed initial view long enough for the released controls
   // and input to paint before another slow software scene draw.
   if(mode==='town'&&entryReady&&now-entryReadyAt<.12&&renderQuality(renderBackend,'auto',1).software)return;
