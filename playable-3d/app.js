@@ -17,7 +17,7 @@ import {MARKET_APPROACH} from './landing.mjs?v=post-photo-tour-20261013';
 import {createGpuFrameGate,createTextureUploadQueue} from './frame-budget.mjs?v=interaction-upload-priority-20261016';
 import {needsSoftwarePresentation,createSoftwarePresentation} from './software-presentation.mjs?v=interaction-upload-priority-20261016';
 import {renderQuality,rendererName} from './render-quality.mjs?v=ecc-ba60122';
-import {waitForPriorityAsset,withAssetDeadline,canClearDetailWarning} from './startup-assets.mjs?v=ecc-ba60122';
+import {withAssetDeadline,canClearDetailWarning} from './startup-assets.mjs?v=ecc-ba60122';
 import {WHOLE_AVATARS} from './whole-avatar-catalog.mjs?v=named-students-20261011';
 import {keepOutdoorClearance,keepChapelClearance,campusEntryFraming} from './camera-clearance.mjs?v=ecc-ba60122';
 import {createLocomotion, STEP, turnTowards,accumulateTravelTime} from './locomotion.js?v=ecc-ba60122';
@@ -29,7 +29,7 @@ import {afterFirstPaint} from './deferred-textures.js?v=ecc-ba60122';
 import {CHAPEL} from './chapel.js?v=opt2-20260914';
 import * as THREE from 'three';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {createWorlds,sign} from './world.js?v=rocket-pad-1';
+import {createWorlds,sign} from './world.js?v=staged-entry-1';
 import {LEGACY,EST,CAREERS} from './destinations.js?v=demo-20260914';
 import {loadCharacterKit,loadProfileKit,createCharacter,createFallbackCharacter,isSimpleBody} from './characters.js?v=test-characters-20261013';
 import {loadProfiles,saveProfiles,normaliseProfile,OPTIONS,SKIN,PHASES,TEST_CHARACTER_INFO,COLOUR_PRESETS} from './profiles.js?v=test-characters-20261013';
@@ -388,7 +388,7 @@ async function ensureCampus(){
 }
 // Opening assets finish before any speculative next-task work. Destination
 // actions still own navigation; prefetch never changes progress or opens a UI.
-let entryLoad,entryAvatarPriority,entryPreparing=false,entryGeometryReady=false,entryDrawSubmitted=false,entryReady=false,entryFailure=false,entryHandover=false,entrySceneFrame=0,entryReadyAt=0,preparing=false,prepared=new Set(),lastPreparation=0;
+let entryLoad,entryPreparing=false,entryGeometryReady=false,entryDrawSubmitted=false,entryReady=false,entryFailure=false,entryHandover=false,entrySceneFrame=0,entryReadyAt=0,preparing=false,prepared=new Set(),lastPreparation=0;
 let detailLoad,detailFailed=false;
 function detailNotice(){
  $('campus-progress').hidden=false;
@@ -421,9 +421,20 @@ async function prepareEntry(){
  if(entryLoad)return entryLoad;
  entryFailure=false;entryPreparing=true;entryGeometryReady=false;entryDrawSubmitted=false;updateEntryLoading();campusNotice('Preparing campus paths and buildings…');
  const environmentModule=environmentReady?null:(entryEnvironmentModule||=import('./environment.js?v=broad-integrated-20261014'));environmentModule?.catch(()=>{});
- // Complete exterior geometry and original opening planting during the intro; interiors and decorative maps remain deferred.
- const originalExteriors=worlds.loadBuildingExteriors();
- entryLoad=Promise.all([worlds.loadEntry(),originalExteriors,entryAvatarPriority?waitForPriorityAsset(entryAvatarPriority):Promise.resolve()]).then(async()=>{if(!environmentReady){const {integrateEnvironment}=await environmentModule;await integrateEnvironment(worlds,{entryOnly:true});worlds.phase(phase);}showMarketExteriorSigns();worlds.loadMuralTexture().catch(()=>{detailFailed=true;detailNotice();});entryGeometryReady=true;updateCamera(1,true);if(mode==='town')await waitForVisibleEntryFrame();entryReady=true;entryReadyAt=clock.getElapsedTime();worlds.openCampus();$('campus-progress').hidden=true;updateEntryLoading();canvas.dataset.entryVisibleMs=String(performance.now());startSurfaceDetail();}).catch(error=>{entryFailure=true;campusNotice('Campus buildings could not load. Retry to open campus.',true);updateEntryLoading();throw error;}).finally(()=>{entryPreparing=false;entryLoad=null;});
+ // Present the collision-ready entrance before downloading distant buildings and trees.
+ entryLoad=worlds.loadEntry().then(async()=>{
+   if(!environmentReady){
+     const {integrateEnvironment}=await environmentModule;
+     await integrateEnvironment(worlds,{entryOnly:true});worlds.phase(phase);
+   }
+   entryGeometryReady=true;updateCamera(1,true);
+   if(mode==='town')await waitForVisibleEntryFrame();
+   entryReady=true;entryReadyAt=clock.getElapsedTime();$('campus-progress').hidden=true;
+   updateEntryLoading();canvas.dataset.entryVisibleMs=String(performance.now());
+ }).catch(error=>{
+   entryFailure=true;campusNotice('Campus entrance could not load. Retry to open campus.',true);
+   updateEntryLoading();throw error;
+ }).finally(()=>{entryPreparing=false;entryLoad=null;});
  return entryLoad;
 }
 function prepareNextTask(){}
@@ -911,7 +922,7 @@ async function boot(){
     camera=new THREE.PerspectiveCamera(55,1,.08,275);
     const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();const environment=pmrem.fromScene(room,.04);room.dispose();pmrem.dispose();
     $('loading-message').textContent=studioFirst?'Opening your wardrobe…':'Loading your character and learning district...';
-    const avatarReady=loadProfileKit(copy(active())).then(()=>true,()=>false);entryAvatarPriority=avatarReady;
+    const avatarReady=loadProfileKit(copy(active())).then(()=>true,()=>false);
     // Fetch only the lightweight exterior module graph while the selected avatar
     // has asset priority. Geometry integration still waits for the entry paths.
     entryEnvironmentModule=import('./environment.js?v=broad-integrated-20261014');entryEnvironmentModule.catch(()=>{entryEnvironmentModule=null;});
