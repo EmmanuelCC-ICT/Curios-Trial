@@ -160,3 +160,7 @@ Places → Loopy Tunes enters the ArtQuest + Loopy Tunes centre and identifies t
 Native rover acceptance: boarded from the relocated entrance, retained the seated original avatar, used held phone Drive and Reverse, Stop (confirmed speed zero), Unstick, and top/follow/reverse views. Drove manually along the cleared entrance-to-Lab route, stopped against the Lab exterior and reversed out successfully, then parked to restore the walking avatar. Studio while driving selected an exterior route without dismounting. ECC Entrance selected a route ending at the new dock (12,3). All phone controls fit the viewport. A real physical iPhone, multi-touch on hardware and a complete browser/device matrix were not tested.
 
 Final local source checkpoint: 75 tests, 76 module/import checks, all 217 original asset hashes and static packaging pass. The temporary error probe is removed. The root QA harness is excluded from publication. Changed source import chains use entrance-stage-4; mobile control CSS uses mobile-recovery-2. Publication and deployed-file verification follow below.
+
+
+## Approved player-only welcome — 12 November 2026
+Explicit publication approval: new welcome and only playable avatar. Replaces Basil/group greeting, old Tania wording removed. Existing wide camera/rover retained; original character assets preserved. Unrelated Attributes edits excluded. Background Safari reports hidden, so visual scene acceptance remains unverified; automated and live source checks are reported separately.

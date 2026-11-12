@@ -1,6 +1,6 @@
 {
-  "title": "Curios · Learning Without Limits",
-  "welcome": "Reuse · Repurpose · Recycle. Explore, connect and create your own learning experiences.",
+  "title": "Curios \u00b7 Learning Without Limits",
+  "welcome": "Welcome! Somethings are familiar, some are new. Take a look around, explore, think about what you might be able to do with this space, add or change. Take a drive around in the rover and see if you can launch the rocket!",
   "places": {
     "hall": "Archon Engine",
     "centre": "ArtQuest + Loopy Tunes",
@@ -16,60 +16,46 @@
   "npcs": {
     "echo": {
       "name": "Echo",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "middleton": {
       "name": "Mr Middleton",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "psandodakis": {
       "name": "Mr Psandodakis",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "mara": {
       "name": "Mara",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "sam": {
       "name": "Sam",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "nora": {
       "name": "Nora",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "dev": {
       "name": "Dev",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     },
     "kenji": {
       "name": "Kenji",
-      "enabled": true,
+      "enabled": false,
       "dialogue": ""
     }
   },
-  "extraNpcs": [
-    {
-      "id": "basil",
-      "name": "Basil",
-      "enabled": true,
-      "dialogue": "Hi, I'm Basil. This is a prototype for teachers to explore and make their own. I said Tania couldn't easily turn Career Empire into something Curios teachers could adapt. Well, here we are!\n\nHer prompts were simple: keep the world, avatars, buildings and characters; remove the careers content; and leave the original untouched. Tania spent weeks building Career Empire, then hours cloning it for Curios. The teacher tools, branding, app rooms and testing came afterwards.\n\nWalk into the ArtQuest + Loopy Tunes centre. Walk up to either desktop PC and press E to open the app shown on its monitor. Archon Engine is in the Learning Hall. Return to Curios brings you back. Avatar Studio is still here.\n\nTry Teacher setup in the top bar: change names, conversations and app links, then preview your ideas. Download the settings for ICT when you're ready to publish. New activities and game rules still need development.\n\nReuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old NPC new tricks.\n\nThis prototype is for teachers. It shows how we can modularise the software we're creating, repurpose it for different uses, and add or remove the parts we want.\n\nOnce the world is built, customisation becomes much easier. The final additions were the Curios Lunar Lab building and a moon rover you can drive.\n\nIt's all still a prototype: kicking around ideas, having fun and experimenting with what's possible. What could you add, swap or take out for your own use?\n\nHop in the rover and let's take a drive to the Curios Lunar Lab. Who knows what could come next? Maybe one day I'll hop into a rocket and blast off into the Mooniverse!",
-      "position": [
-        7.1,
-        1.7
-      ],
-      "model": "./assets/mr-psandodakis-20260917.glb",
-      "greetOnArrival": true,
-      "videoEnabled": true
-    }
-  ],
+  "extraNpcs": [],
   "apps": [
     {
       "id": "archon",

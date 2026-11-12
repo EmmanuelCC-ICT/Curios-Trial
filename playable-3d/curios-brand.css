@@ -96,3 +96,11 @@
 @media (prefers-reduced-motion:reduce){
  .rocket-finale::before,.rocket-finale::after,.rocket-finale .curios-wordmark,.rocket-finale strong{animation:none}
 }
+
+/* A compact invitation, not a slide show covering the family portrait. */
+#basil-welcome.family-welcome{left:50%;bottom:20px;top:auto;transform:translateX(-50%);width:min(760px,calc(100vw - 32px));max-height:28dvh;overflow:auto;border-radius:16px;padding:0 16px 12px;background:#082b36ee}
+#basil-welcome.family-welcome header{padding:10px 0 6px;background:none}
+#basil-welcome.family-welcome header::after{display:none}
+#basil-welcome.family-welcome .family-welcome-copy{font:16px/1.45 system-ui;margin:0 0 10px;color:#f1f9f7}
+#basil-welcome.family-welcome>button{align-self:flex-end;padding:8px 18px;background:#e9d593;color:#173c3c}
+@media(max-width:599px){#basil-welcome.family-welcome{bottom:12px;max-height:31dvh}#basil-welcome.family-welcome .family-welcome-copy{font-size:14px}}

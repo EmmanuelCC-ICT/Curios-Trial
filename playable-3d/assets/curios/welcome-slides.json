@@ -1,68 +1,8 @@
 [
   {
-    "title": "Hi, I’m Basil.",
-    "text": "Hi, I'm Basil. This is a prototype for teachers to explore and make their own. I said Tania couldn't easily turn Career Empire into something Curios teachers could adapt. Well, here we are!",
+    "title": "Welcome!",
+    "text": "Welcome! Somethings are familiar, some are new. Take a look around, explore, think about what you might be able to do with this space, add or change. Take a drive around in the rover and see if you can launch the rocket!",
     "image": "curios-branding.png",
-    "seconds": 15.2
-  },
-  {
-    "title": "Keep. Clear. Repurpose.",
-    "text": "Her prompts were simple: keep the world, avatars, buildings and characters; remove the careers content; and leave the original untouched. Tania spent weeks building Career Empire, then hours cloning it for Curios.",
-    "image": "curios-campus-clean.jpg",
-    "seconds": 14.9
-  },
-  {
-    "title": "Keep. Clear. Repurpose.",
-    "text": "The teacher tools, branding, app rooms and testing came afterwards.",
-    "image": "curios-campus-clean.jpg",
-    "seconds": 9
-  },
-  {
-    "title": "Walk in. Open an app.",
-    "text": "Walk into the ArtQuest + Loopy Tunes centre. Walk up to either desktop PC and press E to open the app shown on its monitor. Archon Engine is in the Learning Hall. Return to Curios brings you back.",
-    "image": "curios-app-map.jpg",
-    "seconds": 17.1
-  },
-  {
-    "title": "Walk in. Open an app.",
-    "text": "Avatar Studio is still here.",
-    "image": "avatar-studio.jpg",
-    "seconds": 9
-  },
-  {
-    "title": "Make it your own.",
-    "text": "Try Teacher setup in the top bar: change names, conversations and app links, then preview your ideas. Download the settings for ICT when you're ready to publish. New activities and game rules still need development.",
-    "image": "teacher-settings-film.jpg",
-    "seconds": 16.0
-  },
-  {
-    "title": "Reuse. Repurpose. Recycle.",
-    "text": "Reuse. Repurpose. Recycle. Curios: learning without limits. Apparently, you can teach an old NPC new tricks.",
-    "image": "curios-branding.png",
-    "seconds": 9.7
-  },
-  {
-    "title": "A world we can reshape.",
-    "text": "This prototype is for teachers. It shows how we can modularise the software we're creating, repurpose it for different uses, and add or remove the parts we want.",
-    "image": "curios-branding.png",
-    "seconds": 13.4
-  },
-  {
-    "title": "Build once. Keep experimenting.",
-    "text": "Once the world is built, customisation becomes much easier. The final additions were the Curios Lunar Lab building and a moon rover you can drive.",
-    "image": "lunar-lab.svg",
-    "seconds": 12.3
-  },
-  {
-    "title": "Prototypes and possibilities.",
-    "text": "It's all still a prototype: kicking around ideas, having fun and experimenting with what's possible. What could you add, swap or take out for your own use?",
-    "image": "curios-campus-clean.jpg",
-    "seconds": 13.0
-  },
-  {
-    "title": "Hop in. Let’s explore!",
-    "text": "Hop in the rover and let's take a drive to the Curios Lunar Lab. Who knows what could come next? Maybe one day I'll hop into a rocket and blast off into the Mooniverse!",
-    "image": "lunar-lab.svg",
-    "seconds": 15.6
+    "seconds": 120
   }
 ]

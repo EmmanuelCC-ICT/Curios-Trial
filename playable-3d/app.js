@@ -1,17 +1,17 @@
 import {isRocketViewingArea,rocketApproachFraming} from "./rocket-site.mjs?v=rocket-launch-1";
-import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=dock-sign-1';
+import {createLunarRover,ROVER_DOCK} from './lunar-rover.mjs?v=player-only-1';
 import RAPIER from '@dimforge/rapier3d-compat';
 import {createLunarDrivingUI} from './lunar-driving-ui.mjs';
 import {roverCameraPose,ROVER_VIEWS,createRoverTreeClearance,dragCameraElevation,applyCameraElevation,cameraElevation,dragWalkingElevation,walkingLensTilt} from './lunar-driving-camera.mjs?v=walking-sky-1';
 import {createLunarDriverPose} from './lunar-driver-pose.mjs';
 import {roomCameraPose} from './room-camera.mjs';
-import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=entrance-stage-4';
-import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=entrance-stage-4';
+import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=player-only-1';
+import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=player-only-1';
 import {createCuriosHub} from './curios-hub.mjs?v=curios-finale-2';
 import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=rocket-pad-1';
-import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=entrance-stage-4';
+import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=player-only-1';
 import {createIsolatedStorage} from './world-storage.mjs';
-import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=entrance-stage-4';
+import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=player-only-1';
 import {estEyeHeight,estPlayTop} from './est-camera.mjs?v=broad-integrated-20261014';
 import {MARKET_APPROACH} from './landing.mjs?v=post-photo-tour-20261013';
 import {createGpuFrameGate,createTextureUploadQueue} from './frame-budget.mjs?v=interaction-upload-priority-20261016';
@@ -112,7 +112,7 @@ function loadTeachers({explicit=false}={}){
  if(teacherLoad)return teacherLoad;
  teacherLoading=true;teacherAttempted=true;
  const moduleAttempt=teacherModuleFailure?.attempts||0,moduleGeneration=teacherModuleRequest++;
- const moduleRequest=moduleGeneration?import('./teacher-npc.js?v=ecc-ba60122&retry='+moduleGeneration):import('./teacher-npc.js?v=ecc-ba60122');
+ const moduleRequest=moduleGeneration?import('./teacher-npc.js?v=player-only-1&retry='+moduleGeneration):import('./teacher-npc.js?v=player-only-1');
  teacherLoad=moduleRequest.then(async m=>{teacherModuleFailure=null;
   // Stagger decode/upload work and isolate each optional NPC's failure.
   for(const config of m.TEACHERS)if(npcInfo(config.id).enabled&&!teachers.some(n=>n.id===config.id)){
@@ -956,7 +956,7 @@ async function boot(){
     if(completeView){$('loading').hidden=true;icons();}
     curiosHub=createCuriosHub({worlds,sign,canvas,pause:()=>{resetNavigationInput();actor.setWalking(false);},resume:resetNavigationInput,visit:visitCampusDestination,visitRover:()=>campusSpot(ROVER_DOCK.boardX,ROVER_DOCK.boardZ,'Lunar Rover',Math.PI)});
     await loadEcho();if(npcInfo('echo').enabled)await echo.selectHelper({id:'echo',name:npcInfo('echo').name,model:'./assets/helpers/echo.glb'});
-    extraCast=createExtraCast(worlds);const castReady=extraCast.load();prepareEntry().then(async()=>{curiosHub.installSigns();lunarRover ||= createLunarRover(worlds.town,worlds.townPhysics);ensureCampus().catch(()=>{});await castReady;extraCast.refreshGrounding();const greeting=config.extraNpcs.find(n=>n.enabled&&n.greetOnArrival&&n.dialogue);if(greeting&&mode==='town'){resetNavigationInput();showNpc(greeting.id,greeting);}}).catch(()=>{});
+    extraCast=createExtraCast(worlds);const castReady=extraCast.load();prepareEntry().then(async()=>{curiosHub.installSigns();lunarRover ||= createLunarRover(worlds.town,worlds.townPhysics);ensureCampus().catch(()=>{});castReady.then(()=>extraCast.refreshGrounding()).catch(error=>console.warn('Welcome still loading',error));const greeting={id:'basil',name:'Welcome',enabled:true,videoEnabled:true,dialogue:config.welcome};if(greeting&&mode==='town'){resetNavigationInput();showNpc(greeting.id,greeting);}}).catch(()=>{});
     $('choose-helper').textContent='Companion';
     $('arrival-mission').hidden=true;
     document.title=config.title;document.querySelector('.brand').setAttribute('aria-label',config.title+' home');

@@ -1,10 +1,10 @@
 import {validateConfig,previewStorageKey} from './world-content.mjs?v=navigation-final1';
-const response=await fetch('../world-config.json?v=entrance-stage-4');
+const response=await fetch('../world-config.json?v=player-only-1');
 if(!response.ok)throw Error('World settings could not load.');
 let settings=await response.json();
 if(new URLSearchParams(location.search).get('teacher-preview')==='1'){try{const draft=localStorage.getItem(previewStorageKey(new URL('../',location.href).pathname));if(draft)settings=validateConfig(JSON.parse(draft));}catch(error){console.warn('Teacher preview settings unavailable; using published settings.',error);}}
 export const config=validateConfig(settings);
-export const npcInfo=id=>config.npcs[id]||{name:id.startsWith('customer-')?'Visitor':id,enabled:true,dialogue:''};
+export const npcInfo=id=>config.npcs[id]||{name:id.startsWith('customer-')?'Visitor':id,enabled:false,dialogue:''};
 const labels={
  'ORIGINAL CAREER EMPIRE':'WELCOME','OPEN THE ORIGINAL GAME':'EXPLORE THE CAMPUS',
  'CAREERS ADVICE CENTRE':config.places.centre.toUpperCase(),'Careers Advice Centre':config.places.centre,

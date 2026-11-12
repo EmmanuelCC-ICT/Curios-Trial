@@ -1,10 +1,10 @@
-import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=entrance-stage-4';
-import {createTeacherNPC,TEACHERS} from './teacher-npc.js?v=entrance-stage-4';
+import {showWelcomeVideo,updateWelcomeAnchor,welcomeIsPlaying} from './welcome-player.mjs?v=player-only-1';
+import {createTeacherNPC,TEACHERS} from './teacher-npc.js?v=player-only-1';
 import * as THREE from 'three';
-import {ENTRANCE_STAGE,usesEntranceStage,basilEntranceYaw} from './entrance-showcase.mjs?v=entrance-stage-4';
+import {ENTRANCE_STAGE,usesEntranceStage,basilEntranceYaw} from './entrance-showcase.mjs?v=player-only-1';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {createSelectedHelper} from './helper-model.js';
-import {config,npcInfo} from './world-settings.mjs?v=entrance-stage-4';
+import {config,npcInfo} from './world-settings.mjs?v=player-only-1';
 let dialog,pages=[],page=0;
 function renderDialogue(){dialog.querySelector('#npc-message').textContent=pages[page]||'';dialog.querySelector('[data-page]').textContent=pages.length>1?`${page+1} of ${pages.length}`:'';dialog.querySelector('[data-back]').disabled=page===0;dialog.querySelector('[data-next]').textContent=page===pages.length-1?'Explore Curios':'Next';dialog.querySelector('footer').hidden=pages.length<2;dialog.scrollTop=0;}
 export function showNpc(id,details=npcInfo(id)){
@@ -17,7 +17,7 @@ export function createNeutralGuide({scene,onPause=()=>{}}){
  const fallback=()=>{const root=new THREE.Group();return {root};};
  const model=createSelectedHelper(fallback);scene.add(model.root);model.root.position.set(ENTRANCE_STAGE.helper.x,0,ENTRANCE_STAGE.helper.z);let visible=true;
  return {root:model.root,resources:null,resourcesNear:()=>false,showResources:()=>{},showHelp:()=>{},close:()=>dialog?.close(),open:()=>false,markMarketVisited:()=>{},guidance:()=>{},nextPreparation:()=>null,
- async selectHelper(helper){if(helper.id==='echo'&&!npcInfo('echo').enabled)helper={id:'none',model:null};visible=Boolean(helper.model);await model.select(helper);},setHidden(value){visible=!value;},
+ async selectHelper(helper){if(!npcInfo('echo').enabled)helper={id:'none',model:null};visible=Boolean(helper.model);await model.select(helper);},setHidden(value){visible=!value;},
  near:p=>visible&&model.root.position.distanceTo(p)<2.5,
  show(){onPause();showNpc('echo');},
  interaction(p){const details=npcInfo('echo');return visible&&details.enabled&&details.dialogue&&model.root.position.distanceTo(p)<2.5?{label:'Talk to '+details.name,action:()=>{onPause();showNpc('echo');}}:null;},
@@ -25,9 +25,7 @@ export function createNeutralGuide({scene,onPause=()=>{}}){
  snapshot:()=>({neutral:true,helperStatus:model.status})};
 }
 export function createExtraCast(worlds){
- const scene=worlds.town,cast=[];const loader=new GLTFLoader();
- return {async load(){for(const item of config.extraNpcs.filter(n=>n.enabled)){try{if(item.model==='./assets/mr-psandodakis-20260917.glb'){const npc=await createTeacherNPC(worlds,{...TEACHERS.find(n=>n.id==='psandodakis'),id:item.id,name:item.name,spawn:{x:item.position[0],z:item.position[1]},fixed:true});npc.root.rotation.y=item.id==='basil'&&usesEntranceStage(config)?basilEntranceYaw:0;cast.push({item,root:npc.root,npc});continue;}const gltf=await loader.loadAsync(item.model);const root=gltf.scene,box=new THREE.Box3().setFromObject(root),size=box.getSize(new THREE.Vector3()),scale=1.72/Math.max(size.y,.001);root.scale.setScalar(scale);root.position.set(item.position[0],-box.min.y*scale,item.position[1]);root.name='Teacher NPC / '+item.id;scene.add(root);const mixer=new THREE.AnimationMixer(root);const idle=gltf.animations.find(a=>/idle/i.test(a.name));if(idle)mixer.clipAction(idle).play();cast.push({item,root,mixer});}catch(error){console.warn('Additional character unavailable: '+item.name,error);}}},
- refreshGrounding(){for(const n of cast)n.npc?.refreshGrounding?.();},
- interaction(p){const n=cast.filter(n=>n.item.dialogue&&n.root.position.distanceTo(p)<2.5).sort((a,b)=>a.root.position.distanceTo(p)-b.root.position.distanceTo(p))[0];return n?{label:'Talk to '+n.item.name,action:()=>{n.npc?.react(n.root.position.clone().add(new THREE.Vector3(0,0,2)));showNpc(n.item.id,n.item);}}:null;},
- update(dt,camera,mode,player){for(const n of cast){updateWelcomeAnchor(n.item.id,n.root,camera,mode,player);n.npc?.welcomeDance(welcomeIsPlaying(n.item.id)&&!matchMedia('(prefers-reduced-motion: reduce)').matches);}if(!matchMedia('(prefers-reduced-motion: reduce)').matches)cast.forEach(n=>n.npc?n.npc.update(dt,n.root.position):n.mixer.update(dt));}};
+ const welcomeAnchor={position:new THREE.Vector3(ENTRANCE_STAGE.player.x,0,ENTRANCE_STAGE.player.z)};
+ return {async load(){},refreshGrounding(){},interaction(){return null;},
+ update(dt,camera,mode,player){updateWelcomeAnchor('basil',welcomeAnchor,camera,mode,player);}};
 }
