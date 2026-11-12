@@ -104,3 +104,10 @@
 #basil-welcome.family-welcome .family-welcome-copy{font:16px/1.45 system-ui;margin:0 0 10px;color:#f1f9f7}
 #basil-welcome.family-welcome>button{align-self:flex-end;padding:8px 18px;background:#e9d593;color:#173c3c}
 @media(max-width:599px){#basil-welcome.family-welcome{bottom:12px;max-height:31dvh}#basil-welcome.family-welcome .family-welcome-copy{font-size:14px}}
+
+/* Keep a reachable touch/keyboard toggle when the mini map is hidden. */
+#curios-mini-map [hidden]{display:none!important}
+#curios-mini-map.map-collapsed{width:auto;padding:4px}
+#curios-mini-map.map-collapsed header{margin:0}
+#curios-mini-map header button{min-height:44px}
+#curios-mini-map #curios-map-toggle{min-width:76px}
