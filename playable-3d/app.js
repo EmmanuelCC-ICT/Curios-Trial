@@ -7,7 +7,7 @@ import {createLunarDriverPose} from './lunar-driver-pose.mjs';
 import {roomCameraPose} from './room-camera.mjs';
 import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=player-only-1';
 import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=player-only-1';
-import {createCuriosHub} from './curios-hub.mjs?v=capabilities-1';
+import {createCuriosHub} from './curios-hub.mjs?v=pavilion-entry-1';
 import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=capabilities-1';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=player-only-1';
 import {createIsolatedStorage} from './world-storage.mjs';
@@ -29,7 +29,7 @@ import {afterFirstPaint} from './deferred-textures.js?v=ecc-ba60122';
 import {CHAPEL} from './chapel.js?v=opt2-20260914';
 import * as THREE from 'three';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {createWorlds,sign} from './world.js?v=staged-entry-1';
+import {createWorlds,sign} from './world.js?v=pavilion-entry-1';
 import {LEGACY,EST,CAREERS} from './destinations.js?v=demo-20260914';
 import {loadCharacterKit,loadProfileKit,createCharacter,createFallbackCharacter,isSimpleBody} from './characters.js?v=test-characters-20261013';
 import {loadProfiles,saveProfiles,normaliseProfile,OPTIONS,SKIN,PHASES,TEST_CHARACTER_INFO,COLOUR_PRESETS} from './profiles.js?v=test-characters-20261013';
@@ -41,6 +41,7 @@ const pixelDiagnostics=new URLSearchParams(location.search).get('diagnostics')==
 const joystick=createJoystick($('movement'));
 const icons=()=>window.lucide?.createIcons();
 const entryParams=new URLSearchParams(location.search);
+const pavilionEntry=entryParams.get('view')==='capabilities';
 const adminReviewRequested=false;
 const isolatedDiscovery=entryParams.get('review')==='1'&&entryParams.get('discovery')==='1';
 const discoveryReview=false;
@@ -367,6 +368,7 @@ async function ensureCampus(){
     THREE.Cache.enabled=true;
     try{
       await prepareEntry();
+      if(pavilionEntry)await worlds.loadEntry();
       const results=await Promise.allSettled([worlds.loadScenery({deferReveal:true})]);
       const failure=results.find(result=>result.status==='rejected');if(failure)throw failure.reason;
       await new Promise(resolve=>setTimeout(resolve,0));
@@ -376,6 +378,7 @@ async function ensureCampus(){
         try{await integrateEnvironment(worlds);worlds.syncWalkingSurfaces();environmentReady=true;}
         catch(error){for(const child of [...worlds.town.children])if(!before.has(child))child.removeFromParent();throw error;}
       }
+      if(pavilionEntry){curiosHub.installSigns();lunarRover ||= createLunarRover(worlds.town,worlds.townPhysics);}
       worlds.phase(phase);worlds.revealCampusDetail();worlds.openCampus();campusReady=true;worlds.scenery.status='ready';showMarketExteriorSigns();
       worlds.scenery.errors=[];canvas.dataset.campusReadyMs=String(Math.round(performance.now()));
       campusNotice('Campus ready');startSurfaceDetail();if(detailFailed)detailNotice();
@@ -852,7 +855,7 @@ function animate(){
     else {
     stepNavigation(movementElapsed);
     }
-    if(mode==='town'){if(entryReady&&!campusReady&&actor.model.position.z<-14&&worlds.scenery.status==='pending')openCampusInBackground();for(const npc of teachers)npc.update(Math.max(0,elapsed),actor.model.position);}if(!lunarRover?.driving)actor.update(discovery?.reduced()?0:Math.min(movementElapsed,.25));prepareNextTask(now);worlds.update(now,camera);updateInteraction();updateMission();
+    if(mode==='town'){if(entryReady&&!campusReady&&(actor.model.position.z<-14||(pavilionEntry&&worlds.atPavilionBoundary(actor.model.position)))&&worlds.scenery.status==='pending')openCampusInBackground();for(const npc of teachers)npc.update(Math.max(0,elapsed),actor.model.position);}if(!lunarRover?.driving)actor.update(discovery?.reduced()?0:Math.min(movementElapsed,.25));prepareNextTask(now);worlds.update(now,camera);updateInteraction();updateMission();
   }else {renderMotion=null;locomotion.reset();accumulator=0;actor.setWalking(false);if(mode==='studio')preview?.update(dt);}
   updateTeacherLoading();
   // The ungraded queue observation follows visible elapsed time. Clamping it
@@ -932,7 +935,7 @@ async function boot(){
     const avatarReady=loadProfileKit(copy(active())).then(()=>true,()=>false);
     // Fetch only the lightweight exterior module graph while the selected avatar
     // has asset priority. Geometry integration still waits for the entry paths.
-    entryEnvironmentModule=import('./environment.js?v=broad-integrated-20261014');entryEnvironmentModule.catch(()=>{entryEnvironmentModule=null;});
+    if(!pavilionEntry){entryEnvironmentModule=import('./environment.js?v=broad-integrated-20261014');entryEnvironmentModule.catch(()=>{entryEnvironmentModule=null;});}
     worlds=await createWorlds(message=>{$('loading-message').textContent=message;},()=>{detailFailed=true;detailNotice();},(hydrate,options)=>surfaceUploads.schedule(hydrate,options));applyRenderQuality();
     $('loading-message').textContent='Preparing your first view...';worlds.town.environment=environment.texture;worlds.town.environmentIntensity=.28;worlds.interior.environment=environment.texture;worlds.interior.environmentIntensity=.55;worlds.careers.environment=environment.texture;worlds.careers.environmentIntensity=.55;worlds.chapel.environment=environment.texture;worlds.chapel.environmentIntensity=.35;
     THREE.Cache.clear();THREE.Cache.enabled=false;
@@ -945,7 +948,18 @@ async function boot(){
     const viewpoint=viewpoints[view];
     const completeView=Boolean(viewpoint||view==='chapel-interior');entryHandover=!completeView&&!studioFirst&&!marketRequested;
     if(renderQuality(renderBackend,'auto',1).software){softwareNavigationAt=clock.getElapsedTime();setInterval(advanceSoftwareNavigation,16);}
-    if(!completeView){
+    curiosHub=createCuriosHub({worlds,sign,canvas,pause:()=>{resetNavigationInput();actor.setWalking(false);},resume:resetNavigationInput,visit:visitCampusDestination,visitRover:()=>campusSpot(ROVER_DOCK.boardX,ROVER_DOCK.boardZ,'Lunar Rover',Math.PI)});
+    if(pavilionEntry){
+      const site=resolveCampusDestination(config,'attributes');
+      curiosHub.installPavilion();
+      worlds.setPavilionBounds(site.x,site.z);
+      worlds.teleport(false,site.x,site.z);
+      actor.model.position.copy(worlds.position(false));
+      entryGeometryReady=true;entryReady=true;entryReadyAt=clock.getElapsedTime();
+      entryHandover=false;
+      setLocation(site.label);updateCamera(1,true);
+      $('campus-progress').hidden=true;$('loading').hidden=true;icons();animate();
+    }else if(!completeView){
       $('loading').hidden=true;icons();if(mode!=='market'&&!studioFirst)prepareEntry().catch(()=>{});animate();
       if(mode==='market')$('campus-progress').hidden=true;
       else if(studioFirst){
@@ -956,9 +970,8 @@ async function boot(){
     if(!marketRequested&&new URLSearchParams(location.search).get('view')==='chapel-interior')await enterChapel();
     if(viewpoint){worlds.teleport(false,viewpoint.p[0],viewpoint.p[1]);actor.model.position.copy(worlds.position(false));yaw=viewpoint.p[2];if(view==='home-economics')actor.model.rotation.y=Math.PI;aerial=false;setLocation(viewpoint.name);updateCamera(1,true);}
     if(completeView){$('loading').hidden=true;icons();}
-    curiosHub=createCuriosHub({worlds,sign,canvas,pause:()=>{resetNavigationInput();actor.setWalking(false);},resume:resetNavigationInput,visit:visitCampusDestination,visitRover:()=>campusSpot(ROVER_DOCK.boardX,ROVER_DOCK.boardZ,'Lunar Rover',Math.PI)});
     await loadEcho();if(npcInfo('echo').enabled)await echo.selectHelper({id:'echo',name:npcInfo('echo').name,model:'./assets/helpers/echo.glb'});
-    extraCast=createExtraCast(worlds);const castReady=extraCast.load();prepareEntry().then(async()=>{curiosHub.installSigns();lunarRover ||= createLunarRover(worlds.town,worlds.townPhysics);ensureCampus().catch(()=>{});castReady.then(()=>extraCast.refreshGrounding()).catch(error=>console.warn('Welcome still loading',error));const greeting={id:'basil',name:'Welcome',enabled:true,videoEnabled:true,dialogue:config.welcome};if(greeting&&mode==='town'){resetNavigationInput();showNpc(greeting.id,greeting);}}).catch(()=>{});
+    extraCast=createExtraCast(worlds);const castReady=extraCast.load();if(!pavilionEntry)prepareEntry().then(async()=>{curiosHub.installSigns();lunarRover ||= createLunarRover(worlds.town,worlds.townPhysics);ensureCampus().catch(()=>{});castReady.then(()=>extraCast.refreshGrounding()).catch(error=>console.warn('Welcome still loading',error));const greeting={id:'basil',name:'Welcome',enabled:true,videoEnabled:true,dialogue:config.welcome};if(greeting&&mode==='town'){resetNavigationInput();showNpc(greeting.id,greeting);}}).catch(()=>{});
     $('choose-helper').textContent='Companion';
     $('arrival-mission').hidden=true;
     document.title=config.title;document.querySelector('.brand').setAttribute('aria-label',config.title+' home');
