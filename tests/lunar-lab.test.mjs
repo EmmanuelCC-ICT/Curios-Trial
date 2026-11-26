@@ -268,7 +268,7 @@ test('Lunar dialog guards repeat opening, keyboard input and both navigation loo
   const hub=await readFile(new URL('../playable-3d/curios-hub.mjs',import.meta.url),'utf8');
   const app=await readFile(new URL('../playable-3d/app.js',import.meta.url),'utf8');
   assert.match(hub,/if\(moonDialog\?\.open\)return;/);
-  assert.match(hub,/dialogOpen:\(\)=>map\.open\|\|Boolean\(moonDialog\?\.open\)/);
+  assert.match(hub,/dialogOpen:\(\)=>attributes\.open\(\)\|\|map\.open\|\|Boolean\(moonDialog\?\.open\)/);
   assert.match(hub,/moonDialog\.addEventListener\('close',\(\)=>\{resume\(\);canvas\.focus/);
   assert.match(app,/window\.addEventListener\('keydown',e=>\{if\(curiosHub\?\.dialogOpen\(\)/);
   assert.match(app,/function canStepNavigation\(\)\{\s*return !curiosHub\?\.dialogOpen\(\)/);

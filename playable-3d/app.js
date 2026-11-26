@@ -7,8 +7,8 @@ import {createLunarDriverPose} from './lunar-driver-pose.mjs';
 import {roomCameraPose} from './room-camera.mjs';
 import {ENTRANCE_STAGE,usesEntranceStage,entranceShowcasePose} from './entrance-showcase.mjs?v=player-only-1';
 import {welcomeViewShift,welcomeIsOpen} from './welcome-player.mjs?v=player-only-1';
-import {createCuriosHub} from './curios-hub.mjs?v=map-toggle-1';
-import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=rocket-pad-1';
+import {createCuriosHub} from './curios-hub.mjs?v=attributes-1';
+import {ROOM_POINTS,MENU_DESTINATIONS,resolveCampusDestination} from './campus-destinations.mjs?v=attributes-1';
 import {config,npcInfo,neutralLabel} from './world-settings.mjs?v=player-only-1';
 import {createIsolatedStorage} from './world-storage.mjs';
 import {createNeutralGuide,showNpc,createExtraCast} from './neutral-cast.mjs?v=player-only-1';
@@ -693,7 +693,9 @@ function updateInteraction(){
   const launchAction=curiosHub?.rocketLaunch?.interaction(p);
   const walking=keys.size>0||Math.hypot(joystick.x,joystick.z)>.1;
   if(walking&&!curiosHub?.blocked()){if(Math.hypot(p.x-EST.x,p.z-EST.doorZ)<1.1){enterHall();return;}if(Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<1.1){enterCareers();return;}if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<.9){curiosHub?.openRoom('media');return;}}
+  const attributesAction=curiosHub?.attributesInteraction(p);
   if(launchAction)interaction=launchAction;
+  else if(attributesAction)interaction=attributesAction;
   else if(curiosHub?.forRoom('media')&&Math.hypot(p.x-ROOM_POINTS.media.x,p.z-ROOM_POINTS.media.z)<2.2)interaction={label:'Enter '+curiosHub.forRoom('media').name,action:()=>curiosHub?.openRoom('media')};
   else if(Math.hypot(p.x-ROOM_POINTS.hall.x,p.z-ROOM_POINTS.hall.z)<2.2||Math.hypot(p.x-EST.x,p.z-EST.doorZ)<2.2)interaction={label:'Enter '+config.places.hall,action:enterHall};
   else if(Math.hypot(p.x-ROOM_POINTS.centre.x,p.z-ROOM_POINTS.centre.z)<2.2||Math.hypot(p.x-CAREERS.x,p.z-CAREERS.doorZ)<2.2)interaction={label:'Enter '+config.places.centre,action:enterCareers};
