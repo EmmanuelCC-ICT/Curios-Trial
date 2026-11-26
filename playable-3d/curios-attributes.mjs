@@ -2,11 +2,54 @@ import * as THREE from 'three';
 import {ATTRIBUTES_SITE} from './attributes-site.mjs';
 
 const studios = [
-  ['Collaboration','#287543','The Build Table'],
-  ['Engagement','#245d9e','The Project Desk'],
-  ['Flexibility','#a84813','The Remix Studio'],
-  ['Critical Thinking','#a83358','The Clue Wall'],
-  ['Respect & Responsibility','#63488f','The Shared Space']
+  [
+    "Communication",
+    "#1458b4",
+    "communication",
+    "Help someone understand your idea and listen to theirs."
+  ],
+  [
+    "Creativity",
+    "#e66f00",
+    "creativity",
+    "Try a fresh idea or find a different way to make something work."
+  ],
+  [
+    "Citizenship",
+    "#008586",
+    "citizenship",
+    "Think about who your choices affect and how you can contribute."
+  ],
+  [
+    "Critical thinking",
+    "#7939a1",
+    "critical-thinking",
+    "Compare ideas, question assumptions and use evidence to choose."
+  ],
+  [
+    "Collaboration",
+    "#d92a65",
+    "collaboration",
+    "Bring different strengths together to reach a shared goal."
+  ],
+  [
+    "Character",
+    "#41812e",
+    "character",
+    "Act fairly, take responsibility and show care for others."
+  ],
+  [
+    "Independence",
+    "#176bc2",
+    "independence",
+    "Plan your next step and make decisions about your own learning."
+  ],
+  [
+    "Resilience",
+    "#44892f",
+    "resilience",
+    "Recover from a setback and try again with what you learned."
+  ]
 ];
 const plans = [
   ['Keep the outdoor layout','The big display still needs wall space. The new room only has space around its edges.'],
@@ -16,14 +59,14 @@ const plans = [
 
 export function createAttributesPavilion({worlds,sign,pause,resume,canvas}) {
   const {x,z} = ATTRIBUTES_SITE;
-  const points = studios.map((studio,index)=>({x:x+(index-2)*3,z:z-2.7,studio}));
+  const points = studios.map((studio,index)=>({x:x+(index-3.5)*1.92,z:z-2.7,studio}));
   const desk = {x:x+3,z:z+2.4};
-  let root, dialog, goal='', reflection='', previousChoice=null, choice=null, take=0, entry=null;
+  let root, dialog, previousChoice=null, choice=null, take=0;
 
   function install(){
     if(root)return;
     root=new THREE.Group();
-    root.name='Curios Attributes';
+    root.name='Curios Capabilities';
     root.position.set(x,0,z);
     const timber=new THREE.MeshStandardMaterial({color:0xb58457});
     const stone=new THREE.MeshStandardMaterial({color:0xe5d7bd});
@@ -55,16 +98,21 @@ export function createAttributesPavilion({worlds,sign,pause,resume,canvas}) {
     block(16.5,.36,1.25,ink,0,4.02,4.4);
     block(16.5,.24,2.4,timber,0,3.92,-3.55);
     for(const px of [-6,-4,-2,0,2,4,6])block(.15,.16,8.5,timber,px,3.89,.15);
-    label('CURIOS ATTRIBUTES',5.4,0,3.59,-3.44);
-    for(const [index,{studio:[name,colour,subtitle]}] of points.entries()){
-      const px=(index-2)*3;
+    label('CURIOS CAPABILITIES',5.4,0,3.59,-3.44);
+    for(const [index,{studio:[name,colour,slug]}] of points.entries()){
+      const px=(index-3.5)*1.92;
       const accent=new THREE.MeshStandardMaterial({color:colour});
-      for(const side of [-1,1])solid(.16,2.7,.28,accent,px+side*1.27,1.42,-3.65);
-      block(2.7,.34,.32,accent,px,2.77,-3.65);
-      solid(2.65,2.68,.22,stone,px,1.42,-4.75);
-      label(name,2.56,px,2.78,-3.46,colour);
-      label(subtitle,2.2,px,1.65,-4.62,colour);
-      block(2.35,.035,1.25,accent,px,.095,-3.32);
+      for(const side of [-1,1])solid(.16,2.7,.28,accent,px+side*.89,1.42,-3.65);
+      block(1.9,.34,.32,accent,px,2.77,-3.65);
+      solid(1.85,2.68,.22,stone,px,1.42,-4.75);
+      label(name,1.85,px,2.78,-3.46,colour);
+      const texture=new THREE.TextureLoader().load('./portfolio/icons/'+slug+'.svg');
+      texture.colorSpace=THREE.SRGBColorSpace;
+      const badge=new THREE.Mesh(new THREE.PlaneGeometry(1.52,1.52),
+        new THREE.MeshBasicMaterial({map:texture,transparent:true,alphaTest:.05}));
+      badge.position.set(px,1.52,-4.62);
+      root.add(badge);
+      block(1.72,.035,1.25,accent,px,.095,-3.32);
     }
     solid(1.8,.9,.65,timber,3,.5,1.15);
     label('MY FIELDBOOK',1.8,3,1.16,1.53);
@@ -79,7 +127,7 @@ export function createAttributesPavilion({worlds,sign,pause,resume,canvas}) {
       dialog.addEventListener('close',()=>{resume();canvas.focus({preventScroll:true});});
       document.body.append(dialog);
     }
-    dialog.innerHTML=`<header><span>Curios Attributes · Sample module</span><button type="button" data-close aria-label="Return to pavilion">✕</button></header>
+    dialog.innerHTML=`<header><span>Curios Capabilities · Sample module</span><button type="button" data-close aria-label="Return to pavilion">✕</button></header>
       <main><p class="attributes-kicker">${kicker}</p><h2 id="attributes-heading" tabindex="-1">${title}</h2>${body}<div class="attributes-actions"></div></main>`;
     dialog.querySelector('[data-close]').onclick=()=>dialog.close();
     for(const [label,action] of actions){
@@ -115,39 +163,19 @@ export function createAttributesPavilion({worlds,sign,pause,resume,canvas}) {
   }
 
   function fieldbook(){
-    show('My Fieldbook','04 · Reflect and plan',
-      '<div class="attributes-scene"><span>Sample entry · ArtQuest</span><strong>I moved the labels after a partner said they were hard to read. They found the information faster on the second try.</strong></div><p>Look for evidence of using feedback, adapting to change or persisting when a task gets difficult.</p><label>My next-project goal<input maxlength="180" placeholder="When I get feedback, I will…"></label><label>What did I do, and what happened?<textarea maxlength="800" rows="3" placeholder="Describe a real example, or try a sample reflection."></textarea></label><p><small>Demo entries stay in this visit and clear on refresh.</small></p><output aria-live="polite"></output>',
-      [['Save demo entry',()=>{
-        if(!goal.trim()&&!reflection.trim()){
-          dialog.querySelector('output').textContent='Add a goal or reflection first.';
-          return;
-        }
-        entry={goal:goal.trim(),reflection:reflection.trim()};
-        dialog.querySelector('output').textContent='Demo entry saved for this visit.';
-      }],['Review descriptors',review],['Back to the studio',lesson]]);
-    const input=dialog.querySelector('input'), notes=dialog.querySelector('textarea');
-    input.value=goal;notes.value=reflection;
-    input.oninput=()=>{goal=input.value;dialog.querySelector('output').textContent='';};
-    notes.oninput=()=>{reflection=notes.value;dialog.querySelector('output').textContent='';};
-    if(entry&&entry.goal===goal.trim()&&entry.reflection===reflection.trim())dialog.querySelector('output').textContent='Demo entry saved for this visit.';
-  }
-
-  function review(){
-    show('Review your evidence','05 · Check in',
-      '<p>Compare your examples with these sample summaries of the ECC Flexibility descriptors.</p><dl><dt>Needs Attention</dt><dd>Finds it difficult to adapt to changes or use feedback.</dd><dt>Satisfactory</dt><dd>Can adapt with support and sometimes accepts feedback.</dd><dt>Good</dt><dd>Uses feedback to improve and persists with some support.</dd><dt>Excellent</dt><dd>Embraces new ideas, responds positively to feedback and perseveres through difficult tasks.</dd></dl><p>ECC requires evidence of at least three descriptors for a rating. This demo leaves the rating open for further reflection.</p><blockquote data-entry></blockquote><p data-goal></p>',
-      [['Return to My Fieldbook',fieldbook]]);
-    dialog.querySelector('[data-entry]').textContent=entry?.reflection||'Sample evidence · I moved the labels after a partner gave me feedback.';
-    if(entry?.goal)dialog.querySelector('[data-goal]').textContent='Next goal · '+entry.goal;
+    show('My Fieldbook','Capability portfolios',
+      '<p><a href="./portfolio/student.html">Student portfolio and entry</a></p><p><a href="./portfolio/teacher.html">Teacher portfolio view</a></p>',[]);
   }
 
   function interaction(p){
     if(!root)return null;
-    const point=points.find(at=>Math.hypot(p.x-at.x,p.z-at.z)<1.35);
+    const point=points.find(at=>Math.abs(p.x-at.x)<.94 && Math.abs(p.z-at.z)<1.35);
     if(point){
-      const [name,,subtitle]=point.studio;
-      return {label:'Open '+name,action:name==='Flexibility'?lesson:()=>show(subtitle,name,
-        '<p>This studio doorway is part of the pavilion preview. Try the Flexibility studio for a playable lesson.</p>',
-        [['Return to pavilion',()=>dialog.close()]])};
+      const [name,,slug,description]=point.studio;
+      const actions=[['Open My Fieldbook',fieldbook]];
+      if(name==='Resilience')actions.unshift(['Try the festival scenario',lesson]);
+      return {label:'Open '+name,action:()=>show(name,'Key capability',
+        `<img width="88" height="88" alt="" src="./portfolio/icons/${slug}.svg"><p>${description}</p>`,actions)};
     }
     if(Math.hypot(p.x-desk.x,p.z-desk.z)<1.35)return {label:'Open My Fieldbook',action:fieldbook};
     return null;

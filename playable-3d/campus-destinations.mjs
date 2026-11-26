@@ -21,7 +21,7 @@ const PLACES={
  space:{label:'SPACE',x:7,z:-53,yaw:-Math.PI/2},
  rocket:{label:'Rocket Launch Pad',x:ROCKET_SITE.x,z:ROCKET_SITE.viewingZ,pin:{x:ROCKET_SITE.x,z:ROCKET_SITE.z},rover:{x:ROCKET_SITE.roverX,z:ROCKET_SITE.roverZ},badges:['./assets/curios/rocket-pad.svg']},
  circuit:{label:'Lunar Rover Circuit',x:51,z:-56,pin:{x:62,z:-69},rover:{x:60,z:-50}},
- attributes:{label:'Curios Attributes',x:ATTRIBUTES_SITE.x,z:ATTRIBUTES_SITE.arrivalZ,pin:ATTRIBUTES_SITE},
+ attributes:{label:'Curios Capabilities',x:ATTRIBUTES_SITE.x,z:ATTRIBUTES_SITE.arrivalZ,pin:ATTRIBUTES_SITE},
  lunar:{label:'Curios Lunar Lab',x:38,z:-54.5,badges:['./assets/curios/lunar-lab.svg']}
 };
 export function resolveCampusDestination(config,key,{driving=false,enter=false,roverDock}={}){

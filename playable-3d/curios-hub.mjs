@@ -1,11 +1,11 @@
-import {createAttributesPavilion} from './curios-attributes.mjs';
+import {createAttributesPavilion} from './curios-attributes.mjs?v=capabilities-1';
 import {installMiniMapToggle} from './mini-map-toggle.mjs?v=map-toggle-1';
 import * as THREE from 'three';
 import {installRocketLaunchPad} from './curios-rocket.mjs';
 import {createRocketLaunch} from './rocket-launch.mjs?v=curios-finale-2';
 import {installLunarLab,LUNAR_SITE,lunarApproachFraming,updateLunarLab} from './curios-lunar-lab.mjs?v=lunar-circuit-1';
 import {config} from './world-settings.mjs?v=entrance-stage-4';
-import {ROOM_POINTS,campusMapDestinations} from './campus-destinations.mjs?v=attributes-1';
+import {ROOM_POINTS,campusMapDestinations} from './campus-destinations.mjs?v=capabilities-1';
 export {ROOM_POINTS};
 export function createCuriosHub({worlds,sign,canvas,pause,resume,visit,visitRover}){
  const attributes=createAttributesPavilion({worlds,sign,canvas,pause,resume});
